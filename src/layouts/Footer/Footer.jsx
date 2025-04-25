@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { Facebook, Linkedin, Youtube } from 'lucide-react';
 
 const Footer = () => {
   const footerData = {
@@ -7,10 +7,9 @@ const Footer = () => {
       logoText: "ComfortWay",
       description: "Expert Care For Your Devices",
       socials: [
-        { icon: Facebook, path: 'https://facebook.com' },
-        { icon: Twitter, path: 'https://twitter.com' },
-        { icon: Instagram, path: 'https://instagram.com' },
-        { icon: Youtube, path: 'https://youtube.com' },
+        { icon: Facebook, path: 'https://www.facebook.com/comfortway.in/' },
+        { icon: Linkedin, path: 'https://www.linkedin.com/company/comfortway-in' },
+        { icon: Youtube, path: 'https://www.youtube.com/@comfortway3020' },
       ],
       referral: {
         title: "Refer & Earn",
@@ -24,86 +23,46 @@ const Footer = () => {
       {
         title: "Company",
         links: [
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
           { name: "About Us", path: "/about" },
-          { name: "Blog", path: "/blog" },
-          { name: "Careers", path: "/careers" },
-          { name: "In The Media", path: "/media" },
-          { name: "Whitepapers", path: "/whitepapers" },
           { name: "Contact Us", path: "/contact" },
-          { name: "Sitemap", path: "/sitemap" },
         ],
       },
       {
         title: "Products",
         links: [
-          { name: "Mobile Phones", path: "/products/mobiles" },
-          { name: "Laptops", path: "/products/laptops" },
-          { name: "Tablets", path: "/products/tablets" },
-          { name: "Digital Cameras", path: "/products/cameras" },
-          { name: "Printers & Scanners", path: "/products/printers" },
           { name: "Water Purifiers", path: "/products/purifiers" },
-        ],
-      },
-      {
-        title: " ", // Invisible title for layout
-        links: [
           { name: "Air Conditioners", path: "/products/ac" },
           { name: "Washing Machine", path: "/products/washing-machines" },
           { name: "Refrigerators", path: "/products/refrigerators" },
           { name: "Microwaves", path: "/products/microwaves" },
-          { name: "Televisions", path: "/products/tv" },
-          { name: "Fitness Tracker", path: "/products/fitness" },
+          { name: "Chimneys", path: "/products/chimneys" },
         ],
       },
       {
         title: " ", // Invisible title for layout
         links: [
-          { name: "Desktop", path: "/products/desktop" },
-          { name: "Smartwatch", path: "/products/smartwatch" },
-          { name: "HomeCare", path: "/products/homecare" },
+          { name: "Juicers", path: "/products/juicers" },
+          { name: "Geysers", path: "/products/geysers" },
+          { name: "Choppers", path: "/products/choppers" },
+          { name: "Blenders", path: "/products/blenders" },
+          { name: "Microwaves", path: "/products/microwaves" },
+          { name: "Hobs", path: "/products/hobs" },
+          { name: "Iron", path: "/products/irons" },
         ],
       },
-    ],
-    // Row 2: Policies + 2 Warranty Columns + Lending
-    row2Links: [
-       {
+      {
         title: "Policies",
         links: [
           { name: "Terms of Use", path: "/terms-of-use" },
           { name: "Privacy Policy", path: "/privacy" },
           { name: "Terms of Service", path: "/terms-of-service" },
-          { name: "Annual Returns", path: "/annual-returns" },
-        ],
-      },
-      {
-        title: "Warranty Check",
-        links: [
-          { name: "Apple Warranty Check", path: "/warranty/apple" },
-          { name: "iPhone Warranty Check", path: "/warranty/iphone" },
-          { name: "Dell Warranty Check", path: "/warranty/dell" },
-        ],
-      },
-      {
-        title: " ", // Invisible title for layout
-        links: [
-          { name: "Sony Warranty Check", path: "/warranty/sony" },
-          { name: "Lenovo Warranty Check", path: "/warranty/lenovo" },
-          { name: "Samsung Warranty Check", path: "/warranty/samsung" },
-        ],
-      },
-       {
-        title: "Lending Service Provider",
-        links: [
-          { name: "Customer Consent", path: "/lending/consent" },
-          { name: "Grievance Redressal", path: "/lending/grievance" },
-          { name: "LSP Partners", path: "/lending/partners" },
         ],
       },
     ],
     bottomBar: {
-      securePaymentText: "Secure Payment",
-      paymentIcons: ['VISA', 'MasterCard', 'NetBanking', 'EasyEMI'],
-      copyrightText: `© 2010-${new Date().getFullYear()} ComfortWay. All Rights Reserved.`,
+      copyrightText: `© ${new Date().getFullYear()} Comfort Way. All Rights Reserved.`,
     },
   };
 
@@ -179,21 +138,11 @@ const Footer = () => {
              {/* --- Row 1 --- */} 
              {renderLinkRow(footerData.row1Links)}
 
-             {/* --- Row 2 --- */} 
-             {renderLinkRow(footerData.row2Links)}
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center text-xs">
-          <div className="flex items-center space-x-4 mb-4 md:mb-0">
-            <span className="text-gray-400">{footerData.bottomBar.securePaymentText}:</span>
-            <div className="flex space-x-2">
-              {footerData.bottomBar.paymentIcons.map(icon => (
-                  <span key={icon} className="text-[10px] bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded">{icon}</span>
-              ))}
-            </div>
-          </div>
+        <div className="mt-12 pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-center items-center text-xs">
           <p className="text-gray-400 text-center md:text-right">{footerData.bottomBar.copyrightText}</p>
         </div>
       </div>

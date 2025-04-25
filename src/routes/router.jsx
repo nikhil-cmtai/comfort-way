@@ -5,7 +5,17 @@ import RootLayout from '../layouts/RootLayout';
 import Home from '../pages/home/Home';
 import About from '../pages/about/about';
 import Contact from '../pages/contact/contact';
-import ExtendedWarranty from '../pages/extended-warranty/ExtendedWarranty';
+import BuyRent from '../pages/buy-rent/buy-rent';
+import ProtectionPlan from '../pages/protection-plans/protection-plans';
+import RaiseRequest from '../pages/raise-request/raise-request';
+import Privacy from '../pages/privacy/privacy';
+import Terms from '../pages/terms/terms';
+import Services from '../pages/services/services';
+import MaintenanceRepair from '../pages/maintenance-repair/maintenance-repair';
+import SignIn from '../pages/auth/signin';
+import SignUp from '../pages/auth/signup';
+import Devices from '../pages/devices/devices';
+import DeviceDetails from '../pages/device-detail/device-detail';
 
 export const router = createBrowserRouter([
   {
@@ -25,9 +35,49 @@ export const router = createBrowserRouter([
         element: <Contact />,
       },
       {
-        path: 'extended-warranty',
-        element: <ExtendedWarranty />,
+        path: 'buy-rent',
+        element: <BuyRent />,
       },
+      {
+        path: 'home-protection',
+        element: <ProtectionPlan />,
+      },
+      {
+        path: 'raise-request',
+        element: <RaiseRequest />,
+      },
+      {
+        path: 'privacy',
+        element: <Privacy />,
+      },
+      {
+        path: 'terms',
+        element: <Terms />,
+      },
+      {
+        path: 'services',
+        element: <Services />,
+      },
+      {
+        path: 'maintenance-repairs',
+        element: <MaintenanceRepair />,
+      },
+      {
+        path: 'sign-in',
+        element: <SignIn />,
+      },
+      {
+        path: 'sign-up',
+        element: <SignUp />,
+      },
+      {
+        path: 'devices',
+        element: <Devices />,
+      },
+      {
+        path: 'devices/:deviceId',
+        element: <DeviceDetails />,
+      },  
     ],
   },
 ]); 
