@@ -6,45 +6,45 @@ import { Menu, X, ShoppingCart, User, ChevronDown } from 'lucide-react';
 const devicePlansData = [
   // Column 1
   [
-    { name: 'Air Conditioner', subLinks: ['Extended Warranty', 'Maintenance and Repair'], path: '/devices/ac', new: true },
-    { name: 'Air Purifier', subLinks: ['Extended Warranty'], path: '/devices/air-purifier' },
-    { name: 'Audio System', subLinks: ['Extended Warranty'], path: '/devices/audio' },
-    { name: 'Chopper and Blender', subLinks: ['Extended Warranty'], path: '/devices/blender' },
-    { name: 'Desktop', subLinks: ['Extended Warranty'], path: '/devices/desktop' },
-    { name: 'Digital Camera', subLinks: ['Spills and Drops / Damage Protection', 'Extended Warranty'], path: '/devices/camera' },
-    { name: 'Dishwasher', subLinks: ['Extended Warranty'], path: '/devices/dishwasher' },
-    { name: 'Electric Cooker', subLinks: ['Extended Warranty'], path: '/devices/cooker' },
+    { name: 'Air Conditioner', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }, { name: 'Maintenance and Repair', path: '/devices/ac/maintenance' }], path: '/devices/ac', new: true },
+    { name: 'Air Purifier', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/air-purifier' },
+    { name: 'Audio System', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/audio' },
+    { name: 'Chopper and Blender', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/blender' },
+    { name: 'Desktop', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/desktop' },
+    { name: 'Digital Camera', subLinks: [{ name: 'Spills and Drops / Damage Protection', path: '/devices/camera/protection' }, { name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/camera' },
+    { name: 'Dishwasher', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/dishwasher' },
+    { name: 'Electric Cooker', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/cooker' },
   ],
   // Column 2
   [
-    { name: 'Fan', subLinks: ['Extended Warranty'], path: '/devices/fan' },
-    { name: 'Fitness Tracker', subLinks: ['Extended Warranty'], path: '/devices/fitness-tracker' },
-    { name: 'Gaming Console', subLinks: ['Extended Warranty'], path: '/devices/gaming' },
-    { name: 'Geyser', subLinks: ['Extended Warranty', 'Maintenance and Repair'], path: '/devices/geyser' },
-    { name: 'Groom & Hair Care', subLinks: ['Extended Warranty'], path: '/devices/grooming' },
-    { name: 'Headphone', subLinks: ['Extended Warranty'], path: '/devices/headphones' },
-    { name: 'Home Theatre and Soundbar', subLinks: ['Extended Warranty'], path: '/devices/home-theatre' },
-    { name: 'Iron', subLinks: ['Extended Warranty'], path: '/devices/iron' },
+    { name: 'Fan', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/fan' },
+    { name: 'Fitness Tracker', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/fitness-tracker' },
+    { name: 'Gaming Console', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/gaming' },
+    { name: 'Geyser', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }, { name: 'Maintenance and Repair', path: '/devices/geyser/maintenance' }], path: '/devices/geyser' },
+    { name: 'Groom & Hair Care', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/grooming' },
+    { name: 'Headphone', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/headphones' },
+    { name: 'Home Theatre and Soundbar', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/home-theatre' },
+    { name: 'Iron', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/iron' },
   ],
   // Column 3
   [
-    { name: 'Juicer Mixer Grinder', subLinks: ['Extended Warranty'], path: '/devices/jmg' },
-    { name: 'Kettle', subLinks: ['Extended Warranty'], path: '/devices/kettle' },
-    { name: 'Laptop', subLinks: ['Laptop Complete Care', 'Extended Warranty'], path: '/devices/laptop', new: true },
-    { name: 'Microwave', subLinks: ['Extended Warranty', 'Maintenance and Repair'], path: '/devices/microwave' },
-    { name: 'Mobile Phone', subLinks: ['Extended Warranty'], path: '/devices/mobile' },
-    { name: 'Printer and Scanner', subLinks: ['Extended Warranty', 'Maintenance and Repair'], path: '/devices/printer' },
-    { name: 'Refrigerator', subLinks: ['Extended Warranty', 'Maintenance and Repair'], path: '/devices/refrigerator' },
+    { name: 'Juicer Mixer Grinder', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/jmg' },
+    { name: 'Kettle', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/kettle' },
+    { name: 'Laptop', subLinks: [{ name: 'Laptop Complete Care', path: '/devices/laptop/complete-care' }, { name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/laptop', new: true },
+    { name: 'Microwave', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }, { name: 'Maintenance and Repair', path: '/devices/microwave/maintenance' }], path: '/devices/microwave' },
+    { name: 'Mobile Phone', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/mobile' },
+    { name: 'Printer and Scanner', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }, { name: 'Maintenance and Repair', path: '/devices/printer/maintenance' }], path: '/devices/printer' },
+    { name: 'Refrigerator', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }, { name: 'Maintenance and Repair', path: '/devices/refrigerator/maintenance' }], path: '/devices/refrigerator' },
   ],
   // Column 4
   [
-    { name: 'Room Cooler', subLinks: ['Extended Warranty'], path: '/devices/room-cooler' },
-    { name: 'Smartwatch', subLinks: ['Extended Warranty'], path: '/devices/smartwatch' },
-    { name: 'Tablet', subLinks: ['Extended Warranty'], path: '/devices/tablet' },
-    { name: 'Television', subLinks: ['Extended Warranty'], path: '/devices/tv' },
-    { name: 'Vacuum Cleaner', subLinks: ['Extended Warranty'], path: '/devices/vacuum' },
-    { name: 'Washing Machine', subLinks: ['Extended Warranty', 'Maintenance and Repair'], path: '/devices/washing-machine' },
-    { name: 'Water Purifier', subLinks: ['Extended Warranty', 'Maintenance and Repair'], path: '/devices/water-purifier' },
+    { name: 'Room Cooler', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/room-cooler' },
+    { name: 'Smartwatch', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/smartwatch' },
+    { name: 'Tablet', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/tablet' },
+    { name: 'Television', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/tv' },
+    { name: 'Vacuum Cleaner', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }], path: '/devices/vacuum' },
+    { name: 'Washing Machine', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }, { name: 'Maintenance and Repair', path: '/devices/washing-machine/maintenance' }], path: '/devices/washing-machine' },
+    { name: 'Water Purifier', subLinks: [{ name: 'Extended Warranty', path: '/extended-warranty' }, { name: 'Maintenance and Repair', path: '/devices/water-purifier/maintenance' }], path: '/devices/water-purifier' },
   ],
 ];
 
@@ -225,8 +225,8 @@ const Header = () => {
       {isDevicePlansOpen && (
         <div 
           ref={devicePlansRef}
-          onMouseEnter={handleDevicePlansMouseEnter} // Keep open when hovering menu
-          onMouseLeave={handleDevicePlansMouseLeave} // Close when leaving menu
+          onMouseEnter={handleDevicePlansMouseEnter}
+          onMouseLeave={handleDevicePlansMouseLeave}
           className="absolute left-0 right-0 top-full bg-white shadow-lg border-t border-gray-200 z-10"
         >
           <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -237,12 +237,10 @@ const Header = () => {
                     <div key={item.name}>
                       {/* Heading Part */}
                       <div className="mb-2">
-                        <div
-                          className="block text-base font-bold text-gray-900 relative"
-                        >
+                        <div className="block text-base font-bold text-gray-900 relative">
                           {item.name}
                           {item.new && (
-                              <span className="ml-2 text-xs align-middle font-semibold text-white bg-red-500 px-1.5 py-0.5 rounded-full">NEW</span>
+                            <span className="ml-2 text-xs align-middle font-semibold text-white bg-red-500 px-1.5 py-0.5 rounded-full">NEW</span>
                           )}
                         </div>
                         <div className="mt-1 h-0.5 w-10 bg-teal-400"></div>
@@ -251,8 +249,14 @@ const Header = () => {
                       {/* Sublinks Part */}
                       <ul className="mt-2 space-y-1.5">
                         {item.subLinks.map((subLink) => (
-                          <li key={subLink} className="text-sm text-gray-600 hover:text-indigo-600 hover:underline cursor-pointer">
-                            {subLink}
+                          <li key={subLink.name}>
+                            <Link
+                              to={subLink.path}
+                              className="text-sm text-gray-600 hover:text-indigo-600 hover:underline cursor-pointer"
+                              onClick={() => setIsDevicePlansOpen(false)}
+                            >
+                              {subLink.name}
+                            </Link>
                           </li>
                         ))}
                       </ul>

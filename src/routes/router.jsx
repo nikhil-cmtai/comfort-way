@@ -5,6 +5,7 @@ import RootLayout from '../layouts/RootLayout';
 import Home from '../pages/home/Home';
 import About from '../pages/about/about';
 import Contact from '../pages/contact/contact';
+import ExtendedWarranty from '../pages/extended-warranty/ExtendedWarranty';
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ export const router = createBrowserRouter([
       {
         path: 'contact',
         element: <Contact />,
+      },
+      {
+        path: 'extended-warranty',
+        element: <ExtendedWarranty />,
       },
     ],
   },
