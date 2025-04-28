@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import RootLayout from '../layouts/RootLayout';
 
 // Import your page components here
-import Home from '../pages/home/Home';
+import Home from '../pages/home/home';
 import About from '../pages/about/about';
 import Contact from '../pages/contact/contact';
 import BuyRent from '../pages/buy-rent/buy-rent';
