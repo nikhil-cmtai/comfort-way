@@ -13,6 +13,7 @@ import PartnersSection from '../../components/home/PartnersSection';
 
 const Home = () => {
   return (
+    <>
     <main>
       <HeroCarousel />
       <SearchSection />
@@ -26,6 +27,7 @@ const Home = () => {
       <CustomerReviewsSection />
       <PartnersSection />
     </main>
+    </>
   );
 }; 
 
