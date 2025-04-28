@@ -16,7 +16,8 @@ import SignIn from '../pages/auth/signin';
 import SignUp from '../pages/auth/signup';
 import Devices from '../pages/devices/devices';
 import DeviceDetails from '../pages/device-detail/device-detail';
-
+import ProductRepairForm from '../pages/maintenance-repair/ProductRepairForm';
+import CategoryDetails from '../pages/buy-rent/[category]';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -39,6 +40,10 @@ export const router = createBrowserRouter([
         element: <BuyRent />,
       },
       {
+        path: 'buy-rent/:category',
+        element: <CategoryDetails />,
+      },
+      {
         path: 'home-protection',
         element: <ProtectionPlan />,
       },
@@ -59,7 +64,7 @@ export const router = createBrowserRouter([
         element: <Services />,
       },
       {
-        path: 'maintenance-repairs',
+        path: 'maintenance-repair',
         element: <MaintenanceRepair />,
       },
       {
@@ -78,6 +83,10 @@ export const router = createBrowserRouter([
         path: 'devices/:deviceId',
         element: <DeviceDetails />,
       },  
+      {
+        path: 'maintenance-repair/:product',
+        element: <ProductRepairForm />,
+      },
     ],
   },
 ]); 

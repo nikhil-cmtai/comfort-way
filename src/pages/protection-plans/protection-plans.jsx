@@ -1,141 +1,317 @@
 import React from 'react';
-import { FiShield, FiCheckSquare, FiDollarSign, FiTool } from 'react-icons/fi';
+import { FiShield, FiCheckSquare, FiDollarSign, FiTool, FiHome, FiZap, FiUsers } from 'react-icons/fi';
+import protectionBanner from '/images/products/protectionBanner.webp';
 
-const ProtectionPlans = () => {
+const bhkPlans = [
+  {
+    bhk: '1 BHK',
+    original: 9999,
+    discount: 40,
+    price: 5999,
+    features: [
+      'All appliances covered',
+      'Unlimited repairs',
+      'Free service visits',
+      'Genuine parts guarantee',
+      'Priority support',
+    ],
+    icon: <FiHome className="w-10 h-10 text-indigo-600" />,
+    highlight: false,
+  },
+  {
+    bhk: '2 BHK',
+    original: 12999,
+    discount: 40,
+    price: 7799,
+    features: [
+      'All appliances covered',
+      'Unlimited repairs',
+      'Free service visits',
+      'Genuine parts guarantee',
+      'Priority support',
+      'Annual maintenance check',
+    ],
+    icon: <FiUsers className="w-10 h-10 text-blue-600" />,
+    highlight: true, // Most popular
+  },
+  {
+    bhk: '3 BHK',
+    original: 15999,
+    discount: 40,
+    price: 9599,
+    features: [
+      'All appliances covered',
+      'Unlimited repairs',
+      'Free service visits',
+      'Genuine parts guarantee',
+      'Priority support',
+      'Annual maintenance check',
+      'AC deep cleaning',
+    ],
+    icon: <FiZap className="w-10 h-10 text-purple-600" />,
+    highlight: false,
+  },
+  {
+    bhk: '4 BHK',
+    original: 19999,
+    discount: 40,
+    price: 11999,
+    features: [
+      'All appliances covered',
+      'Unlimited repairs',
+      'Free service visits',
+      'Genuine parts guarantee',
+      'Priority support',
+      'Annual maintenance check',
+      'AC deep cleaning',
+      'Dedicated relationship manager',
+    ],
+    icon: <FiShield className="w-10 h-10 text-yellow-500" />,
+    highlight: false,
+  },
+];
 
-  // Placeholder data - Replace with actual plan details
-  const plans = [
-    {
-      icon: <FiShield className="w-12 h-12 text-blue-600 mb-4" />,
-      name: "Basic Coverage",
-      price: "Starts at $9.99/mo",
-      description: "Essential protection against common defects and malfunctions.",
-      features: [
-        "Standard parts warranty",
-        "Labor coverage for manufacturing defects",
-        "Phone support"
-      ],
-      idealFor: "Light users, basic equipment"
-    },
-    {
-      icon: <FiCheckSquare className="w-12 h-12 text-green-600 mb-4" />,
-      name: "Extended Pro",
-      price: "Starts at $19.99/mo",
-      description: "Comprehensive coverage including accidental damage and extended support.",
-      features: [
-        "Includes Basic Coverage",
-        "Accidental damage protection (limits apply)",
-        "Priority repair service",
-        "Annual preventative maintenance check"
-      ],
-      idealFor: "Frequent users, valuable equipment"
-    },
-    {
-      icon: <FiDollarSign className="w-12 h-12 text-yellow-500 mb-4" />,
-      name: "Business Fleet Plan",
-      price: "Custom Quote",
-      description: "Tailored protection for businesses with multiple pieces of equipment.",
-      features: [
-        "Covers multiple units under one plan",
-        "On-site repair options",
-        "Dedicated account manager",
-        "Customizable coverage levels"
-      ],
-      idealFor: "Businesses, contractors"
-    }
-  ];
-
+export default function ProtectionPlans() {
   return (
-    <div className="bg-gray-50">
-      {/* --- Hero Section --- */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 sm:py-28 text-center shadow-lg relative overflow-hidden">
-         <div className="absolute inset-0 bg-black opacity-10 z-0"></div>
-         <div className="container mx-auto px-6 relative z-10">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 tracking-tight">Equipment Protection Plans</h1>
-          <p className="text-lg sm:text-xl md:text-2xl font-light opacity-90 max-w-3xl mx-auto">Secure your investment with our comprehensive protection plans for peace of mind.</p>
+    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen">
+      {/* Hero Section - Maintenance Style */}
+      <section
+        className="relative w-full h-[250px] sm:h-[320px] md:h-[420px] flex items-center justify-center text-center shadow"
+        style={{
+          backgroundImage: `url(${protectionBanner})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div className="relative z-10 w-full flex flex-col items-center justify-center px-4">
+          <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 tracking-tight text-white drop-shadow-lg">Home Protection Plans</h1>
+          <p className="text-lg sm:text-xl md:text-2xl font-light opacity-90 max-w-3xl mx-auto text-white drop-shadow mb-2">Protect all your home appliances with one simple, affordable plan. Peace of mind for your entire home!</p>
+          <div className="flex flex-wrap gap-3 justify-center mt-2">
+            <span className="bg-white/20 text-white px-4 py-1 rounded-full text-sm font-medium shadow">All Appliances Covered</span>
+            <span className="bg-white/20 text-white px-4 py-1 rounded-full text-sm font-medium shadow">Unlimited Repairs</span>
+            <span className="bg-white/20 text-white px-4 py-1 rounded-full text-sm font-medium shadow">Priority Support</span>
+          </div>
         </div>
       </section>
 
-      {/* --- Plan Details Section --- */}
-      <section className="py-16 sm:py-24 bg-white">
-        <div className="container mx-auto px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 text-center mb-4">Choose Your Plan</h2>
-          <p className="text-lg text-gray-600 text-center mb-12 sm:mb-16 max-w-2xl mx-auto">We offer a range of plans to fit your needs and budget, ensuring your equipment stays operational.</p>
+      {/* Plans Section */}
+      <section className="py-16 sm:py-24">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 text-center mb-4">Choose Your Home Protection Plan</h2>
+          <p className="text-lg text-gray-600 text-center mb-12 sm:mb-16 max-w-2xl mx-auto">One plan covers all your appliances. Unlimited repairs, free service visits, and more. Select your home type below:</p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 items-stretch">
-            {plans.map((plan, index) => (
-              <div key={index} className="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden flex flex-col hover:border-blue-500 transition-all duration-300">
-                <div className="p-8 text-center border-b bg-gray-50">
-                   <div className="inline-block p-3 rounded-full bg-blue-100 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 items-stretch">
+            {bhkPlans.map((plan, idx) => {
+              const maxFeatures = 4;
+              const showMore = plan.features.length > maxFeatures;
+              return (
+                <div key={plan.bhk}
+                  className={`relative bg-white/60 backdrop-blur-xl rounded-3xl shadow-2xl flex flex-col border-2 transition-all duration-300 overflow-hidden group ${plan.highlight ? 'border-blue-600 scale-105 z-10 shadow-2xl' : 'border-transparent'} hover:scale-105 hover:border-indigo-500`}
+                  style={{boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}
+                >
+                  {/* Gradient Top Bar */}
+                  <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+                  {/* Most Popular Badge */}
+                  {plan.highlight && (
+                    <div className="absolute top-2 left-4 bg-gradient-to-r from-blue-600 to-indigo-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg z-20 uppercase tracking-wider animate-bounce">Most Popular</div>
+                  )}
+                  {/* Discount Badge */}
+                  <div className="absolute top-4 right-4 bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full shadow">40% OFF</div>
+                  <div className="p-6 text-center border-b border-indigo-100 bg-gradient-to-br from-indigo-50/60 to-white/80">
+                    <div className="inline-block p-2 rounded-full bg-indigo-100 mb-3 shadow-lg" style={{boxShadow: '0 0 24px 0 rgba(99,102,241,0.15)'}}>
                       {plan.icon}
-                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
-                  <p className="text-xl font-bold text-blue-700 mb-3">{plan.price}</p>
-                  <p className="text-sm text-gray-600">{plan.description}</p>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-1 tracking-wide uppercase">{plan.bhk}</h3>
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <span className="text-base text-gray-400 line-through font-medium">₹{plan.original.toLocaleString()}</span>
+                      <span className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent drop-shadow">₹{plan.price.toLocaleString()}</span>
+                    </div>
+                    <p className="text-xs text-gray-600">Covers all appliances in your {plan.bhk} home</p>
+                  </div>
+                  <div className="p-5 flex flex-col flex-grow">
+                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Features:</h4>
+                    <ul className="space-y-2 mb-4 flex-grow">
+                      {plan.features.slice(0, maxFeatures).map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-start gap-2">
+                          <FiCheckSquare className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-700 text-xs">{feature}</span>
+                        </li>
+                      ))}
+                      {showMore && (
+                        <li className="text-indigo-500 text-xs font-semibold ml-6">+ more</li>
+                      )}
+                    </ul>
+                  </div>
+                  <div className="p-4 bg-gradient-to-r from-indigo-100 to-blue-100 border-t border-indigo-100">
+                    <a href={`/contact?plan=${plan.bhk}`} className="block w-full text-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:scale-105 hover:from-indigo-700 hover:to-blue-700 transition-all text-base">
+                      Get Started
+                    </a>
+                  </div>
                 </div>
-                <div className="p-8 flex flex-col flex-grow">
-                  <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Features include:</h4>
-                  <ul className="space-y-3 mb-6 flex-grow">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start gap-3">
-                        <FiCheckSquare className="w-5 h-5 text-green-500 mt-1 flex-shrink-0" />
-                        <span className="text-gray-700 text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                   <p className="text-xs text-gray-500 italic mt-auto pt-4">Ideal for: {plan.idealFor}</p>
-                </div>
-                 <div className="p-6 bg-gray-50 border-t">
-                   <a href="/contact?plan=" /* Link to contact/quote page */
-                      className="block w-full text-center bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
-                     {plan.price === 'Custom Quote' ? 'Get a Quote' : 'Select Plan'}
-                   </a>
-                 </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose ComfortWay Protection Section (merged, animated) */}
+      <section className="py-16 bg-gradient-to-r from-indigo-50 to-blue-100">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-10">Why Choose ComfortWay Protection?</h2>
+          <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch">
+            <div className="flex-1 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl shadow-xl p-8 flex flex-col items-center text-center group border-t-4 border-blue-400 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-transparent hover:bg-gradient-to-br hover:from-blue-200 hover:to-indigo-200">
+              <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+                <FiTool className="w-10 h-10 text-indigo-500" />
+              </span>
+              <h3 className="font-bold text-xl mb-2 text-gray-800">All Appliances</h3>
+              <p className="text-gray-600 text-base">Covers ACs, refrigerators, washing machines, microwaves, water purifiers, and more.</p>
+            </div>
+            <div className="flex-1 bg-gradient-to-br from-green-100 to-indigo-100 rounded-2xl shadow-xl p-8 flex flex-col items-center text-center group border-t-4 border-green-400 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-transparent hover:bg-gradient-to-br hover:from-green-200 hover:to-indigo-200">
+              <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
+                <FiCheckSquare className="w-10 h-10 text-green-600" />
+              </span>
+              <h3 className="font-bold text-xl mb-2 text-gray-800">Unlimited Repairs</h3>
+              <p className="text-gray-600 text-base">No cap on the number of repairs. We fix it, no questions asked.</p>
+            </div>
+            <div className="flex-1 bg-gradient-to-br from-yellow-100 to-indigo-100 rounded-2xl shadow-xl p-8 flex flex-col items-center text-center group border-t-4 border-yellow-400 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-transparent hover:bg-gradient-to-br hover:from-yellow-200 hover:to-indigo-200">
+              <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+                <FiShield className="w-10 h-10 text-yellow-500" />
+              </span>
+              <h3 className="font-bold text-xl mb-2 text-gray-800">Genuine Parts</h3>
+              <p className="text-gray-600 text-base">Only genuine parts used for every repair and service.</p>
+            </div>
+            <div className="flex-1 bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl shadow-xl p-8 flex flex-col items-center text-center group border-t-4 border-purple-400 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-transparent hover:bg-gradient-to-br hover:from-purple-200 hover:to-blue-200">
+              <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
+                <FiUsers className="w-10 h-10 text-purple-600" />
+              </span>
+              <h3 className="font-bold text-xl mb-2 text-gray-800">Priority Support</h3>
+              <p className="text-gray-600 text-base">Get faster response and priority scheduling for all your service needs.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section - Modern Stepper */}
+      <section className="py-14 bg-gradient-to-br from-indigo-50 to-blue-50">
+        <div className="max-w-5xl mx-auto px-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-10">How It Works</h2>
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center justify-between">
+            {/* Step 1 */}
+            <div className="flex-1 group flex flex-col items-center text-center bg-white rounded-2xl border border-indigo-100 shadow-md px-6 py-8 mx-0 md:mx-2 transition-all duration-300 hover:shadow-xl hover:border-blue-400 hover:scale-105">
+              <div className="relative mb-4">
+                <span className="absolute -top-4 -left-4 bg-gradient-to-br from-indigo-500 to-blue-400 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300">1</span>
+                <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-indigo-100 to-blue-100 shadow group-hover:scale-110 transition-transform duration-300">
+                  <FiShield className="w-7 h-7 text-indigo-600" />
+                </span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --- Why Protect Section --- */}
-      <section className="py-16 sm:py-20 bg-gray-100">
-        <div className="container mx-auto px-6 lg:px-8 max-w-4xl">
-          <h2 className="text-3xl font-bold text-gray-800 text-center mb-10">Why Invest in Protection?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="flex items-start gap-4">
-               <FiTool className="w-10 h-10 text-blue-600 flex-shrink-0 mt-1" />
-               <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">Minimize Downtime</h3>
-                  <p className="text-gray-600 text-sm">Get priority repairs and reduce the time your equipment is out of service.</p>
-               </div>
+              <h3 className="font-semibold text-lg mb-1 text-gray-800">Choose Your Plan</h3>
+              <p className="text-gray-500 text-sm">Select the perfect protection plan for your home and appliances.</p>
             </div>
-            <div className="flex items-start gap-4">
-               <FiDollarSign className="w-10 h-10 text-green-500 flex-shrink-0 mt-1" />
-               <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">Control Costs</h3>
-                  <p className="text-gray-600 text-sm">Avoid unexpected, high repair bills with predictable plan payments.</p>
-               </div>
+            {/* Step 2 */}
+            <div className="flex-1 group flex flex-col items-center text-center bg-white rounded-2xl border border-indigo-100 shadow-md px-6 py-8 mx-0 md:mx-2 transition-all duration-300 hover:shadow-xl hover:border-blue-400 hover:scale-105">
+              <div className="relative mb-4">
+                <span className="absolute -top-4 -left-4 bg-gradient-to-br from-blue-400 to-green-400 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300">2</span>
+                <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-blue-100 to-green-100 shadow group-hover:scale-110 transition-transform duration-300">
+                  <FiCheckSquare className="w-7 h-7 text-blue-600" />
+                </span>
+              </div>
+              <h3 className="font-semibold text-lg mb-1 text-gray-800">Get Covered Instantly</h3>
+              <p className="text-gray-500 text-sm">Your coverage starts immediately—no paperwork, no hassle.</p>
             </div>
-            <div className="flex items-start gap-4">
-               <FiShield className="w-10 h-10 text-yellow-500 flex-shrink-0 mt-1" />
-               <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">Extend Equipment Life</h3>
-                  <p className="text-gray-600 text-sm">Included maintenance helps keep your equipment running optimally for longer.</p>
-               </div>
-            </div>
-             <div className="flex items-start gap-4">
-               <FiCheckSquare className="w-10 h-10 text-purple-500 flex-shrink-0 mt-1" />
-               <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">Peace of Mind</h3>
-                  <p className="text-gray-600 text-sm">Focus on your work knowing your essential tools are covered.</p>
-               </div>
+            {/* Step 3 */}
+            <div className="flex-1 group flex flex-col items-center text-center bg-white rounded-2xl border border-indigo-100 shadow-md px-6 py-8 mx-0 md:mx-2 transition-all duration-300 hover:shadow-xl hover:border-blue-400 hover:scale-105">
+              <div className="relative mb-4">
+                <span className="absolute -top-4 -left-4 bg-gradient-to-br from-green-400 to-indigo-500 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300">3</span>
+                <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-green-100 to-indigo-100 shadow group-hover:scale-110 transition-transform duration-300">
+                  <FiHome className="w-7 h-7 text-green-600" />
+                </span>
+              </div>
+              <h3 className="font-semibold text-lg mb-1 text-gray-800">Enjoy Peace of Mind</h3>
+              <p className="text-gray-500 text-sm">Relax knowing your appliances are protected by ComfortWay experts.</p>
             </div>
           </div>
         </div>
       </section>
 
+      {/* FAQ Section - Maintenance Style */}
+      <section className="py-16 bg-white">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-10">Frequently Asked Questions</h2>
+          <div className="grid grid-cols-1 gap-6">
+            {/* FAQ 1 */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-indigo-100 hover:border-indigo-300 transition-colors duration-300">
+              <div className="p-6 sm:p-8">
+                <div className="flex items-start">
+                  <div className="bg-indigo-100 p-3 rounded-full mr-4 text-indigo-600 flex-shrink-0">
+                    <FiShield className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-semibold text-indigo-700 mb-3">What appliances are covered under the plan?</h4>
+                    <p className="text-gray-600 text-base">All major home appliances including ACs, refrigerators, washing machines, microwaves, water purifiers, and more are covered. For a full list, contact our team.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* FAQ 2 */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-indigo-100 hover:border-indigo-300 transition-colors duration-300">
+              <div className="p-6 sm:p-8">
+                <div className="flex items-start">
+                  <div className="bg-indigo-100 p-3 rounded-full mr-4 text-indigo-600 flex-shrink-0">
+                    <FiCheckSquare className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-semibold text-indigo-700 mb-3">Is there a limit on the number of repairs?</h4>
+                    <p className="text-gray-600 text-base">No, you get unlimited repairs for all covered appliances during your plan period. No hidden charges or caps.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* FAQ 3 */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-indigo-100 hover:border-indigo-300 transition-colors duration-300">
+              <div className="p-6 sm:p-8">
+                <div className="flex items-start">
+                  <div className="bg-indigo-100 p-3 rounded-full mr-4 text-indigo-600 flex-shrink-0">
+                    <FiDollarSign className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-semibold text-indigo-700 mb-3">Are there any hidden costs?</h4>
+                    <p className="text-gray-600 text-base">No, all costs are included in your plan. You pay one price for complete protection—no surprises.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* FAQ 4 */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-indigo-100 hover:border-indigo-300 transition-colors duration-300">
+              <div className="p-6 sm:p-8">
+                <div className="flex items-start">
+                  <div className="bg-indigo-100 p-3 rounded-full mr-4 text-indigo-600 flex-shrink-0">
+                    <FiTool className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-semibold text-indigo-700 mb-3">How do I request a repair or service?</h4>
+                    <p className="text-gray-600 text-base">Simply contact us via phone, WhatsApp, or our website. Our team will schedule a technician visit at your convenience.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* FAQ 5 */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-indigo-100 hover:border-indigo-300 transition-colors duration-300">
+              <div className="p-6 sm:p-8">
+                <div className="flex items-start">
+                  <div className="bg-indigo-100 p-3 rounded-full mr-4 text-indigo-600 flex-shrink-0">
+                    <FiHome className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-semibold text-indigo-700 mb-3">Is the plan available in my city?</h4>
+                    <p className="text-gray-600 text-base">Currently, ComfortWay Protection Plans are available across Mumbai. For other cities, please contact us for updates.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
-};
-
-export default ProtectionPlans; 
+} 

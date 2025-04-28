@@ -2,7 +2,7 @@ import React from 'react';
 import HeroCarousel from '../../components/home/HeroCarousel';
 import SearchSection from '../../components/home/SearchSection';
 import ServicesSection from '../../components/home/ServicesSection';
-import WhyChooseUsSection from '../../components/home/WhyChooseUsSection';
+import StatsSection from '../../components/home/StatsSection';
 import ServiceRequestBanner from '../../components/home/ServiceRequestBanner';
 import FeaturedServiceSection from '../../components/home/FeaturedServiceSection';
 import QuickRepairsSection from '../../components/home/QuickRepairsSection';
@@ -17,7 +17,7 @@ const Home = () => {
       <HeroCarousel />
       <SearchSection />
       <ServicesSection />
-      <WhyChooseUsSection />
+      <StatsSection />
       <ServiceRequestBanner />
       <FeaturedServiceSection />
       <QuickRepairsSection />

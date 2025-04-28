@@ -8,7 +8,7 @@ const Footer = () => {
       description: "Expert Care For Your Devices",
       socials: [
         { icon: Facebook, path: 'https://www.facebook.com/comfortway.in/' },
-        { icon: Linkedin, path: 'https://www.linkedin.com/company/comfortway-in' },
+        { icon: Linkedin, path: 'https://www.linkedin.com/search/results/all/?fetchDeterministicClustersOnly=true&heroEntityKey=urn%3Ali%3Aorganization%3A14578646&keywords=comfort%20way&origin=RICH_QUERY_SUGGESTION&position=0&searchId=7c15b76e-a069-44b6-ae31-aca36a19890a&sid=qQ1&spellCorrectionEnabled=false' },
         { icon: Youtube, path: 'https://www.youtube.com/@comfortway3020' },
       ],
       referral: {
@@ -55,9 +55,8 @@ const Footer = () => {
       {
         title: "Policies",
         links: [
-          { name: "Terms of Use", path: "/terms-of-use" },
           { name: "Privacy Policy", path: "/privacy" },
-          { name: "Terms of Service", path: "/terms-of-service" },
+          { name: "Terms of Service", path: "/terms" },
         ],
       },
     ],

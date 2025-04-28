@@ -1,128 +1,129 @@
 import React from 'react';
-import { FiZap, FiTool, FiShoppingCart, FiRefreshCw, FiUsers, FiAward } from 'react-icons/fi'; // Example icons
+import { FiUsers, FiAward, FiCheckCircle, FiTrendingUp, FiCalendar } from 'react-icons/fi';
+import about from '/images/about-banner.jpg';
+import about2 from '/images/gallery/Image1.jpeg';
 
-const About = () => {
-  // Placeholder content - Replace with your actual company details
-  // const companyName = "ComfortWay Electric Services"; // Company name now hardcoded in H1
-  const missionStatement = "To provide reliable, efficient, and affordable electric solutions through expert repair, quality sales, and convenient rentals.";
-  const story = "Founded in [Year], ComfortWay Electric Services started with a simple goal: to keep our community powered and productive. We saw a need for dependable electric equipment services – from quick repairs to accessible rentals and trustworthy sales. Over the years, we've grown into a leading provider, known for our technical expertise, commitment to customer satisfaction, and a wide range of electric solutions tailored to meet diverse needs.";
-  const services = [
-    {
-      icon: <FiTool className="w-12 h-12 text-blue-600 mb-4" />,
-      title: "Expert Electric Repair",
-      description: "Fast, reliable repairs for a wide range of electric equipment. Our certified technicians diagnose and fix issues efficiently to minimize downtime."
-    },
-    {
-      icon: <FiShoppingCart className="w-12 h-12 text-blue-600 mb-4" />,
-      title: "Quality Equipment Sales",
-      description: "Offering a curated selection of new and certified pre-owned electric equipment from trusted brands. Find the right tools for your job."
-    },
-    {
-      icon: <FiRefreshCw className="w-12 h-12 text-blue-600 mb-4" />,
-      title: "Convenient Rentals",
-      description: "Flexible rental options for short-term projects or trying before you buy. Get access to the equipment you need, when you need it."
-    }
-  ];
-  const values = [
-    {
-      icon: <FiAward className="w-10 h-10 text-blue-600 mb-3" />,
-      title: "Reliability",
-      description: "Count on us for dependable service and equipment that performs."
-    },
-    {
-      icon: <FiZap className="w-10 h-10 text-blue-600 mb-3" />,
-      title: "Efficiency",
-      description: "We work quickly and effectively to get you back up and running."
-    },
-    {
-      icon: <FiUsers className="w-10 h-10 text-blue-600 mb-3" />,
-      title: "Customer Focus",
-      description: "Your satisfaction is our priority. We listen and provide tailored solutions."
-    },
-     {
-      icon: <FiTool className="w-10 h-10 text-blue-600 mb-3" />,
-      title: "Expertise",
-      description: "Years of experience and technical know-how in electric equipment."
-    }
-  ];
 
+const whyChoose = [
+  {
+    icon: <FiUsers className="w-10 h-10 text-indigo-600 mb-4" />, title: 'Expert Technicians', desc: 'Certified, experienced, and background-checked professionals.'
+  },
+  {
+    icon: <FiAward className="w-10 h-10 text-green-600 mb-4" />, title: 'Affordable Pricing', desc: 'Transparent, competitive rates for all services.'
+  },
+  {
+    icon: <FiCalendar className="w-10 h-10 text-purple-600 mb-4" />, title: 'Trusted Since 2012', desc: 'Serving Mumbai with pride and reliability for over a decade.'
+  },
+];
+
+export default function About() {
   return (
     <div className="bg-gray-50">
-      {/* --- Hero Section --- */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-24 sm:py-32 text-center shadow-lg relative overflow-hidden">
-         {/* Optional: Add subtle background pattern or shapes */}
-         <div className="absolute inset-0 bg-black opacity-10 z-0"></div>
-         <div className="container mx-auto px-6 relative z-10">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 tracking-tight">About ComfortWay</h1>
-          <p className="text-lg sm:text-xl md:text-2xl font-light opacity-90 max-w-3xl mx-auto">{missionStatement}</p>
+      {/* Hero Section */}
+      <section
+        className="relative w-full h-[250px] sm:h-[320px] md:h-[420px] flex items-center justify-center text-center shadow"
+        style={{
+          backgroundImage: `url(${about})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div className="relative z-10 w-full flex flex-col items-center justify-center px-4">
+          <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 tracking-tight text-white drop-shadow-lg">About ComfortWay</h1>
+          <p className="text-lg sm:text-xl md:text-2xl font-light opacity-90 max-w-3xl mx-auto text-white drop-shadow mb-2">Mumbai's Most Trusted Home Appliance Service</p>
+          <div className="flex flex-wrap gap-3 justify-center mt-2">
+            <span className="bg-white/20 text-white px-4 py-1 rounded-full text-sm font-medium shadow">Expert Repair</span>
+            <span className="bg-white/20 text-white px-4 py-1 rounded-full text-sm font-medium shadow">Certified Technicians</span>
+            <span className="bg-white/20 text-white px-4 py-1 rounded-full text-sm font-medium shadow">Since 2012</span>
+          </div>
         </div>
       </section>
 
-      {/* --- Our Story Section --- */}
-      <section className="py-16 sm:py-24 bg-white">
-        <div className="container mx-auto px-6 lg:px-8 max-w-4xl text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">Our Story</h2>
-          <p className="text-gray-600 leading-relaxed text-lg">{story}</p>
+      {/* About Section */}
+      <section className="relative py-20 bg-gradient-to-br from-indigo-50 to-blue-50">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12 px-4">
+          {/* Image with floating effect */}
+          <div className="relative w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
+            <div className="absolute -top-6 -left-6 w-full h-full rounded-3xl bg-gradient-to-br from-indigo-200 to-blue-100 blur-2xl opacity-40 z-0"></div>
+            <img src={about2} alt="About ComfortWay" className="relative z-10 rounded-3xl shadow-2xl border-4 border-white object-cover w-full h-72 md:h-96" />
+          </div>
+          {/* Content Card */}
+          <div className="w-full md:w-1/2 bg-white rounded-3xl shadow-2xl p-8 md:-ml-16 relative z-20">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 flex items-center">
+              <span className="border-l-4 border-indigo-500 pl-4">Who We Are</span>
+            </h2>
+            <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent">
+              We Build The Invention That Can Change The World!
+            </h3>
+            <p className="text-lg font-semibold text-gray-800 mb-2">
+              Best Electrical Appliances Installation, Plumbing & Maintenance Service Providers in Mumbai.
+            </p>
+            <p className="text-base text-gray-600 mb-3">
+              If you are looking for the best Home Appliances Repairing & Plumbing Service company in Mumbai then COMFORT WAY is the leading company which provides complete repairing and maintenance services like Air Conditioner Repairing, Geyser Repairing, Refrigerator Repairing, Washing Machine Repairing, Microwave Oven Repairing, Ro Water Purifier and Plumbing in Mumbai at the most affordable rates.
+            </p>
+            <p className="text-base text-gray-600">
+              With the latest advancements in the home appliance and electronics goods sector in recent times you need the experts in the field to stay up to date with the latest technology and provide the best repairing and maintenance services. We have been in the field of home appliance repairing and plumbing since long. It is the rich experience we have that provides us with a distinct edge over our competitors in the field.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* --- What We Do Section --- */}
-      <section className="py-16 sm:py-24 bg-gray-100">
-        <div className="container mx-auto px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 text-center mb-12 sm:mb-16">What We Do</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {services.map((service, index) => (
-              <div key={index} className="bg-white p-8 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow duration-300">
-                <div className="flex justify-center items-center mb-4">
-                  {service.icon} {/* Icon color already updated */} 
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">{service.title}</h3>
-                <p className="text-gray-600">{service.description}</p>
+      {/* Vision & Mission Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Vision Card */}
+          <div className="group bg-gradient-to-br from-indigo-100 to-blue-50 rounded-3xl shadow-2xl p-10 flex flex-col items-center text-center border-t-4 border-indigo-400 relative overflow-hidden transition-transform duration-500 hover:scale-105" data-aos="fade-up" data-aos-delay="100">
+            <div className="mb-5 flex items-center justify-center">
+              <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-blue-400 shadow-lg">
+                <FiTrendingUp className="w-8 h-8 text-white" />
+              </span>
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold mb-2 bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent">Our Vision</h3>
+            <p className="text-base text-gray-600">To be Mumbai's most trusted and innovative home service provider, empowering every home with comfort and reliability.</p>
+            {/* Glow effect */}
+            <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-gradient-to-br from-indigo-200 to-blue-100 rounded-full blur-2xl opacity-40 z-0"></div>
+          </div>
+          {/* Mission Card */}
+          <div className="group bg-gradient-to-br from-green-100 to-blue-50 rounded-3xl shadow-2xl p-10 flex flex-col items-center text-center border-t-4 border-green-400 relative overflow-hidden transition-transform duration-500 hover:scale-105" data-aos="fade-up" data-aos-delay="250">
+            <div className="mb-5 flex items-center justify-center">
+              <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-blue-400 shadow-lg">
+                <FiCheckCircle className="w-8 h-8 text-white" />
+              </span>
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold mb-2 bg-gradient-to-r from-green-600 to-blue-500 bg-clip-text text-transparent">Our Mission</h3>
+            <p className="text-base text-gray-600">Delivering expert appliance repair, installation, and maintenance with honesty, speed, and care—every single time.</p>
+            {/* Glow effect */}
+            <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-gradient-to-br from-green-200 to-blue-100 rounded-full blur-2xl opacity-40 z-0"></div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">Why Choose Us?</h2>
+          <div className="w-24 h-1 bg-indigo-600 mx-auto mb-6"></div>
+          <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch">
+            {whyChoose.map((item, idx) => (
+              <div key={item.title} className={`flex-1 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl shadow-xl p-8 flex flex-col items-center text-center group border-t-4 ${idx === 0 ? 'border-blue-400' : idx === 1 ? 'border-green-400' : 'border-purple-400'} transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-transparent hover:bg-gradient-to-br hover:from-blue-200 hover:to-indigo-200`}>
+                {item.icon}
+                <h3 className="font-bold text-lg mb-2 text-gray-800">{item.title}</h3>
+                <p className="text-gray-600 text-base">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* --- Why Choose Us / Our Values Section --- */}
-      <section className="py-16 sm:py-24 bg-white">
-        <div className="container mx-auto px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 text-center mb-12 sm:mb-16">Why Choose Us?</h2>
-          {/* Updated grid to handle 4 items cleanly */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 max-w-6xl mx-auto">
-            {values.map((value, index) => (
-              <div key={index} className="text-center p-6 border border-gray-200 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors duration-200">
-                 <div className="flex justify-center items-center mb-4">
-                   {value.icon} {/* Icon color updated */} 
-                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{value.title}</h3>
-                <p className="text-gray-600 text-sm">{value.description}</p>
-              </div>
-            ))}
-          </div>
+      {/* Call to Action Section */}
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-indigo-600">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Ready to Experience ComfortWay?</h2>
+          <p className="text-base md:text-lg text-indigo-100 mb-8">Book a service or get in touch with our team for the best appliance repair, installation, and maintenance in Mumbai.</p>
+          <a href="/contact" className="inline-block bg-white text-blue-700 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-indigo-50 transition text-lg">Contact Us</a>
         </div>
       </section>
-
-      {/* --- Call to Action Section --- */}
-      <section className="py-16 sm:py-20 bg-blue-600 text-white">
-        <div className="container mx-auto px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">Whether you need a quick repair, new equipment, or a flexible rental, we have the solution.</p>
-          <div className="space-x-4">
-             <a href="/contact" /* Link to Contact Page */
-               className="inline-block bg-white text-blue-600 font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-gray-100 transition duration-300">
-              Contact Us
-            </a>
-             <a href="/services" /* Link to Services/Products Page */
-               className="inline-block bg-blue-800 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-900 transition duration-300">
-              Browse Services
-            </a>
-          </div>
-        </div>
-      </section>
-
     </div>
   );
-};
-
-export default About;
+}

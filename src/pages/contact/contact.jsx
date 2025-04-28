@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FiMapPin, FiMail, FiPhone } from 'react-icons/fi'; // Example icons
-
+import contact from '/images/contact-banner.jpg';
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -29,12 +29,21 @@ const Contact = () => {
   return (
     <div className="bg-gray-100">
       {/* --- Hero Section --- */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-800 text-white py-24 sm:py-32 md:py-40 text-center shadow-lg relative overflow-hidden">
-        {/* Optional: Add subtle background pattern or shapes */}
-        <div className="absolute inset-0 bg-black opacity-10 z-0"></div>
-        <div className="container mx-auto px-6 relative z-10">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 tracking-tight">Contact Us</h1>
-          <p className="text-lg sm:text-xl md:text-2xl font-light opacity-90 max-w-3xl mx-auto">We're here to help and answer any question you might have. We look forward to hearing from you.</p>
+      <section
+        className="relative w-full h-[250px] sm:h-[300px] md:h-[400px] flex items-center justify-center text-center"
+        style={{
+          backgroundImage: `url(${contact})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        {/* Overlay for text readability */}
+        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div className="relative z-10 w-full flex flex-col items-center justify-center px-4">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 tracking-tight text-white drop-shadow-lg">Contact Us</h1>
+          <p className="text-lg sm:text-xl md:text-2xl font-light opacity-90 max-w-3xl mx-auto text-white drop-shadow">
+            We're here to help and answer any question you might have. We look forward to hearing from you.
+          </p>
         </div>
       </section>
 

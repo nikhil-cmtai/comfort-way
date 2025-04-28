@@ -2,24 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, User, ChevronDown } from 'lucide-react';
 
-// Updated data for the Device Plans Mega Menu
-const devicePlansData = [
-  { name: 'AC', category: 'ac' },
-  { name: 'Air Purifier', category: 'air-purifier' },
-  { name: 'Chopper', category: 'chopper' },
-  { name: 'Blender', category: 'blender' },
-  { name: 'Iron', category: 'iron' },
-  { name: 'Geyser', category: 'geyser' },
-  { name: 'Boiler', category: 'boiler' },
-  { name: 'Juicer', category: 'juicer' },
-  { name: 'Microwave', category: 'microwave' },
-  { name: 'Washing Machine', category: 'washing-machine' },
-  { name: 'Chimney', category: 'chimney' },
-  { name: 'Hob', category: 'hob' },
-  { name: 'Water Purifier', category: 'water-purifier' },
-  { name: 'Refrigerator', category: 'refrigerator' },
-];
-
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -28,9 +10,10 @@ const Header = () => {
   const devicePlansRef = useRef(null); // Ref for mega menu area
 
   const navigation = [
+    { name: 'Maintenace & Repairs', path: '/maintenance-repair', separator: true },
     { name: 'Home Protection', path: '/home-protection', new: true },
     { name: 'Buy/Rent', path: '/buy-rent', separator: true },
-    { name: 'Maintenace & Repairs', path: '/maintenance-repairs' },
+    { name: 'Contact Us', path: '/contact', separator: true },
   ];
   
   const userDropdownItems = [
@@ -114,48 +97,6 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:space-x-6 lg:space-x-8">
-            {/* Device Plans Trigger */}
-             <div 
-                className="relative group"
-                onMouseEnter={handleDevicePlansMouseEnter}
-                onMouseLeave={handleDevicePlansMouseLeave}
-             >
-                 <Link 
-                     id="device-plans-trigger"
-                     to="/devices"
-                     className="flex items-center text-sm lg:text-base font-medium text-gray-600 hover:text-indigo-600"
-                 >
-                     <span>Device Plans</span>
-                     <ChevronDown className={`ml-1 h-4 w-4 transition-transform duration-200 ${isDevicePlansOpen ? 'rotate-180' : ''}`} />
-                 </Link>
-                 {/* Desktop Mega Menu */}
-                 {isDevicePlansOpen && (
-                   <div 
-                     ref={devicePlansRef}
-                     className="absolute left-0 mt-2 w-auto min-w-[650px] bg-gray-50 shadow-lg border border-gray-200 z-30 rounded-lg"
-                   >
-                     <div className="px-6 py-8">
-                        <div className="grid grid-cols-3 gap-x-6 gap-y-0 divide-x divide-gray-200">
-                          {devicePlansData.map((item, index) => (
-                            <div 
-                                key={item.name} 
-                                className={`group relative p-4 ${index % 3 !== 0 ? 'pl-8' : 'pl-4' } hover:bg-white rounded-md transition-colors duration-150`}
-                            >
-                                <Link 
-                                    to={`/devices/${item.category}`} 
-                                    onClick={() => setIsDevicePlansOpen(false)}
-                                >
-                                    <p className="text-base font-semibold text-gray-800 mb-0 group-hover:text-indigo-600">
-                                        {item.name}
-                                    </p>
-                                </Link>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                   </div>
-                 )}
-              </div>
  
              {/* Other Navigation Links */} 
              {navigation.map((item) => (
@@ -253,22 +194,6 @@ const Header = () => {
            
            {/* Drawer Content (Scrollable) */} 
            <div className="flex-grow overflow-y-auto p-4 space-y-6">
-                  {/* Device Plans Section */} 
-                 <div className="space-y-2">
-                     <h3 className="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Device Plans</h3>
-                     <div className="space-y-1">
-                         {devicePlansData.map((item) => (
-                             <Link 
-                                 key={item.name} 
-                                 to={`/devices/${item.category}`}
-                                 onClick={() => setIsMenuOpen(false)}
-                                 className="block px-2 py-1.5 rounded-md hover:bg-gray-100 group"
-                             >
-                                 <p className="font-medium text-gray-800 text-sm mb-1 group-hover:text-indigo-600">{item.name}</p>
-                             </Link>
-                         ))}
-                     </div>
-                 </div>
                  
                  {/* Divider */} 
                  <div className="border-t border-gray-200"></div>
