@@ -71,21 +71,9 @@ const Header = () => {
     }, 100);
   };
 
-  // --- Hover Handlers for Device Plans Mega Menu --- 
-   const handleDevicePlansMouseEnter = () => setIsDevicePlansOpen(true);
-   const handleDevicePlansMouseLeave = () => {
-     setTimeout(() => {
-       // Check hover on both trigger and menu
-       const triggerLink = document.getElementById('device-plans-trigger');
-       if (devicePlansRef.current && !devicePlansRef.current.matches(':hover') && (!triggerLink || !triggerLink.matches(':hover'))) {
-         setIsDevicePlansOpen(false);
-       }
-     }, 150); // Slightly longer delay might be needed for larger menus
-   };
-
 
   return (
-    <header className="bg-white text-gray-800 shadow-md relative">
+    <header className="bg-white text-gray-800 shadow-md sticky top-0 z-50">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}

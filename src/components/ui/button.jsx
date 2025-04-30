@@ -1,38 +1,45 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import React from 'react';
 
-const Button = React.forwardRef(({ className, variant = "default", size = "default", ...props }, ref) => {
-  const baseStyles = "inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-  
+const Button = ({ 
+  children, 
+  variant = 'primary', 
+  size = 'md', 
+  className = '', 
+  icon = null,
+  ...props 
+}) => {
+  // Button style variants with lighter colors
   const variants = {
-    default: "bg-primary text-primary-foreground hover:bg-primary/90",
-    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-    outline: "border border-input hover:bg-accent hover:text-accent-foreground",
-    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-    ghost: "hover:bg-accent hover:text-accent-foreground",
-    link: "text-primary underline-offset-4 hover:underline",
-  }
+    primary: 'bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-200',
+    secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200',
+    danger: 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-200',
+    success: 'bg-green-50 hover:bg-green-100 text-green-600 border border-green-200',
+    outline: 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-300',
+    link: 'text-blue-600 hover:text-blue-800 bg-transparent'
+  };
 
+  // Button sizes
   const sizes = {
-    default: "h-10 px-4 py-2",
-    sm: "h-9 rounded-md px-3",
-    lg: "h-11 rounded-md px-8",
-    icon: "h-10 w-10",
-  }
+    sm: 'px-2 py-1 text-xs',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-6 py-3 text-base'
+  };
 
   return (
     <button
-      className={cn(
-        baseStyles,
-        variants[variant],
-        sizes[size],
-        className
-      )}
-      ref={ref}
+      className={`
+        ${variants[variant] || variants.primary}
+        ${sizes[size] || sizes.md}
+        rounded-lg transition-colors
+        flex items-center justify-center gap-2
+        ${className}
+      `}
       {...props}
-    />
-  )
-})
-Button.displayName = "Button"
+    >
+      {icon && <span className="flex-shrink-0">{icon}</span>}
+      {children}
+    </button>
+  );
+};
 
-export { Button } 
+export default Button;

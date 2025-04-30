@@ -61,8 +61,10 @@ const Contact = () => {
                 <div>
                   <h3 className="font-semibold text-gray-800">Our Office</h3>
                   <p className="text-gray-600 text-sm">
-                    123 Comfort Way, Suite 456<br />
-                    Cityville, State 78900
+                    Comfortway<br />
+                    Shop No. 162, Shanti Nagar, S.P. Road<br />
+                    Antop Hill, Near VIT College, Wadala (E)<br />
+                    Mumbai, Maharashtra, India, 400037
                   </p> {/* Replace with actual address */}
                 </div>
               </div>
@@ -70,14 +72,18 @@ const Contact = () => {
                 <FiMail className="text-blue-600 text-2xl mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold text-gray-800">Email Us</h3>
-                  <a href="mailto:info@comfortway.com" className="text-blue-600 hover:text-blue-800 transition duration-200 text-sm">info@comfortway.com</a> {/* Replace with actual email */}
+                  <a href="mailto:info@comfortway.in" className="text-blue-600 hover:text-blue-800 transition duration-200 text-sm">info@comfortway.in</a> {/* Replace with actual email */}
+                  <br />
+                  <a href="mailto:comfortway1@gmail.com" className="text-blue-600 hover:text-blue-800 transition duration-200 text-sm">comfortway1@gmail.com</a> {/* Replace with actual email */}
                 </div>
               </div>
               <div className="flex items-start space-x-4">
                 <FiPhone className="text-blue-600 text-2xl mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold text-gray-800">Call Us</h3>
-                  <a href="tel:+1234567890" className="text-blue-600 hover:text-blue-800 transition duration-200 text-sm">+1 (234) 567-890</a> {/* Replace with actual phone */}
+                  <a href="tel:+919967157463" className="text-blue-600 hover:text-blue-800 transition duration-200 text-sm">+91 9967157463</a> {/* Replace with actual phone */}
+                  <br />
+                  <a href="tel:+917800908909" className="text-blue-600 hover:text-blue-800 transition duration-200 text-sm">+91 7800908909</a> {/* Replace with actual phone */}
                 </div>
               </div>
             </div>
@@ -159,8 +165,7 @@ const Contact = () => {
       <section className="w-full h-[450px] md:h-[550px] bg-gray-300">
         {/* IMPORTANT: Replace the src below with your actual Google Maps embed code */}
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.086414904673!2d144.95373531590418!3d-37.8172099797516!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4c2b349649%3A0xb6899234e561db11!2sFederation%20Square!5e0!3m2!1sen!2sau!4v1618886800000!5m2!1sen!2sau" // Placeholder SRC
-          className="w-full h-full border-0"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241336.7546281158!2d72.9688274!3d19.068714449999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7cfe8552a3785%3A0x9318373585e5de26!2sCOMFORT%20WAY!5e0!3m2!1sen!2sin!4v1746002277935!5m2!1sen!2sin" className="w-full h-full border-0"
           allowFullScreen=""
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"

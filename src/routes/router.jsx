@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import RootLayout from '../layouts/RootLayout';
+import RootLayout from '../layouts/website/RootLayout';
 
 // Import your page components here
 import Home from '../pages/home/home';
@@ -14,10 +14,16 @@ import Services from '../pages/services/services';
 import MaintenanceRepair from '../pages/maintenance-repair/maintenance-repair';
 import SignIn from '../pages/auth/signin';
 import SignUp from '../pages/auth/signup';
-import Devices from '../pages/devices/devices';
-import DeviceDetails from '../pages/device-detail/device-detail';
 import ProductRepairForm from '../pages/maintenance-repair/ProductRepairForm';
 import CategoryDetails from '../pages/buy-rent/[category]';
+
+// Dashboard Routes
+import Dashboard from '../pages/dashboard/page';
+import DashboardLayout from '../layouts/dashboard/DashboardLayout';
+import Leads from '../pages/dashboard/leads/page';
+import MaintenanceRequest from '../pages/dashboard/maintenance-request/page';
+import Products from '../pages/dashboard/products/page';
+import Logout from '../pages/auth/logout';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -76,16 +82,34 @@ export const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path: 'devices',
-        element: <Devices />,
-      },
-      {
-        path: 'devices/:deviceId',
-        element: <DeviceDetails />,
-      },  
-      {
         path: 'maintenance-repair/:product',
         element: <ProductRepairForm />,
+      },
+      {
+        path: 'logout',
+        element: <Logout />,
+      },
+      ],
+  },
+  {
+    path: '/dashboard',
+    element: <DashboardLayout />,
+    children: [
+      {
+        index: true,
+        element: <Dashboard />,
+      },
+      {
+        path: 'leads',
+        element: <Leads />,
+      },
+      {
+        path: 'maintenance-request',
+        element: <MaintenanceRequest />,
+      },
+      {
+        path: 'products',
+        element: <Products />,
       },
     ],
   },

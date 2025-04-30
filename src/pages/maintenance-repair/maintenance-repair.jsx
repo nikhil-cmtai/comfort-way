@@ -260,7 +260,9 @@ const MaintenanceRepair = () => {
           </div>
           
           {/* Gallery Section - Improved Layout */}
-          <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Our Work in Action</h3>
+          <h3 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6 text-center">
+            Our <span className="text-indigo-600">Work</span> in Action
+          </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-8">
             {galleryImages.map((img, idx) => (
               <div key={idx} className="rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 aspect-square bg-white border border-gray-100">
