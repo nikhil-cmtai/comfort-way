@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PageHeader from '../../../components/ui/PageHeader';
 import Card from '../../../components/ui/Card';
-import Button from '../../../components/ui/Button';
+import Button from '../../../components/ui/button';
 import SearchInput from '../../../components/ui/SearchInput';
 import StatusBadge from '../../../components/ui/StatusBadge';
 import FilterBar from '../../../components/ui/FilterBar';
