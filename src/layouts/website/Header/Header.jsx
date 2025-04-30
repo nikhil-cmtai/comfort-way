@@ -142,7 +142,7 @@ const Header = () => {
              {/* Mobile menu button */} 
              <button
                id="mobile-menu-button"
-               className="md:hidden text-gray-600 hover:text-indigo-600"
+               className="md:hidden text-gray-600 hover:text-indigo-600 bg-gray-100 hover:bg-gray-200 rounded-md p-2"
                onClick={() => setIsMenuOpen(!isMenuOpen)}
                aria-label="Toggle menu"
              >
@@ -169,11 +169,11 @@ const Header = () => {
            {/* Drawer Header */} 
            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 flex-shrink-0">
                <Link to="/" className="text-xl font-bold text-indigo-600" onClick={() => setIsMenuOpen(false)}>
-                 <img src="/logo.png" alt="ComfortWay" className="h-8 w-8" />
+                 <img src="/logo.png" alt="ComfortWay" className="h-16 w-full" />
                </Link>
               <button
-                 className="p-2 -mr-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-                 onClick={() => setIsMenuOpen(false)}
+               className="md:hidden text-gray-600 hover:text-indigo-600 bg-gray-100 hover:bg-gray-200 rounded-md p-2"
+               onClick={() => setIsMenuOpen(false)}
                  aria-label="Close menu"
                >
                  <X className="h-6 w-6" />
@@ -220,20 +220,6 @@ const Header = () => {
                           {item.name}
                         </Link>
                        ))}
-                       {/* Separator */} 
-                        <div className="border-t border-gray-200 pt-2 mt-2">
-                           <h3 className="px-2 mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Partners</h3>
-                           {userDropdownItems.filter(item => item.separator).map((item) => (
-                              <Link
-                                key={item.name}
-                                to={item.path}
-                                className={`flex items-center px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-md`}
-                                onClick={() => setIsMenuOpen(false)}
-                              >
-                                {item.name}
-                              </Link>
-                           ))}
-                        </div>
                    </div>
            </div>
         </div>
