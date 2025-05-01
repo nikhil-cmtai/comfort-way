@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FiTool, FiClock, FiCheckCircle, FiMessageSquare, FiUser, FiMail, FiPhone, FiHash, FiEdit3, FiArrowRight, FiStar, FiShield, FiTruck, FiThumbsUp } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import maintenance from '/images/maintenance-banner.jpg';  
+import { fetchCategoryData, selectCategoryData, selectCategoryLoading, selectCategoryError } from '../../features/slices/categorySlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 // Device plans data with image and description
 const devicePlansData = [
@@ -66,6 +68,15 @@ const testimonials = [
 ];
 
 const MaintenanceRepair = () => {
+  const dispatch = useDispatch();
+  const categories = useSelector(selectCategoryData);
+  const loading = useSelector(selectCategoryLoading);
+  const error = useSelector(selectCategoryError);
+
+  useEffect(() => {
+    dispatch(fetchCategoryData());
+  }, [dispatch]);
+
   return (
     <div className="bg-gray-50">
       {/* --- 1. Hero Banner --- */}

@@ -1,9 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchMaintenanceRequestData, selectMaintenanceRequestData, selectMaintenanceRequestLoading, selectMaintenanceRequestError } from '../../../features/slices/maintenanceSlice';
 
 const MaintenanceRequest = () => {
+  const dispatch = useDispatch();
+  const maintenanceRequests = useSelector(selectMaintenanceRequestData);
+  const loading = useSelector(selectMaintenanceRequestLoading);
+  const error = useSelector(selectMaintenanceRequestError);
   const [activeFilter, setActiveFilter] = useState('all');
 
-  // Sample maintenance requests data
+  useEffect(() => {
+    dispatch(fetchMaintenanceRequestData());
+  }, [dispatch]);
+
+  console.log(maintenanceRequests);
+
   const maintenanceData = {
     pending: [
       { id: 1, customer: 'John Smith', service: 'AC Repair', priority: 'High', date: '2023-10-24', address: '123 Main St, Apt 4B, New York', phone: '(123) 456-7890', description: 'AC not cooling properly, making strange noises when turned on.' },
@@ -55,6 +66,27 @@ const MaintenanceRequest = () => {
       default: return key;
     }
   };
+
+  if (loading) {
+    return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-3 text-gray-600">Loading maintenance requests...</p>
+        </div>
+    </div>;
+}
+
+if (error) {
+    return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="text-center bg-red-100 rounded-xl p-6 max-w-md">
+            <svg className="mx-auto h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h2 className="mt-2 text-lg font-semibold text-red-800">Error</h2>
+            <p className="mt-1 text-red-600">{error}</p>
+        </div>
+    </div>;
+}
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">

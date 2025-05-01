@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   FiHome, FiShoppingCart, FiArrowLeft, FiArrowRight 
 } from 'react-icons/fi';
 import { FaFire, FaSnowflake } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProductByCategory, selectProductData, selectProductLoading, selectProductError } from '../../features/slices/productSlice';
 
 const categories = [
   {
@@ -255,6 +257,14 @@ const brandInfo = {
 export default function CategoryDetails() {
   const { category } = useParams();
   const cat = categories.find((c) => c.key === category);
+  const dispatch = useDispatch();
+  const productData = useSelector(selectProductData);
+  const isLoading = useSelector(selectProductLoading);
+  const error = useSelector(selectProductError);
+
+  useEffect(() => {
+    dispatch(fetchProductByCategory(category));
+  }, [dispatch, category]);
 
   if (!cat) {
     return (

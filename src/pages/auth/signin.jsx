@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import { FiLogIn, FiUserPlus, FiMail, FiLock } from 'react-icons/fi';
-import { Link } from 'react-router-dom'; // Assuming you use React Router
+import { FiLogIn, FiMail, FiLock, FiLoader } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom'; // Adding useNavigate
+import { useDispatch } from 'react-redux';
+import { login } from '../../features/slices/authSlice';
 
 const Signin = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,21 +23,31 @@ const Signin = () => {
      setError(''); // Clear error on change
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-     setError(''); // Clear previous errors
+    setError(''); // Clear previous errors
+    setIsLoading(true);
 
-    // Replace with your actual signin logic (e.g., API call)
-    console.log('Signin attempt:', formData);
-
-    // Example: Basic validation (replace with real auth)
-    if (formData.email === "test@example.com" && formData.password === "password") {
-        alert('Sign in successful! (Placeholder)');
-        // Redirect user or clear form
-        setFormData({ email: '', password: '' });
+    if (formData.email == 'comfortway1@gmail.com' && formData.password == '123456') {
+      localStorage.setItem("isAuthenticated", true);
+      navigate('/dashboard');
     } else {
-        setError('Invalid email or password. Please try again.'); // More descriptive error
+      setError('Invalid email or password');
+      setIsLoading(false);
     }
+
+    // try {
+    //   const response = await dispatch(login(formData));
+    //   if (response.payload && response.payload.status === 200) {
+    //     navigate('/dashboard');
+    //   } else {
+    //     setError(response.payload?.message || 'Login failed. Please check your credentials.');
+    //   }
+    // } catch (err) {
+    //   setError(err.message || 'An unexpected error occurred. Please try again.');
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   return (
@@ -66,6 +81,7 @@ const Signin = () => {
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
+                disabled={isLoading}
               />
             </div>
             <div className="relative">
@@ -80,6 +96,7 @@ const Signin = () => {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -91,6 +108,7 @@ const Signin = () => {
                 name="remember-me"
                 type="checkbox"
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                disabled={isLoading}
               />
               <label htmlFor="remember-me" className="ml-2 block text-gray-900">
                 Remember me
@@ -113,9 +131,17 @@ const Signin = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              disabled={isLoading}
+              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
             >
-              Sign In
+              {isLoading ? (
+                <>
+                  <FiLoader className="animate-spin mr-2 h-5 w-5" />
+                  Signing In...
+                </>
+              ) : (
+                'Sign In'
+              )}
             </button>
           </div>
         </form>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FiUser, FiMail, FiPhone, FiMapPin, FiEdit3, FiCheckCircle, FiTool, FiClock, FiShield, FiThumbsUp } from 'react-icons/fi';
+import { addMaintenanceRequest } from '../../features/slices/maintenanceSlice';
+import { useDispatch } from 'react-redux';
 
 // Device plans data with image and description
 const devicePlansData = [
@@ -52,6 +54,7 @@ const serviceTips = [
 ];
 
 const ProductRepairForm = () => {
+  const dispatch = useDispatch();
   const { product } = useParams();
   const productItem = devicePlansData.find((item) => item.category === product);
 
@@ -74,6 +77,7 @@ const ProductRepairForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    dispatch(addMaintenanceRequest(formData));
     // Replace with your actual request submission logic (e.g., API call, email)
     alert(`Thank you for your ${productItem ? productItem.name : ''} service request! We will contact you shortly to arrange the service.`);
     setFormData({ name: '', email: '', phone: '', address: '', serviceType: 'repair', issueDescription: '' });

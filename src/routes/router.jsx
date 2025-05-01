@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import RootLayout from '../layouts/website/RootLayout';
+import ProtectedRoute from './protectedRoute';
 
 // Import your page components here
 import Home from '../pages/home/home';
@@ -16,6 +17,8 @@ import SignIn from '../pages/auth/signin';
 import SignUp from '../pages/auth/signup';
 import ProductRepairForm from '../pages/maintenance-repair/ProductRepairForm';
 import CategoryDetails from '../pages/buy-rent/[category]';
+import Categories from '../pages/dashboard/categories/page';
+
 
 // Dashboard Routes
 import Dashboard from '../pages/dashboard/page';
@@ -93,23 +96,31 @@ export const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <DashboardLayout />,
+    element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <ProtectedRoute><Dashboard /></ProtectedRoute>,
       },
       {
         path: 'leads',
-        element: <Leads />,
+        element: <ProtectedRoute><Leads /></ProtectedRoute>,
       },
       {
         path: 'maintenance-request',
-        element: <MaintenanceRequest />,
+        element: <ProtectedRoute><MaintenanceRequest /></ProtectedRoute>,
+      },
+      {
+        path: '#',
+        element: <ProtectedRoute><Products /></ProtectedRoute>,
+      },
+      {
+        path: 'products/categories',
+        element: <ProtectedRoute><Categories /></ProtectedRoute>,
       },
       {
         path: 'products',
-        element: <Products />,
+        element: <ProtectedRoute><Products /></ProtectedRoute>,
       },
     ],
   },

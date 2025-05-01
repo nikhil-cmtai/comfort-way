@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FiWind, 
@@ -15,6 +15,8 @@ import {
 } from 'react-icons/fi';
 import {FaFire, FaSnowflake} from 'react-icons/fa';
 import BannerBuyRent from '/images/products/buy-rent-banner.jpg';
+import { fetchCategoryData, selectCategoryData, selectCategoryLoading, selectCategoryError } from '../../features/slices/categorySlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const categories = [
   {
@@ -145,7 +147,16 @@ const categories = [
   },
 ];
 
-export default function BuyRent() {
+  export default function BuyRent() {
+  const dispatch = useDispatch();
+  const categoryData = useSelector(selectCategoryData);
+  const loading = useSelector(selectCategoryLoading);
+  const error = useSelector(selectCategoryError);
+
+  useEffect(() => {
+    dispatch(fetchCategoryData());
+  }, [dispatch]);
+
   return (
     <div className="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen">
       {/* Hero Section */}

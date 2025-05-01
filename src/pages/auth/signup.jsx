@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { FiUserPlus, FiLogIn, FiUser, FiMail, FiLock } from 'react-icons/fi';
-import { Link } from 'react-router-dom'; // Assuming you use React Router
+import { FiUserPlus, FiLogIn, FiUser, FiMail, FiLock, FiLoader } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom'; // Adding useNavigate
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -10,6 +11,7 @@ const Signup = () => {
     confirmPassword: '',
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,10 +22,10 @@ const Signup = () => {
     setError(''); // Clear error on change
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(''); // Clear previous errors
-
+    
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match.');
       return;
@@ -34,11 +36,23 @@ const Signup = () => {
       return;
     }
 
-    // Replace with your actual signup logic (e.g., API call)
-    console.log('Signup attempt:', { name: formData.name, email: formData.email });
-    alert('Signup successful! Please sign in. (Placeholder)');
-    // Redirect user or clear form
-    setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+    setIsLoading(true);
+    
+    try {
+      // Replace with your actual signup logic (e.g., API call)
+      console.log('Signup attempt:', { name: formData.name, email: formData.email });
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // On success
+      setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+      navigate('/auth/signin');
+    } catch (err) {
+      setError(err.message || 'An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -71,6 +85,7 @@ const Signup = () => {
                 placeholder="Full Name"
                 value={formData.name}
                 onChange={handleChange}
+                disabled={isLoading}
               />
             </div>
             <div className="relative">
@@ -85,6 +100,7 @@ const Signup = () => {
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
+                disabled={isLoading}
               />
             </div>
             <div className="relative">
@@ -99,6 +115,7 @@ const Signup = () => {
                 placeholder="Password (min. 6 characters)"
                 value={formData.password}
                 onChange={handleChange}
+                disabled={isLoading}
               />
             </div>
             <div className="relative">
@@ -113,6 +130,7 @@ const Signup = () => {
                 placeholder="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -126,9 +144,17 @@ const Signup = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              disabled={isLoading}
+              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
             >
-              Sign Up
+              {isLoading ? (
+                <>
+                  <FiLoader className="animate-spin mr-2 h-5 w-5" />
+                  Creating Account...
+                </>
+              ) : (
+                'Sign Up'
+              )}
             </button>
           </div>
         </form>

@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { FiMapPin, FiMail, FiPhone } from 'react-icons/fi'; // Example icons
 import contact from '/images/contact-banner.jpg';
+import { addLead } from '../../features/slices/leadSlice';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+
 const Contact = () => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,7 +26,8 @@ const Contact = () => {
     e.preventDefault();
     // Replace with your actual form submission logic (e.g., API call)
     console.log('Form data submitted:', formData);
-    alert('Thank you for your message! We will get back to you soon.');
+    dispatch(addLead(formData));
+    toast.success('Thank you for your message! We will get back to you soon.');
     // Reset form after submission
     setFormData({ name: '', email: '', subject: '', message: '' });
   };
