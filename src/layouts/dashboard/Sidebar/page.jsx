@@ -17,6 +17,7 @@ const Sidebar = () => {
         { label: 'Product List', path: '/dashboard/products', icon: '📋' }
       ]
     },
+    { label: 'Protection Plans', path: '/dashboard/protection-plans', icon: '🔒' },
     { label: 'Maintenance Requests', path: '/dashboard/maintenance-request', icon: '🔧' },
     { label: 'Leads', path: '/dashboard/leads', icon: '👥' },
     { label: 'Logout', path: '/logout', icon: '🚪' },

@@ -27,6 +27,9 @@ import Leads from '../pages/dashboard/leads/page';
 import MaintenanceRequest from '../pages/dashboard/maintenance-request/page';
 import Products from '../pages/dashboard/products/page';
 import Logout from '../pages/auth/logout';
+import ProtectionPlans from '../pages/dashboard/protection-plans/page';
+
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -121,6 +124,10 @@ export const router = createBrowserRouter([
       {
         path: 'products',
         element: <ProtectedRoute><Products /></ProtectedRoute>,
+      },
+      {
+        path: 'protection-plans',
+        element: <ProtectedRoute><ProtectionPlans /></ProtectedRoute>,
       },
     ],
   },

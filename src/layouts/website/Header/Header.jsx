@@ -17,8 +17,8 @@ const Header = () => {
   ];
   
   const userDropdownItems = [
-    { name: 'Sign In/Sign Up', path: '/signin' },
-    { name: 'My Profile', path: '/profile' },
+    { name: 'Sign In/Sign Up', path: '/sign-in' },
+    { name: 'My Profile', path: '/sign-in' },
     { name: 'Raise Service Request', path: '/raise-request' },
     { name: 'Help & Support', path: '/contact' },
   ];
