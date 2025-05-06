@@ -1,7 +1,8 @@
-import React from 'react';
-import { FiShield, FiCheckSquare, FiDollarSign, FiTool, FiHome, FiZap, FiUsers } from 'react-icons/fi';
+import React, { useState } from 'react';
+import { FiShield, FiCheckSquare, FiDollarSign, FiTool, FiHome, FiZap, FiUsers, FiPlus, FiMinus, FiAirplay, FiRefreshCw } from 'react-icons/fi';
 import protectionBanner from '/images/products/protectionBanner.webp';
 
+// Predefined plans
 const bhkPlans = [
   {
     bhk: '1 BHK',
@@ -71,7 +72,66 @@ const bhkPlans = [
   },
 ];
 
+
+const appliances = [
+  { name: 'AC', category: 'ac', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1499 },
+  { name: 'Air Purifier', category: 'air-purifier', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1299 },
+  { name: 'Chopper', category: 'chopper', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1199 },
+  { name: 'Blender', category: 'blender', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
+  { name: 'Iron', category: 'iron', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
+  { name: 'Geyser', category: 'geyser', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
+  { name: 'Boiler', category: 'boiler', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
+  { name: 'Juicer', category: 'juicer', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
+  { name: 'Microwave', category: 'microwave', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
+  { name: 'Washing Machine', category: 'washing-machine', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
+  { name: 'Chimney', category: 'chimney', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
+  { name: 'Hob', category: 'hob', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
+  { name: 'Water Purifier', category: 'water-purifier', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
+  { name: 'Refrigerator', category: 'refrigerator', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
+];
+
+// Plan duration options
+const durations = [
+  { id: 1, name: '1 Year', multiplier: 1 },
+  { id: 2, name: '2 Years', multiplier: 1.8 },
+  { id: 3, name: '3 Years', multiplier: 2.5 },
+];
+
 export default function ProtectionPlans() {
+  // Custom plan state
+  const [selectedDuration, setSelectedDuration] = useState(durations[0]);
+  const [applianceSelections, setApplianceSelections] = useState(
+    appliances.reduce((acc, appliance) => {
+      acc[appliance.category] = 0;
+      return acc;
+    }, {})
+  );
+
+  // Handle appliance quantity change
+  const handleApplianceChange = (category, change) => {
+    setApplianceSelections(prev => {
+      const newValue = Math.max(0, prev[category] + change);
+      return { ...prev, [category]: newValue };
+    });
+  };
+
+  // Calculate custom plan price
+  const calculateCustomPlanPrice = () => {
+    const basePrice = Object.entries(applianceSelections).reduce((total, [category, quantity]) => {
+      const appliance = appliances.find(a => a.category === category);
+      return total + (appliance?.pricePerUnit * quantity || 0);
+    }, 0);
+    
+    return {
+      basePrice,
+      finalPrice: Math.round(basePrice * selectedDuration.multiplier),
+      originalPrice: Math.round(basePrice * selectedDuration.multiplier * 1.4) // 40% off calculation
+    };
+  };
+
+  const customPricing = calculateCustomPlanPrice();
+  const hasSelectedAppliances = Object.values(applianceSelections).some(qty => qty > 0);
+
   return (
     <div className="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen">
       {/* Hero Section - Maintenance Style */}
@@ -95,11 +155,26 @@ export default function ProtectionPlans() {
         </div>
       </section>
 
-      {/* Plans Section */}
-      <section className="py-16 sm:py-24">
+      {/* Tab Selection for Plan Types */}
+      <section className="pt-16 sm:pt-20">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 text-center mb-4">Choose Your Home Protection Plan</h2>
-          <p className="text-lg text-gray-600 text-center mb-12 sm:mb-16 max-w-2xl mx-auto">One plan covers all your appliances. Unlimited repairs, free service visits, and more. Select your home type below:</p>
+          <div className="flex flex-col items-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 text-center mb-4">Choose Your Protection Plan</h2>
+            <p className="text-lg text-gray-600 text-center mb-8 max-w-2xl mx-auto">Select from our ready-made home plans or build your custom plan for specific appliances.</p>
+            
+            <div className="bg-white rounded-full p-1 shadow-lg mb-12 flex">
+              <a href="#residential-plans" className="px-6 py-2 text-sm md:text-base rounded-full text-white bg-blue-600 font-medium">Residential Plans</a>
+              <a href="#custom-plan" className="px-6 py-2 text-sm md:text-base rounded-full text-gray-700 hover:bg-blue-50 transition font-medium">Custom Plan Builder</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Residential Plans Section */}
+      <section id="residential-plans" className="py-10 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-4">Residential Home Plans</h2>
+          <p className="text-lg text-gray-600 text-center mb-12 sm:mb-14 max-w-2xl mx-auto">One plan covers all your appliances. Unlimited repairs, free service visits, and more. Select your home type below:</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 items-stretch">
             {bhkPlans.map((plan, idx) => {
@@ -155,7 +230,149 @@ export default function ProtectionPlans() {
         </div>
       </section>
 
-      {/* Why Choose ComfortWay Protection Section (merged, animated) */}
+      {/* Custom Plan Builder Section */}
+      <section id="custom-plan" className="py-14 sm:py-20 bg-gradient-to-r from-indigo-50 to-blue-100">
+        <div className="max-w-5xl mx-auto px-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-4">Build Your Custom Protection Plan</h2>
+          <p className="text-lg text-gray-600 text-center mb-12 max-w-2xl mx-auto">Select exactly what appliances you need covered and for how long.</p>
+          
+          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-indigo-200">
+            <div className="p-8 md:p-10">
+              {/* Duration Selection */}
+              <div className="mb-10">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">1. Select Plan Duration</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {durations.map(duration => (
+                    <button
+                      key={duration.id}
+                      onClick={() => setSelectedDuration(duration)}
+                      className={`relative py-4 px-6 rounded-xl text-center transition-all ${
+                        selectedDuration.id === duration.id
+                          ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg scale-105'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      <h4 className="text-lg font-bold">{duration.name}</h4>
+                      {duration.id > 1 && (
+                        <span className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                          Save {((1 - duration.multiplier/duration.id) * 100).toFixed(0)}%
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Appliance Selection */}
+              <div className="mb-10">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">2. Select Your Appliances</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {appliances.map(appliance => (
+                    <div 
+                      key={appliance.category}
+                      className="bg-white border-2 border-gray-100 rounded-xl p-4 flex items-center justify-between hover:border-indigo-200 transition-colors"
+                    >
+                      <div className="flex items-center">
+                        <div className="bg-indigo-100 p-2 rounded-full mr-3">
+                          {appliance.icon}
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-800">{appliance.name}</h4>
+                          <p className="text-sm text-gray-500">₹{appliance.pricePerUnit}/year per unit</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => handleApplianceChange(appliance.category, -1)}
+                          disabled={applianceSelections[appliance.category] === 0}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            applianceSelections[appliance.category] === 0
+                              ? 'bg-gray-100 text-gray-400'
+                              : 'bg-red-100 text-red-500 hover:bg-red-200'
+                          }`}
+                        >
+                          <FiMinus size={16} />
+                        </button>
+                        <span className="w-10 text-center font-bold text-lg">
+                          {applianceSelections[appliance.category]}
+                        </span>
+                        <button
+                          onClick={() => handleApplianceChange(appliance.category, 1)}
+                          className="w-8 h-8 rounded-full bg-green-100 text-green-500 flex items-center justify-center hover:bg-green-200"
+                        >
+                          <FiPlus size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price Summary */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 sm:p-8">
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Your Custom Plan Summary</h3>
+                <div className="space-y-2 mb-6">
+                  {Object.entries(applianceSelections).map(([category, quantity]) => {
+                    if (quantity > 0) {
+                      const appliance = appliances.find(a => a.category === category);
+                      return (
+                        <div key={category} className="flex justify-between">
+                          <span className="text-gray-600">{appliance.name} × {quantity}</span>
+                          <span className="font-medium">₹{(appliance.pricePerUnit * quantity).toLocaleString()}</span>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                  
+                  {hasSelectedAppliances && (
+                    <>
+                      <div className="flex justify-between pt-2 border-t">
+                        <span className="text-gray-600">Base Price (1 Year)</span>
+                        <span className="font-medium">₹{customPricing.basePrice.toLocaleString()}</span>
+                      </div>
+                      
+                      {selectedDuration.id > 1 && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Duration ({selectedDuration.name})</span>
+                          <span className="font-medium text-green-600">Save {((1 - selectedDuration.multiplier/selectedDuration.id) * 100).toFixed(0)}%</span>
+                        </div>
+                      )}
+                      
+                      <div className="flex justify-between pt-2 border-t">
+                        <span className="text-gray-600">Original Price</span>
+                        <span className="font-medium line-through text-gray-500">₹{customPricing.originalPrice.toLocaleString()}</span>
+                      </div>
+                      
+                      <div className="flex justify-between text-lg">
+                        <span className="font-bold text-gray-800">Final Price</span>
+                        <span className="font-bold text-indigo-600">₹{customPricing.finalPrice.toLocaleString()}</span>
+                      </div>
+                    </>
+                  )}
+                  
+                  {!hasSelectedAppliances && (
+                    <p className="text-gray-500 italic">Please select at least one appliance to see your custom plan pricing.</p>
+                  )}
+                </div>
+                
+                <button
+                  disabled={!hasSelectedAppliances}
+                  className={`w-full py-3 rounded-xl text-white font-bold text-lg shadow-lg ${
+                    hasSelectedAppliances
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                      : 'bg-gray-300 cursor-not-allowed'
+                  }`}
+                >
+                  Get Your Custom Plan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose ComfortWay Protection Section */}
       <section className="py-16 bg-gradient-to-r from-indigo-50 to-blue-100">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-10">Why Choose ComfortWay Protection?</h2>
@@ -206,7 +423,7 @@ export default function ProtectionPlans() {
                 </span>
               </div>
               <h3 className="font-semibold text-lg mb-1 text-gray-800">Choose Your Plan</h3>
-              <p className="text-gray-500 text-sm">Select the perfect protection plan for your home and appliances.</p>
+              <p className="text-gray-500 text-sm">Select the perfect protection plan for your home or build a custom one for specific appliances.</p>
             </div>
             {/* Step 2 */}
             <div className="flex-1 group flex flex-col items-center text-center bg-white rounded-2xl border border-indigo-100 shadow-md px-6 py-8 mx-0 md:mx-2 transition-all duration-300 hover:shadow-xl hover:border-blue-400 hover:scale-105">
@@ -248,7 +465,7 @@ export default function ProtectionPlans() {
                   </div>
                   <div>
                     <h4 className="text-xl font-semibold text-indigo-700 mb-3">What appliances are covered under the plan?</h4>
-                    <p className="text-gray-600 text-base">All major home appliances including ACs, refrigerators, washing machines, microwaves, water purifiers, and more are covered. For a full list, contact our team.</p>
+                    <p className="text-gray-600 text-base">All major home appliances including ACs, refrigerators, washing machines, microwaves, water purifiers, and more are covered. You can select specific appliances with our custom plan builder.</p>
                   </div>
                 </div>
               </div>
@@ -275,8 +492,8 @@ export default function ProtectionPlans() {
                     <FiDollarSign className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="text-xl font-semibold text-indigo-700 mb-3">Are there any hidden costs?</h4>
-                    <p className="text-gray-600 text-base">No, all costs are included in your plan. You pay one price for complete protection—no surprises.</p>
+                    <h4 className="text-xl font-semibold text-indigo-700 mb-3">Can I customize my protection plan?</h4>
+                    <p className="text-gray-600 text-base">Yes! Our custom plan builder allows you to select exactly which appliances you want covered and how many units of each. You can also choose the plan duration that works best for you.</p>
                   </div>
                 </div>
               </div>

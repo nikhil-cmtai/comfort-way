@@ -13,7 +13,7 @@ const Header = () => {
     { name: 'Maintenace & Repairs', path: '/maintenance-repair', separator: true },
     { name: 'Home Protection', path: '/home-protection', new: true },
     { name: 'Buy/Rent', path: '/buy-rent', separator: true },
-    { name: 'Contact Us', path: '/contact', separator: true },
+    { name: 'About Us', path: '/about', separator: true },
   ];
   
   const userDropdownItems = [

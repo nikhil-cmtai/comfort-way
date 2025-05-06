@@ -8,6 +8,7 @@ const Sidebar = () => {
   
   const navItems = [
     { label: 'Dashboard', path: '/dashboard', icon: '📊' },
+    { label: 'Customers', path: '/dashboard/customers', icon: '👤' },
     { 
       label: 'Products', 
       path: '/dashboard/products', 
@@ -19,6 +20,7 @@ const Sidebar = () => {
     },
     { label: 'Protection Plans', path: '/dashboard/protection-plans', icon: '🔒' },
     { label: 'Maintenance Requests', path: '/dashboard/maintenance-request', icon: '🔧' },
+    { label: 'Plans', path: '/dashboard/plans', icon: '💰' },
     { label: 'Leads', path: '/dashboard/leads', icon: '👥' },
     { label: 'Logout', path: '/logout', icon: '🚪' },
   ];

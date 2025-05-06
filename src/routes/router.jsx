@@ -18,6 +18,7 @@ import SignUp from '../pages/auth/signup';
 import ProductRepairForm from '../pages/maintenance-repair/ProductRepairForm';
 import CategoryDetails from '../pages/buy-rent/[category]';
 import Categories from '../pages/dashboard/categories/page';
+import ProfilePage from '../pages/profile/page';
 
 
 // Dashboard Routes
@@ -28,7 +29,8 @@ import MaintenanceRequest from '../pages/dashboard/maintenance-request/page';
 import Products from '../pages/dashboard/products/page';
 import Logout from '../pages/auth/logout';
 import ProtectionPlans from '../pages/dashboard/protection-plans/page';
-
+import Plans from '../pages/dashboard/plans/page';
+import Customers from '../pages/dashboard/customers/page';
 
 export const router = createBrowserRouter([
   {
@@ -88,6 +90,10 @@ export const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
+        path: 'profile',
+        element: <ProtectedRoute><ProfilePage /></ProtectedRoute>,
+      },
+      {
         path: 'maintenance-repair/:product',
         element: <ProductRepairForm />,
       },
@@ -128,6 +134,14 @@ export const router = createBrowserRouter([
       {
         path: 'protection-plans',
         element: <ProtectedRoute><ProtectionPlans /></ProtectedRoute>,
+      },
+      {
+        path: 'plans',
+        element: <ProtectedRoute><Plans /></ProtectedRoute>,
+      },
+      {
+        path: 'customers',
+        element: <ProtectedRoute><Customers /></ProtectedRoute>,
       },
     ],
   },

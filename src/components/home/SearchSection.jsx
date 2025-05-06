@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiSearch, FiSettings, FiArrowRight, FiClock, FiShield } from 'react-icons/fi';
+import { FiSearch, FiSettings, FiArrowRight, FiClock, FiShield, FiWind, FiDroplet, FiZap, FiTool, FiHome, FiCoffee } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
 const SearchSection = () => {
@@ -7,12 +7,13 @@ const SearchSection = () => {
   const [searchInput, setSearchInput] = useState('');
   const [isButtonHovered, setIsButtonHovered] = useState(false);
 
-  const popularDevices = [
-    { name: 'AC', icon: '❄️', category: 'ac' },
-    { name: 'Refrigerator', icon: '🧊', category: 'refrigerator' },
-    { name: 'Washing Machine', icon: '🧺', category: 'washing-machine' },
-    { name: 'Microwave', icon: '🔥', category: 'microwave' },
-    { name: 'Water Purifier', icon: '💧', category: 'water-purifier' },
+  const popularServices = [
+    { name: 'AC', icon: <FiWind />, category: 'ac' },
+    { name: 'RO', icon: <FiDroplet />, category: 'ro' },
+    { name: 'Electrician', icon: <FiZap />, category: 'electrician' },
+    { name: 'Plumbing', icon: <FiTool />, category: 'plumbing' },
+    { name: 'Home Appliance', icon: <FiHome />, category: 'home-appliance' },
+    { name: 'Kitchen Appliance', icon: <FiCoffee />, category: 'kitchen-appliance' },
   ];
 
   // Enhanced background with animated gradient
@@ -85,14 +86,14 @@ const SearchSection = () => {
           <div className="mb-8">
             <div className="text-left text-blue-100 text-sm font-medium mb-3 ml-1">Popular Devices:</div>
             <div className="flex flex-wrap gap-2">
-              {popularDevices.map((device) => (
+              {popularServices.map((service) => (
                 <button 
-                  key={device.name}
-                  onClick={() => handleDeviceClick(device.category)}
+                  key={service.name}
+                  onClick={() => handleDeviceClick(service.category)}
                   className="flex items-center px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-full border border-white/20 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
                 >
-                  <span className="mr-2 text-lg">{device.icon}</span>
-                  {device.name}
+                  <span className="mr-2 text-lg">{service.icon}</span>
+                  {service.name}
                 </button>
               ))}
             </div>
@@ -109,39 +110,6 @@ const SearchSection = () => {
             <span>Find Service</span>
             <FiArrowRight className={`transition-all duration-300 ${isButtonHovered ? 'translate-x-1' : ''}`} />
           </button>
-        </div>
-
-        {/* Service Guarantee Badges with enhanced icons and animations */}
-        <div className="mt-12 flex flex-wrap justify-center gap-6 md:gap-10">
-          <div className="flex items-center text-white group hover:scale-105 transition-transform duration-300">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mr-3 group-hover:bg-white/20 transition-colors">
-              <FiSearch className="text-blue-300" size={20} />
-            </div>
-            <div className="text-left">
-              <div className="text-sm font-medium text-blue-100">Service For</div>
-              <div className="font-bold">All Major Appliances</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center text-white group hover:scale-105 transition-transform duration-300">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mr-3 group-hover:bg-white/20 transition-colors">
-              <FiClock className="text-blue-300" size={20} />
-            </div>
-            <div className="text-left">
-              <div className="text-sm font-medium text-blue-100">Response Time</div>
-              <div className="font-bold">Within 2 Hours</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center text-white group hover:scale-105 transition-transform duration-300">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mr-3 group-hover:bg-white/20 transition-colors">
-              <FiShield className="text-blue-300" size={20} />
-            </div>
-            <div className="text-left">
-              <div className="text-sm font-medium text-blue-100">Service Warranty</div>
-              <div className="font-bold">90 Days Guaranteed</div>
-            </div>
-          </div>
         </div>
       </div>
 
