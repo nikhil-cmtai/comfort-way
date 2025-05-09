@@ -31,6 +31,11 @@ import Logout from '../pages/auth/logout';
 import ProtectionPlans from '../pages/dashboard/protection-plans/page';
 import Plans from '../pages/dashboard/plans/page';
 import Customers from '../pages/dashboard/customers/page';
+import Tasks from '../pages/dashboard/tasks/page';
+import Users from '../pages/dashboard/users/page';
+import RolePermissions from '../pages/dashboard/role-permissions/page';
+import EditRole from '../pages/dashboard/role-permissions/edit-role';
+
 
 export const router = createBrowserRouter([
   {
@@ -91,7 +96,8 @@ export const router = createBrowserRouter([
       },
       {
         path: 'profile',
-        element: <ProtectedRoute><ProfilePage /></ProtectedRoute>,
+        // element: <ProtectedRoute><ProfilePage /></ProtectedRoute>,
+        element: <ProfilePage />,
       },
       {
         path: 'maintenance-repair/:product',
@@ -142,6 +148,22 @@ export const router = createBrowserRouter([
       {
         path: 'customers',
         element: <ProtectedRoute><Customers /></ProtectedRoute>,
+      },
+      {
+        path: 'tasks',
+        element: <ProtectedRoute><Tasks /></ProtectedRoute>,
+      },
+      {
+        path: 'users',
+        element: <ProtectedRoute><Users /></ProtectedRoute>,
+      },
+      {
+        path: 'roles-permissions',
+        element: <ProtectedRoute><RolePermissions /></ProtectedRoute>,
+      },
+      {
+        path: 'role-permissions/:id',
+        element: <ProtectedRoute><EditRole /></ProtectedRoute>,
       },
     ],
   },

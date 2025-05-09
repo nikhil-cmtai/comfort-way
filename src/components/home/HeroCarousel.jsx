@@ -134,15 +134,6 @@ const HeroCarousel = () => {
                         </p>
                       </div>
                       
-                      {/* Enhanced Feature Badges - Better mobile layout */}
-                      <div className="flex flex-wrap gap-2 md:gap-3 justify-center md:justify-start mt-2 md:mt-2">
-                        {slide.badges.map((badge, i) => (
-                          <div key={i} className="flex items-center bg-white/20 backdrop-blur-sm px-2.5 py-1 md:px-4 md:py-2 rounded-full border border-white/10 group-hover:bg-white/30 transition-colors duration-300">
-                            <FiCheckCircle className="text-green-400 mr-1 md:mr-2 text-xs md:text-base" />
-                            <span className="text-xs md:text-sm font-medium text-white">{badge}</span>
-                          </div>
-                        ))}
-                      </div>
                       
                       {/* Enhanced Call to Action Button */}
                       <div className="mt-4 md:mt-8">

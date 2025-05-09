@@ -32,24 +32,12 @@ const Footer = () => {
       {
         title: "Maintenance & Repairs",
         links: [
-          { name: "Water Purifiers", path: "/maintenance-repair/water-purifier" },
-          { name: "Air Conditioners", path: "/maintenance-repair/ac" },
-          { name: "Washing Machine", path: "/maintenance-repair/washing-machine" },
-          { name: "Refrigerators", path: "/maintenance-repair/refrigerator" },
-          { name: "Microwaves", path: "/maintenance-repair/microwave" },
-          { name: "Chimneys", path: "/maintenance-repair/chimney" },
-        ],
-      },
-      {
-        title: " ", // Invisible title for layout
-        links: [
-          { name: "Juicers", path: "/maintenance-repair/juicer" },
-          { name: "Geysers", path: "/maintenance-repair/geyser" },
-          { name: "Choppers", path: "/maintenance-repair/chopper" },
-          { name: "Blenders", path: "/maintenance-repair/blender" },
-          { name: "Microwaves", path: "/maintenance-repair/microwave" },
-          { name: "Hobs", path: "/maintenance-repair/hob" },
-          { name: "Irons", path: "/maintenance-repair/iron" },
+          { name: "RO", path: "/maintenance-repair/ro" },
+          { name: "AC", path: "/maintenance-repair/ac" },
+          { name: "Plumbing", path: "/maintenance-repair/plumbing" },
+          { name: "Electrical", path: "/maintenance-repair/electrician" },
+          { name: "Home Appliances", path: "/maintenance-repair/home-appliances" },
+          { name: "Kitchen Appliances", path: "/maintenance-repair/kitchen-appliances" },
         ],
       },
       {

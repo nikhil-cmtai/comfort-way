@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiLogIn, FiMail, FiLock, FiLoader } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGoogleLogin } from '@react-oauth/google';
-import { login, loginWithGoogle } from '../../features/slices/authSlice';
+import { login, loginWithGoogle, setError } from '../../features/slices/authSlice';
 
 const Signin = () => {
   const dispatch = useDispatch();
@@ -13,6 +13,10 @@ const Signin = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [localError, setLocalError] = useState('');
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  useEffect(() => {
+    dispatch(setError(''));
+  }, [dispatch]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -107,11 +111,30 @@ const Signin = () => {
             </div>
           </div>
 
-          {(error || localError) && (
-            <div className="bg-red-100 text-red-700 p-2 rounded text-sm text-center">
-              {error || localError}
-            </div>
-          )}
+          {(() => {
+            if (localError && typeof localError === 'string' && localError.trim() !== '') {
+              return (
+                <div className="bg-red-100 text-red-700 p-2 rounded text-sm text-center">
+                  {localError}
+                </div>
+              );
+            }
+            if (error && typeof error === 'string' && error.trim() !== '') {
+              return (
+                <div className="bg-red-100 text-red-700 p-2 rounded text-sm text-center">
+                  {error}
+                </div>
+              );
+            }
+            if (error && typeof error === 'object' && error !== null && typeof error.message === 'string') {
+              return (
+                <div className="bg-red-100 text-red-700 p-2 rounded text-sm text-center">
+                  {error.message}
+                </div>
+              );
+            }
+            return null;
+          })()}
 
           <button
             type="submit"

@@ -7,20 +7,12 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // Device plans data with image and description
 const devicePlansData = [
-  { name: 'AC', category: 'ac', img: '/images/products/ac-2.webp', desc: 'AC Repair, Installation & Service' },
-  { name: 'Air Purifier', category: 'air-purifier', img: '/images/products/Air-purifier.webp', desc: 'Air Purifier Cleaning & Repair' },
-  { name: 'Chopper', category: 'chopper', img: '/images/products/Chopper.webp', desc: 'Chopper Blade & Motor Service' },
-  { name: 'Blender', category: 'blender', img: '/images/products/Blender.webp', desc: 'Blender Repair & Maintenance' },
-  { name: 'Iron', category: 'iron', img: '/images/products/Iron.webp', desc: 'Iron Plate & Wiring Fix' },
-  { name: 'Geyser', category: 'geyser', img: '/images/products/Geyser.webp', desc: 'Geyser Installation & Repair' },
-  { name: 'Boiler', category: 'boiler', img: '/images/products/Boiler.webp', desc: 'Boiler Service & Repair' },
-  { name: 'Juicer', category: 'juicer', img: '/images/products/Juicer.webp', desc: 'Juicer Motor & Blade Service' },
-  { name: 'Microwave', category: 'microwave', img: '/images/products/Microwave.webp', desc: 'Microwave Repair & Cleaning' },
-  { name: 'Washing Machine', category: 'washing-machine', img: '/images/products/Washing-machine.webp', desc: 'Washing Machine Service' },
-  { name: 'Chimney', category: 'chimney', img: '/images/products/Chimney.webp', desc: 'Chimney Cleaning & Repair' },
-  { name: 'Hob', category: 'hob', img: '/images/products/Hob.webp', desc: 'Hob Burner & Ignition Service' },
-  { name: 'Water Purifier', category: 'water-purifier', img: '/images/products/Water-purifier.webp', desc: 'Water Purifier Filter Change' },
-  { name: 'Refrigerator', category: 'refrigerator', img: '/images/products/Refrigerator.webp', desc: 'Refrigerator Gas & Cooling Repair' },
+  { id: 'ac', label: 'AC', img: '/images/products/ac-2.webp', desc: 'AC Repair, Installation & Service', popular: true  },
+  { id: 'ro', label: 'RO', img: '/images/products/Water-purifier.webp', desc: 'Water Purifier Filter Change', popular: true },
+  { id: 'electrician', label: 'Electrician', img: '/images/products/electrician.webp', desc: 'Electrician Service & Repair' },
+  { id: 'plumbing', label: 'Plumbing', img: '/images/products/plumbing.webp', desc: 'Plumbing Service & Repair' },
+  { id: 'home-appliances', label: 'Home Appliances', img: '/images/products/home-appliances.jpeg', desc: 'Home Appliance Repair & Maintenance' },
+  { id: 'kitchen-appliances', label: 'Kitchen Appliances', img: '/images/products/kitchen-appliances.webp', desc: 'Kitchen Appliance Repair & Maintenance' },
 ];
 
 const galleryImages = [
@@ -35,43 +27,15 @@ const galleryImages = [
   
 ];
 
-const benefits = [
-  { icon: <FiCheckCircle className="text-green-500 w-7 h-7" />, title: 'Certified Technicians', desc: 'All repairs handled by trained and background-checked professionals.' },
-  { icon: <FiClock className="text-blue-500 w-7 h-7" />, title: 'Quick Response', desc: 'Same-day or next-day service available for most requests.' },
-  { icon: <FiTool className="text-indigo-500 w-7 h-7" />, title: 'Genuine Parts', desc: 'We use only high-quality, genuine spare parts for all repairs.' },
-  { icon: <FiMessageSquare className="text-pink-500 w-7 h-7" />, title: 'Transparent Pricing', desc: 'No hidden charges. Upfront quotes and clear communication.' },
-];
-
-// Testimonials data
-const testimonials = [
-  {
-    name: "Rahul Sharma",
-    location: "Delhi",
-    rating: 5,
-    text: "Their AC repair service was exceptional. The technician arrived on time, identified the issue quickly, and fixed it within an hour. My AC works better than before!",
-    service: "AC Repair"
-  },
-  {
-    name: "Priya Patel",
-    location: "Mumbai",
-    rating: 5,
-    text: "I had my washing machine repaired by ComfortWay and was amazed by their professionalism. The technician was knowledgeable and courteous. Will definitely use again!",
-    service: "Washing Machine Repair"
-  },
-  {
-    name: "Amit Verma",
-    location: "Bangalore",
-    rating: 4,
-    text: "Great refrigerator service! The technician explained the issue clearly and provided maintenance tips to prevent future problems. Very satisfied with the service.",
-    service: "Refrigerator Repair"
-  }
-];
 
 const MaintenanceRepair = () => {
   const dispatch = useDispatch();
   const categories = useSelector(selectCategoryData);
   const loading = useSelector(selectCategoryLoading);
   const error = useSelector(selectCategoryError);
+
+  // Fix: Add hoverIndex state for card hover animation
+  const [hoverIndex, setHoverIndex] = React.useState(null);
 
   useEffect(() => {
     dispatch(fetchCategoryData());
@@ -150,51 +114,51 @@ const MaintenanceRepair = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
-            {devicePlansData.map((item) => (
-              <Link
-                to={`/maintenance-repair/${item.category}`}
-                key={item.name}
-                className="group relative flex flex-col items-center overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl border border-gray-100 transition-all duration-300 hover:border-indigo-200 min-h-[280px]"
-                style={{ textDecoration: 'none' }}
-              >
-                {/* Colored Top Border Accent */}
-                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
-                
-                {/* Background Pattern (subtle) */}
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/30 to-white pointer-events-none"></div>
-                
-                {/* Content Container */}
-                <div className="flex flex-col items-center p-6 w-full h-full relative z-10">
-                  {/* Image Container with Circle Background */}
-                  <div className="flex items-center justify-center bg-white w-24 h-24 rounded-full border border-gray-200 shadow-md mb-5 group-hover:shadow-lg group-hover:scale-105 transition-transform duration-300 overflow-hidden p-1">
-                    <img
-                      src={item.img}
-                      alt={item.name}
-                      className="max-h-[80%] max-w-[80%] object-contain"
-                      onError={e => { e.target.src = '/images/placeholder.png'; }}
-                    />
-                  </div>
-                  
-                  <h3 className="text-xl font-bold text-gray-800 group-hover:text-indigo-700 mb-1.5 text-center transition-colors duration-300">
-                    {item.name}
-                  </h3>
-                  
-                  <p className="text-sm text-gray-500 text-center mb-4">{item.desc}</p>
-                  
-                  {/* Action Button */}
-                  <div className="mt-auto w-full">
-                    <div className="flex items-center justify-center text-indigo-600 font-medium text-sm py-2 rounded-md group-hover:text-indigo-700 transition-colors duration-300">
-                      Book Service
-                      <FiArrowRight className="ml-1 h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-                    </div>
+          <div className="grid grid-cols-3 justify-center gap-6 md:gap-8">
+          {devicePlansData.map((item, index) => (
+            <Link
+              to={`/maintenance-repair/${item.category || item.id}`}
+              key={item.id || item.category || index}
+              className="group relative bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col p-0 hover:-translate-y-2 cursor-pointer overflow-hidden max-w-xs w-full mx-auto min-h-[340px]"
+              style={{ textDecoration: 'none' }}
+              onMouseEnter={() => setHoverIndex(index)}
+              onMouseLeave={() => setHoverIndex(null)}
+            >
+              {/* Badge */}
+              {item.popular && (
+                <div className="absolute top-3 left-3 z-10">
+                  <div className="bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-full shadow">
+                    POPULAR
                   </div>
                 </div>
-                
-                {/* Corner Accent */}
-                <div className="absolute bottom-0 right-0 w-20 h-20 bg-indigo-50 rounded-tl-full transform scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-              </Link>
-            ))}
+              )}
+              {/* Card Image */}
+              <img
+                src={item.img}
+                alt={item.label || item.name}
+                className="w-full h-48 object-cover rounded-t-2xl"
+                onError={e => { e.target.src = '/images/placeholder.png'; }}
+              />
+              {/* Card Content */}
+              <div className="flex flex-col flex-1 px-4 py-4">
+                <h3 className="font-bold text-xl text-center mt-2 mb-1 text-gray-900">
+                  {item.label || item.name}
+                </h3>
+                <p className="text-gray-500 text-center text-sm mb-4">
+                  {item.desc}
+                </p>
+                <div className="mt-auto text-center">
+                  <div className={`flex items-center justify-center text-indigo-600 font-medium text-base transition-all duration-300 ${hoverIndex === index ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2'}`}
+                  >
+                    Book Service
+                    <FiArrowRight className="ml-1 transition-transform duration-300" />
+                  </div>
+                </div>
+              </div>
+              {/* Corner Accent */}
+              <div className="absolute bottom-0 right-0 w-20 h-20 bg-indigo-50 rounded-tl-full transform scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+            </Link>
+          ))}
           </div>
         </div>
       </section>

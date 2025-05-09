@@ -10,14 +10,14 @@ const authSlice = createSlice({
     token: localStorage.getItem("token") || null,
     isLoggedIn: !!localStorage.getItem("token"),
     isLoading: false,
-    error: null,
+    error: '',
   },
   reducers: {
     setUser: (state, action) => {
       state.user = action.payload;
       state.isLoggedIn = true;
       state.isLoading = false;
-      state.error = null;
+      state.error = '';
     },
     setToken: (state, action) => {
       state.token = action.payload;
@@ -30,13 +30,21 @@ const authSlice = createSlice({
       state.isLoading = action.payload;
     },
     setError: (state, action) => {
-      state.error = action.payload;
+      if (!action.payload) {
+        state.error = '';
+      } else if (typeof action.payload === 'string') {
+        state.error = action.payload;
+      } else if (typeof action.payload === 'object' && action.payload !== null) {
+        state.error = action.payload.message || JSON.stringify(action.payload);
+      } else {
+        state.error = 'An unknown error occurred.';
+      }
     },
     clearAuth: (state) => {
       state.user = null;
       state.token = null;
       state.isLoggedIn = false;
-      state.error = null;
+      state.error = '';
     },
   },
 });
@@ -78,7 +86,12 @@ export const register = (userData) => async (dispatch) => {
     dispatch(setUser(user));
     return res.data;
   } catch (err) {
-    dispatch(setError(err.response?.data?.error || err.message));
+    dispatch(setError(
+      err.response?.data?.error?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      'An error occurred'
+    ));
     return null;
   } finally {
     dispatch(setIsLoading(false));
@@ -98,7 +111,12 @@ export const login = (formData) => async (dispatch) => {
     dispatch(setUser(user));
     return res.data;
   } catch (err) {
-    dispatch(setError(err.response?.data?.error || err.message));
+    dispatch(setError(
+      err.response?.data?.error?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      'An error occurred'
+    ));
     return null;
   } finally {
     dispatch(setIsLoading(false));
@@ -118,7 +136,12 @@ export const loginWithGoogle = (idToken) => async (dispatch) => {
     dispatch(setUser(user));
     return res.data;
   } catch (err) {
-    dispatch(setError(err.response?.data?.error || err.message));
+    dispatch(setError(
+      err.response?.data?.error?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      'An error occurred'
+    ));
     return null;
   } finally {
     dispatch(setIsLoading(false));
@@ -134,7 +157,12 @@ export const fetchUser = (userId) => async (dispatch) => {
     dispatch(setUser(res.data));
     return res.data;
   } catch (err) {
-    dispatch(setError(err.response?.data?.error || err.message));
+    dispatch(setError(
+      err.response?.data?.error?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      'An error occurred'
+    ));
     return null;
   } finally {
     dispatch(setIsLoading(false));
@@ -149,7 +177,12 @@ export const getAllUsers = () => async (dispatch) => {
     const res = await axios.get(`${API}/auth/users`);
     return res.data;
   } catch (err) {
-    dispatch(setError(err.response?.data?.error || err.message));
+    dispatch(setError(
+      err.response?.data?.error?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      'An error occurred'
+    ));
     return null;
   } finally {
     dispatch(setIsLoading(false));
@@ -165,7 +198,12 @@ export const updateUser = (userId, userData) => async (dispatch) => {
     dispatch(setUser(res.data));
     return res.data;
   } catch (err) {
-    dispatch(setError(err.response?.data?.error || err.message));
+    dispatch(setError(
+      err.response?.data?.error?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      'An error occurred'
+    ));
     return null;
   } finally {
     dispatch(setIsLoading(false));
@@ -183,7 +221,12 @@ export const deleteUser = (userId) => async (dispatch) => {
     dispatch(clearAuth());
     return true;
   } catch (err) {
-    dispatch(setError(err.response?.data?.error || err.message));
+    dispatch(setError(
+      err.response?.data?.error?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      'An error occurred'
+    ));
     return false;
   } finally {
     dispatch(setIsLoading(false));

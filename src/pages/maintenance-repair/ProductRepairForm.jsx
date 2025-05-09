@@ -5,7 +5,7 @@ import { addMaintenanceRequest } from '../../features/slices/maintenanceSlice';
 import { useDispatch } from 'react-redux';
 
 // Device plans data with image and description
-const devicePlansData = [
+const serviceTypes = [
   { name: 'AC', category: 'ac', img: '/images/products/ac-2.webp', desc: 'AC Repair, Installation & Service' },
   { name: 'Air Purifier', category: 'air-purifier', img: '/images/products/Air-purifier.webp', desc: 'Air Purifier Cleaning & Repair' },
   { name: 'Chopper', category: 'chopper', img: '/images/products/Chopper.webp', desc: 'Chopper Blade & Motor Service' },
@@ -23,10 +23,13 @@ const devicePlansData = [
 ];
 
 // Service types
-const serviceTypes = [
-  { id: 'repair', name: 'Repair Service', desc: 'Fix your broken appliance' },
-  { id: 'maintenance', name: 'Maintenance Service', desc: 'Regular check-up and cleaning' },
-  { id: 'installation', name: 'Installation Service', desc: 'Setup your new appliance' }
+const devicePlansData = [
+  { id: 'ac', label: 'AC', img: '/images/products/ac-2.webp', desc: 'AC Repair, Installation & Service', popular: true  },
+  { id: 'ro', label: 'RO', img: '/images/products/Water-purifier.webp', desc: 'Water Purifier Filter Change', popular: true },
+  { id: 'electrician', label: 'Electrician', img: '/images/products/electrician.webp', desc: 'Electrician Service & Repair' },
+  { id: 'plumbing', label: 'Plumbing', img: '/images/products/plumbing.webp', desc: 'Plumbing Service & Repair' },
+  { id: 'home-appliances', label: 'Home Appliances', img: '/images/products/home-appliances.jpeg', desc: 'Home Appliance Repair & Maintenance' },
+  { id: 'kitchen-appliances', label: 'Kitchen Appliances', img: '/images/products/kitchen-appliances.webp', desc: 'Kitchen Appliance Repair & Maintenance' },
 ];
 
 // Service benefits/tips
@@ -56,7 +59,7 @@ const serviceTips = [
 const ProductRepairForm = () => {
   const dispatch = useDispatch();
   const { product } = useParams();
-  const productItem = devicePlansData.find((item) => item.category === product);
+  const productItem = devicePlansData.find((item) => item.category === product || item.id === product);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -100,7 +103,7 @@ const ProductRepairForm = () => {
   };
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 min-h-screen">
       {/* Hero Section */}
       <section 
         className="relative w-full h-[250px] sm:h-[300px] flex items-center justify-center text-center shadow-lg"
@@ -124,43 +127,58 @@ const ProductRepairForm = () => {
         </div>
       </section>
 
-      {/* Info & Tips Section */}
-      <section className="py-12 bg-white">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-3">Why Choose Our {productItem.name} Service?</h2>
-            <div className="w-20 h-1 bg-indigo-600 mx-auto mb-5"></div>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              Our {productItem.name} experts are certified professionals with years of experience. 
-              We provide efficient, reliable service with genuine parts and transparent pricing to 
-              ensure your appliance operates at peak performance.
-            </p>
-          </div>
+      {/* Heading above product cards */}
+      <section className="pt-8 pb-2 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Select Your Appliance</h2>
+          <p className="text-gray-500 text-base mb-2">Choose the appliance you need service for</p>
+        </div>
+      </section>
 
-          {/* Service Benefits */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-            {serviceTips.map((tip, index) => (
-              <div key={index} className="bg-gray-50 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-5 flex flex-col items-center text-center">
-                <div className="bg-indigo-100 p-3 rounded-full mb-4">
-                  {tip.icon}
-                </div>
-                <h3 className="font-bold text-gray-800 mb-2">{tip.title}</h3>
-                <p className="text-gray-600 text-sm">{tip.desc}</p>
-              </div>
-            ))}
+      {/* Device Cards Grid Above Form (all products) */}
+      <section className="py-8 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="w-full overflow-x-auto pb-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 min-w-[400px]">
+              {serviceTypes.map((item) => (
+                <a
+                  key={item.category}
+                  className={`group relative bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col p-0 hover:-translate-y-2 cursor-pointer overflow-hidden min-h-[240px] ${(item.category === productItem.category || item.category === productItem.id) ? 'ring-2 ring-indigo-500 border-indigo-500' : ''}`}
+                  style={{ textDecoration: 'none', maxWidth: 220 }}
+                >
+                  {/* Card Image */}
+                  <img
+                    src={item.img}
+                    alt={item.name}
+                    className="w-16 h-16 rounded-full object-cover mx-auto mt-4 mb-2 border-2 border-indigo-100 shadow"
+                    onError={e => { e.target.src = '/images/placeholder.png'; }}
+                  />
+                  {/* Card Content */}
+                  <div className="flex flex-col flex-1 px-4 py-3">
+                    <h3 className="font-bold text-base text-center mt-2 mb-1 text-gray-900">
+                      {item.name}
+                    </h3>
+                    <p className="text-gray-500 text-center text-xs mb-2">
+                      {item.desc}
+                    </p>
+                  </div>
+                  {/* Corner Accent */}
+                  <div className="absolute bottom-0 right-0 w-10 h-10 bg-indigo-50 rounded-tl-full transform scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Form Section */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-5xl mx-auto px-4">
+      {/* Form Section Below Cards */}
+      <section className="py-8 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-4">
           <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
             <div className="p-6 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
               <h2 className="text-2xl font-bold">Book Your {productItem.name} Service Now</h2>
               <p className="opacity-90">Fill out the form below and our team will get back to you within 2 hours</p>
             </div>
-            
             <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-6">
@@ -236,39 +254,24 @@ const ProductRepairForm = () => {
                     </div>
                   </div>
                 </div>
-                
                 <div className="space-y-6">
-                  {/* Service Type */}
+                  {/* Service Type Dropdown */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
-                    <div className="grid grid-cols-1 gap-3">
+                    <select
+                      name="serviceType"
+                      value={formData.serviceType}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-800"
+                    >
+                      <option value="" disabled>Select a service type</option>
                       {serviceTypes.map((type) => (
-                        <div key={type.id} className="relative">
-                          <input
-                            type="radio"
-                            id={type.id}
-                            name="serviceType"
-                            value={type.id}
-                            checked={formData.serviceType === type.id}
-                            onChange={handleChange}
-                            className="peer absolute opacity-0 h-0 w-0"
-                            required
-                          />
-                          <label
-                            htmlFor={type.id}
-                            className="flex items-center p-3 w-full border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 hover:border-indigo-200 peer-checked:border-indigo-500 peer-checked:bg-indigo-50"
-                          >
-                            <div className="h-5 w-5 rounded-full border-2 border-gray-400 mr-3 flex items-center justify-center peer-checked:border-indigo-500">
-                              <div className={`h-2.5 w-2.5 rounded-full ${formData.serviceType === type.id ? 'bg-indigo-500' : 'bg-transparent'}`}></div>
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-800">{type.name}</p>
-                              <p className="text-xs text-gray-500">{type.desc}</p>
-                            </div>
-                          </label>
-                        </div>
+                        <option key={type.category} value={type.category}>
+                          {type.name}
+                        </option>
                       ))}
-                    </div>
+                    </select>
                   </div>
 
                   {/* Issue Description */}

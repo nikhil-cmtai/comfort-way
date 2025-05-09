@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchUser, updateUser } from '../../features/slices/authSlice';
 import { FiUser, FiMail, FiPhone, FiHome, FiEdit, FiChevronRight, FiSettings, FiShield, FiClock, FiCalendar, FiMapPin, FiTool, FiAward } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import Avatar from '../../components/ui/Avatar';
+import PageHeader from '../../components/ui/PageHeader';
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -353,14 +355,11 @@ const ProfilePage = () => {
   return (
     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen py-10 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <motion.h1 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-700 mb-8"
-        >
-          My Profile
-        </motion.h1>
+        <PageHeader
+          title={user?.displayName ? `Welcome, ${user.displayName}` : 'My Profile'}
+          description="Manage your account, view your service history, and update your details."
+         
+        />
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
@@ -369,66 +368,66 @@ const ProfilePage = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4 }}
-              className="bg-white rounded-xl shadow-md overflow-hidden"
+              className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col h-full"
             >
               <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 text-center">
-                <div className="h-24 w-24 rounded-full mx-auto bg-white/20 backdrop-blur-lg flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                  {user?.displayName ? user.displayName.charAt(0) : 'U'}
-                </div>
-                <h2 className="font-bold text-white text-xl mt-4">{user?.displayName || 'User'}</h2>
+                <Avatar
+                  initials={user?.displayName ? user.displayName.charAt(0) : 'U'}
+                  src={user?.photoURL}
+                  size="lg"
+                  className="mb-2 shadow-lg mx-auto"
+                />
+                <h2 className="font-bold text-white text-xl mt-2">{user?.displayName || 'User'}</h2>
                 <p className="text-blue-100 mt-1">{user?.email || 'No email'}</p>
-                <div className="mt-4 inline-block px-3 py-1 bg-white/20 rounded-full text-xs text-white">
+                <div className="mt-2 inline-block px-3 py-1 bg-white/20 rounded-full text-xs text-white">
                   Premium Member
                 </div>
               </div>
-              
-              <div className="p-4">
+              <div className="border-b border-gray-100 my-2 mx-4"></div>
+              <div className="p-4 flex-1 flex flex-col justify-between">
                 <nav className="space-y-1">
                   <motion.button 
                     whileHover={{ x: 2 }}
                     onClick={() => setActiveTab('profile')}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all ${
                       activeTab === 'profile' 
-                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-medium' 
+                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-medium shadow' 
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     <FiUser className="w-5 h-5" />
                     <span>Profile</span>
                   </motion.button>
-                  
                   <motion.button 
                     whileHover={{ x: 2 }}
                     onClick={() => setActiveTab('services')}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all ${
                       activeTab === 'services' 
-                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-medium' 
+                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-medium shadow' 
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     <FiClock className="w-5 h-5" />
                     <span>Service History</span>
                   </motion.button>
-                  
                   <motion.button 
                     whileHover={{ x: 2 }}
                     onClick={() => setActiveTab('settings')}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all ${
                       activeTab === 'settings' 
-                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-medium' 
+                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-medium shadow' 
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     <FiSettings className="w-5 h-5" />
                     <span>Settings</span>
                   </motion.button>
-                  
                   <motion.button 
                     whileHover={{ x: 2 }}
                     onClick={() => setActiveTab('security')}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all ${
                       activeTab === 'security' 
-                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-medium' 
+                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-medium shadow' 
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
@@ -436,6 +435,14 @@ const ProfilePage = () => {
                     <span>Security</span>
                   </motion.button>
                 </nav>
+                <div className="mt-8">
+                  <button
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-red-600 bg-red-50 hover:bg-red-100 font-medium transition-all"
+                    onClick={() => window.location.href = '/logout'}
+                  >
+                    <FiUser className="w-5 h-5" /> Logout
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>

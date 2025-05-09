@@ -235,7 +235,6 @@ export default function ProtectionPlans() {
         <div className="max-w-5xl mx-auto px-4">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-4">Build Your Custom Protection Plan</h2>
           <p className="text-lg text-gray-600 text-center mb-12 max-w-2xl mx-auto">Select exactly what appliances you need covered and for how long.</p>
-          
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-indigo-200">
             <div className="p-8 md:p-10">
               {/* Duration Selection */}
@@ -262,111 +261,8 @@ export default function ProtectionPlans() {
                   ))}
                 </div>
               </div>
-
-              {/* Appliance Selection */}
-              <div className="mb-10">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">2. Select Your Appliances</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {appliances.map(appliance => (
-                    <div 
-                      key={appliance.category}
-                      className="bg-white border-2 border-gray-100 rounded-xl p-4 flex items-center justify-between hover:border-indigo-200 transition-colors"
-                    >
-                      <div className="flex items-center">
-                        <div className="bg-indigo-100 p-2 rounded-full mr-3">
-                          {appliance.icon}
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-800">{appliance.name}</h4>
-                          <p className="text-sm text-gray-500">₹{appliance.pricePerUnit}/year per unit</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        <button
-                          onClick={() => handleApplianceChange(appliance.category, -1)}
-                          disabled={applianceSelections[appliance.category] === 0}
-                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            applianceSelections[appliance.category] === 0
-                              ? 'bg-gray-100 text-gray-400'
-                              : 'bg-red-100 text-red-500 hover:bg-red-200'
-                          }`}
-                        >
-                          <FiMinus size={16} />
-                        </button>
-                        <span className="w-10 text-center font-bold text-lg">
-                          {applianceSelections[appliance.category]}
-                        </span>
-                        <button
-                          onClick={() => handleApplianceChange(appliance.category, 1)}
-                          className="w-8 h-8 rounded-full bg-green-100 text-green-500 flex items-center justify-center hover:bg-green-200"
-                        >
-                          <FiPlus size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price Summary */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 sm:p-8">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Your Custom Plan Summary</h3>
-                <div className="space-y-2 mb-6">
-                  {Object.entries(applianceSelections).map(([category, quantity]) => {
-                    if (quantity > 0) {
-                      const appliance = appliances.find(a => a.category === category);
-                      return (
-                        <div key={category} className="flex justify-between">
-                          <span className="text-gray-600">{appliance.name} × {quantity}</span>
-                          <span className="font-medium">₹{(appliance.pricePerUnit * quantity).toLocaleString()}</span>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
-                  
-                  {hasSelectedAppliances && (
-                    <>
-                      <div className="flex justify-between pt-2 border-t">
-                        <span className="text-gray-600">Base Price (1 Year)</span>
-                        <span className="font-medium">₹{customPricing.basePrice.toLocaleString()}</span>
-                      </div>
-                      
-                      {selectedDuration.id > 1 && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Duration ({selectedDuration.name})</span>
-                          <span className="font-medium text-green-600">Save {((1 - selectedDuration.multiplier/selectedDuration.id) * 100).toFixed(0)}%</span>
-                        </div>
-                      )}
-                      
-                      <div className="flex justify-between pt-2 border-t">
-                        <span className="text-gray-600">Original Price</span>
-                        <span className="font-medium line-through text-gray-500">₹{customPricing.originalPrice.toLocaleString()}</span>
-                      </div>
-                      
-                      <div className="flex justify-between text-lg">
-                        <span className="font-bold text-gray-800">Final Price</span>
-                        <span className="font-bold text-indigo-600">₹{customPricing.finalPrice.toLocaleString()}</span>
-                      </div>
-                    </>
-                  )}
-                  
-                  {!hasSelectedAppliances && (
-                    <p className="text-gray-500 italic">Please select at least one appliance to see your custom plan pricing.</p>
-                  )}
-                </div>
-                
-                <button
-                  disabled={!hasSelectedAppliances}
-                  className={`w-full py-3 rounded-xl text-white font-bold text-lg shadow-lg ${
-                    hasSelectedAppliances
-                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
-                      : 'bg-gray-300 cursor-not-allowed'
-                  }`}
-                >
-                  Get Your Custom Plan
-                </button>
-              </div>
+              {/* Sexy 2-card custom plan builder */}
+              <CustomPlanSexyBuilder appliances={appliances} selectedDuration={selectedDuration} />
             </div>
           </div>
         </div>
@@ -529,6 +425,117 @@ export default function ProtectionPlans() {
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function CustomPlanSexyBuilder({ appliances, selectedDuration }) {
+  const [selectedAppliance, setSelectedAppliance] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [items, setItems] = useState([]);
+
+  // Add item to right card
+  const handleAdd = () => {
+    if (!selectedAppliance || quantity < 1) return;
+    const existing = items.find(i => i.category === selectedAppliance);
+    let newItems;
+    if (existing) {
+      newItems = items.map(i =>
+        i.category === selectedAppliance ? { ...i, quantity: i.quantity + quantity } : i
+      );
+    } else {
+      const product = appliances.find(a => a.category === selectedAppliance);
+      newItems = [
+        ...items,
+        { category: selectedAppliance, name: product.name, price: product.pricePerUnit, quantity }
+      ];
+    }
+    setItems(newItems);
+    setSelectedAppliance("");
+    setQuantity(1);
+  };
+
+  // Remove item
+  const handleRemove = (cat) => {
+    setItems(items.filter(i => i.category !== cat));
+  };
+
+  // Total
+  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const finalPrice = Math.round(total * selectedDuration.multiplier);
+  const originalPrice = Math.round(total * selectedDuration.multiplier * 1.4);
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Left Card: Select & Add */}
+      <div className="bg-white rounded-2xl shadow-md p-8 flex flex-col justify-center border border-indigo-100">
+        <h4 className="text-lg font-bold text-indigo-700 mb-4">Add Appliance</h4>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Select Appliance</label>
+        <select
+          value={selectedAppliance}
+          onChange={e => setSelectedAppliance(e.target.value)}
+          className="w-full rounded-lg border border-gray-200 py-2 px-3 text-base mb-4 focus:ring-2 focus:ring-indigo-200"
+        >
+          <option value="">-- Select Appliance --</option>
+          {appliances.map(item => (
+            <option key={item.category} value={item.category}>{item.name}</option>
+          ))}
+        </select>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+        <input
+          type="number"
+          min={1}
+          value={quantity}
+          onChange={e => setQuantity(Number(e.target.value))}
+          className="w-full rounded-lg border border-gray-200 py-2 px-3 text-base mb-4 focus:ring-2 focus:ring-indigo-200"
+          placeholder="Enter quantity"
+        />
+        <button
+          className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-2 rounded-lg font-semibold text-lg shadow hover:from-indigo-700 hover:to-blue-700 transition-all duration-200 mt-2"
+          onClick={handleAdd}
+          disabled={!selectedAppliance || quantity < 1}
+        >
+          Add
+        </button>
+      </div>
+      {/* Right Card: Invoice/summary */}
+      <div className="bg-indigo-50 rounded-2xl shadow-inner p-8 flex flex-col border border-indigo-100">
+        <h4 className="text-lg font-bold text-indigo-700 mb-4">Selected Appliances</h4>
+        {items.length === 0 ? (
+          <div className="text-gray-400 text-center py-10">No appliances added yet.</div>
+        ) : (
+          <ul className="mb-4 divide-y divide-indigo-100">
+            {items.map(i => (
+              <li key={i.category} className="flex items-center justify-between py-2 group">
+                <div>
+                  <span className="font-semibold text-gray-800">{i.name}</span>
+                  <span className="ml-2 text-xs text-gray-500">x{i.quantity}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-indigo-700">₹{i.price * i.quantity}</span>
+                  <button
+                    className="ml-2 text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded transition-all border border-transparent hover:border-red-200"
+                    onClick={() => handleRemove(i.category)}
+                  >Remove</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="flex items-center justify-between text-lg font-bold text-indigo-800 border-t pt-3 mt-auto">
+          <span>Total</span>
+          <span>₹{total}</span>
+        </div>
+        <div className="flex items-center justify-between pt-2">
+          <span className="text-gray-600">Original Price</span>
+          <span className="font-medium line-through text-gray-500">₹{originalPrice}</span>
+        </div>
+        <div className="flex items-center justify-between text-lg">
+          <span className="font-bold text-gray-800">Final Price</span>
+          <span className="font-bold text-indigo-600">₹{finalPrice}</span>
+        </div>
+        <button className="mt-6 w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200">Book Custom Plan</button>
+      </div>
     </div>
   );
 } 

@@ -8,7 +8,13 @@ const Sidebar = () => {
   
   const navItems = [
     { label: 'Dashboard', path: '/dashboard', icon: '📊' },
-    { label: 'Customers', path: '/dashboard/customers', icon: '👤' },
+    { label: 'Users', path: '#', icon: '👤',
+      subItems: [
+        { label: 'Users', path: '/dashboard/users', icon: '👤' },
+        { label: 'Roles & Permissions', path: '/dashboard/roles-permissions', icon: '🔒' },
+        { label: 'Customers', path: '/dashboard/customers', icon: '👤' },
+      ]
+     },
     { 
       label: 'Products', 
       path: '/dashboard/products', 
@@ -18,6 +24,7 @@ const Sidebar = () => {
         { label: 'Product List', path: '/dashboard/products', icon: '📋' }
       ]
     },
+    { label: 'Tasks', path: '/dashboard/tasks', icon: '📝' },
     { label: 'Protection Plans', path: '/dashboard/protection-plans', icon: '🔒' },
     { label: 'Maintenance Requests', path: '/dashboard/maintenance-request', icon: '🔧' },
     { label: 'Plans', path: '/dashboard/plans', icon: '💰' },
@@ -34,7 +41,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-gray-100 text-gray-800 h-full w-60 md:w-60 flex-shrink-0 p-6 border-r border-r-gray-200 shadow-md flex flex-col justify-between overflow-y-auto">
+    <div className="bg-gradient-to-br from-blue-50 to-gray-100 text-gray-800 h-full w-64 md:w-64 flex-shrink-0 p-6 border-r border-r-gray-200 shadow-md flex flex-col justify-between overflow-y-auto">
       <div>
         <div className="mb-10">
           <h1 className="text-2xl font-bold text-blue-700 tracking-tight">Comfort Way</h1>

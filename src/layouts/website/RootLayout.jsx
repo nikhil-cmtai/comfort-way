@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Header from './Header/Header';
 import Footer from './Footer/Footer';
 import { FaWhatsapp } from 'react-icons/fa';
+import ScrollToTop from '../../components/home/ScrollToTop';
 
 const RootLayout = () => {
   const whatsappNumber = "919967157463";
@@ -24,6 +25,8 @@ const RootLayout = () => {
       >
         <FaWhatsapp size={28} />
       </a>
+
+      <ScrollToTop />
     </div>
   );
 };
