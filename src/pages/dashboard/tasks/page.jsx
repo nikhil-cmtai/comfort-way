@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import Button from '../../../components/ui/button';
 import Modal from '../../../components/ui/Modal';
 import FormInput from '../../../components/ui/FormInput';
-import Select from '../../../components/ui/Select';
 import Card from '../../../components/ui/Card';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchTaskData, selectTaskData, selectTaskLoading, selectTaskError, deleteTask } from '../../../features/slices/taskSlice';
 
 const USERS_TEAMS = [
   { value: 'john', label: 'John Smith' },

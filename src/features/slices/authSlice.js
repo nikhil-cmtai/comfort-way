@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_BASE_URL;
 
 const authSlice = createSlice({
   name: "auth",
@@ -58,30 +58,18 @@ export const {
   clearAuth,
 } = authSlice.actions;
 
-const setAuthHeader = (token) => {
-  if (token) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  } else {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
-    }
-  }
-};
-
 // Register
 export const register = (userData) => async (dispatch) => {
   dispatch(setIsLoading(true));
   try {
     const newUser = {
       ...userData,
-      role: "user", // always enforce role
+      role: "NpkR5K3M242WKHPdVTTw", // always enforce role
     };
     const res = await axios.post(`${API}/auth/register`, newUser);
     const { token, user } = res.data;
 
     localStorage.setItem("token", token);
-    setAuthHeader(token);
     dispatch(setToken(token));
     dispatch(setUser(user));
     return res.data;
@@ -104,9 +92,7 @@ export const login = (formData) => async (dispatch) => {
   try {
     const res = await axios.post(`${API}/auth/login`, formData);
     const { token, user } = res.data;
-
     localStorage.setItem("token", token);
-    setAuthHeader(token);
     dispatch(setToken(token));
     dispatch(setUser(user));
     return res.data;
@@ -131,7 +117,6 @@ export const loginWithGoogle = (idToken) => async (dispatch) => {
     const { token, user } = res.data;
 
     localStorage.setItem("token", token);
-    setAuthHeader(token);
     dispatch(setToken(token));
     dispatch(setUser(user));
     return res.data;
@@ -151,7 +136,6 @@ export const loginWithGoogle = (idToken) => async (dispatch) => {
 // Fetch User by ID
 export const fetchUser = (userId) => async (dispatch) => {
   dispatch(setIsLoading(true));
-  setAuthHeader();
   try {
     const res = await axios.get(`${API}/auth/users/${userId}`);
     dispatch(setUser(res.data));
@@ -172,7 +156,6 @@ export const fetchUser = (userId) => async (dispatch) => {
 // Get all users (admin only)
 export const getAllUsers = () => async (dispatch) => {
   dispatch(setIsLoading(true));
-  setAuthHeader();
   try {
     const res = await axios.get(`${API}/auth/users`);
     return res.data;
@@ -192,7 +175,6 @@ export const getAllUsers = () => async (dispatch) => {
 // Update user (self or admin)
 export const updateUser = (userId, userData) => async (dispatch) => {
   dispatch(setIsLoading(true));
-  setAuthHeader();
   try {
     const res = await axios.put(`${API}/auth/users/${userId}`, userData);
     dispatch(setUser(res.data));
@@ -213,11 +195,9 @@ export const updateUser = (userId, userData) => async (dispatch) => {
 // Delete user (self or admin)
 export const deleteUser = (userId) => async (dispatch) => {
   dispatch(setIsLoading(true));
-  setAuthHeader();
   try {
     await axios.delete(`${API}/auth/users/${userId}`);
     localStorage.removeItem("token");
-    delete axios.defaults.headers.common["Authorization"];
     dispatch(clearAuth());
     return true;
   } catch (err) {
@@ -236,7 +216,6 @@ export const deleteUser = (userId) => async (dispatch) => {
 // Logout
 export const logout = () => (dispatch) => {
   localStorage.removeItem("token");
-  delete axios.defaults.headers.common["Authorization"];
   dispatch(clearAuth());
 };
 
