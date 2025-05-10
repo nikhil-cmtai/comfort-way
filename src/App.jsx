@@ -4,12 +4,17 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { router } from './routes/router';
 import { store } from './features/store';
 import AuthInitializer from './components/auth/AuthInitializer';
+import Maintenance from './pages/Maintenance';
 
 // Google client ID from environment variables
 // If not available, this will need to be set in the .env file
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const MAINTENANCE_MODE = import.meta.env.VITE_MAINTENANCE === 'true';
 
 function App() {
+  if (MAINTENANCE_MODE) {
+    return <Maintenance />;
+  }
   return (
     <Provider store={store}>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
