@@ -31,6 +31,7 @@ const Signin = () => {
 
       if (res?.token) {
         const role = res?.user?.role;
+        localStorage.setItem("userId", res?.user?.role);
         navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
       } else {
         setLocalError('Invalid email or password');
@@ -48,6 +49,7 @@ const Signin = () => {
         const res = await dispatch(loginWithGoogle(tokenResponse.access_token));
         if (res?.token) {
           const role = res?.user?.role;
+          localStorage.setItem("userId", res?.user?.role);
           navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
         } else {
           setLocalError('Google sign-in failed. Please try again.');

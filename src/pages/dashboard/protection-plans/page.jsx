@@ -1,87 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FiHome, FiUsers, FiZap, FiShield, FiCheck, FiEdit, FiTrash2, FiPlus } from 'react-icons/fi';
+import { FiCheck, FiEdit, FiTrash2, FiPlus } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProtectionData, selectProtectionData, selectProtectionLoading, selectProtectionError } from '../../../features/slices/protectionSlice';
-
-
-  // Sample data for protection plans
-  const plansData = [
-    {
-      id: 1,
-      bhk: '1 BHK',
-      tagline: 'Protect your 1 BHK home with comprehensive coverage',
-      original: 9999,
-      discount: 40,
-      price: 5999,
-      features: [
-        'All appliances covered',
-        'Unlimited repairs',
-        'Free service visits',
-        'Genuine parts guarantee',
-        'Priority support',
-      ],
-      icon: <FiHome className="w-10 h-10 text-indigo-600" />,
-      highlight: false,
-    },
-    {
-      id: 2,
-      bhk: '2 BHK',
-      tagline: 'Protect your 2 BHK home with comprehensive coverage',
-      original: 12999,
-      discount: 40,
-      price: 7799,
-      features: [
-        'All appliances covered',
-        'Unlimited repairs',
-        'Free service visits',
-        'Genuine parts guarantee',
-        'Priority support',
-        'Annual maintenance check',
-      ],
-      icon: <FiUsers className="w-10 h-10 text-blue-600" />,
-      highlight: true, // Most popular
-    },
-    {
-      id: 3,
-      bhk: '3 BHK',
-      tagline: 'Protect your 3 BHK home with comprehensive coverage',
-      original: 15999,
-      discount: 40,
-      price: 9599,
-      features: [
-        'All appliances covered',
-        'Unlimited repairs',
-        'Free service visits',
-        'Genuine parts guarantee',
-        'Priority support',
-        'Annual maintenance check',
-        'AC deep cleaning',
-      ],
-      icon: <FiZap className="w-10 h-10 text-purple-600" />,
-      highlight: false,
-    },
-    {
-      id: 4,
-      bhk: '4 BHK',
-      tagline: 'Protect your 4 BHK home with comprehensive coverage',
-      original: 19999,
-      discount: 40,
-      price: 11999,
-      features: [
-        'All appliances covered',
-        'Unlimited repairs',
-        'Free service visits',
-        'Genuine parts guarantee',
-        'Priority support',
-        'Annual maintenance check',
-        'AC deep cleaning',
-        'Dedicated relationship manager',
-      ],
-      icon: <FiShield className="w-10 h-10 text-yellow-500" />,
-      highlight: false,
-    }
-  ];
-
+import { fetchProtectionData, selectProtectionData, selectProtectionLoading, selectProtectionError, addProtectionPlan, editProtectionPlan, deleteProtectionPlan } from '../../../features/slices/protectionSlice';
 
 const ProtectionPlans = () => {
   const dispatch = useDispatch();
@@ -92,10 +12,6 @@ const ProtectionPlans = () => {
   // State management
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [plans, setPlans] = useState(plansData);
-
-  // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -107,14 +23,13 @@ const ProtectionPlans = () => {
     original: 0,
     discount: 0,
     price: 0,
-    features: [],
+    features: [''],
     highlight: false
   });
 
   useEffect(() => {
     dispatch(fetchProtectionData());  
   }, [dispatch]);
-
 
   // Form handlers and modal functions
   const openAddModal = () => {
@@ -193,45 +108,35 @@ const ProtectionPlans = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      if (isAddModalOpen) {
-        const newPlan = {
-          ...formData,
-          id: plans.length + 1,
-          icon: <FiHome className="w-10 h-10 text-indigo-600" />
-        };
-        setPlans([...plans, newPlan]);
-      } else if (isEditModalOpen && selectedPlan) {
-        const updatedPlans = plans.map(plan => 
-          plan.id === selectedPlan.id ? 
-          { ...plan, ...formData, icon: plan.icon } : 
-          plan
-        );
-        setPlans(updatedPlans);
-      }
-      closeAllModals();
-    }, 1500);
+    if (isAddModalOpen) {
+      dispatch(addProtectionPlan(formData)).then(() => {
+        setIsSubmitting(false);
+        closeAllModals();
+        dispatch(fetchProtectionData());
+      });
+    } else if (isEditModalOpen && selectedPlan) {
+      dispatch(editProtectionPlan({ id: selectedPlan.id, ...formData })).then(() => {
+        setIsSubmitting(false);
+        closeAllModals();
+        dispatch(fetchProtectionData());
+      });
+    }
   };
 
   const handleDelete = () => {
     setIsSubmitting(true);
-
-    // Simulate API call for delete
-    setTimeout(() => {
-      const updatedPlans = plans.filter(plan => plan.id !== selectedPlan.id);
-      setPlans(updatedPlans);
+    dispatch(deleteProtectionPlan(selectedPlan.id)).then(() => {
+      setIsSubmitting(false);
       closeAllModals();
-    }, 1500);
+      dispatch(fetchProtectionData());
+    });
   };
 
   // Filter plans based on search term
-  const filteredPlans = plans.filter(plan =>
-    plan.bhk.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    plan.features.some(feature => feature.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredPlans = (protectionData || []).filter(plan =>
+    (plan.bhk || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (plan.features || []).some(feature => (feature || '').toLowerCase().includes(searchTerm.toLowerCase()))
   );
-
 
   if (isLoading) {
     return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
@@ -254,8 +159,6 @@ const ProtectionPlans = () => {
     </div>;
   }
 
-  console.log(protectionData);
-  
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="mb-6">
@@ -315,7 +218,7 @@ const ProtectionPlans = () => {
       </div>
 
       {/* Protection Plans Display */}
-      {loading ? (
+      {isLoading ? (
         <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
@@ -328,11 +231,7 @@ const ProtectionPlans = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredPlans.map(plan => (
                 <div key={plan.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full">
-                  <div className={`w-full p-4 flex items-center justify-center ${plan.highlight ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                    <div className="w-16 h-16 flex items-center justify-center">
-                      {plan.icon}
-                    </div>
-                  </div>
+                  <div className={`w-full p-4 flex items-center justify-center ${plan.highlight ? 'bg-blue-100' : 'bg-gray-100'}`}></div>
                   <div className="p-4 flex-grow flex flex-col">
                     <div className="flex justify-between items-center mb-2">
                       <h3 className="font-semibold text-gray-800">{plan.bhk}</h3>
@@ -394,10 +293,7 @@ const ProtectionPlans = () => {
                       <tr key={plan.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center">
-                              {plan.icon}
-                            </div>
-                            <div className="ml-4">
+                            <div className="ml-0">
                               <div className="text-sm font-medium text-gray-900">{plan.bhk}</div>
                             </div>
                           </div>

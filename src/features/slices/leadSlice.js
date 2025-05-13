@@ -46,7 +46,7 @@ export const fetchLeadData = () => async (dispatch) => {
     const response = await axios.get(
       import.meta.env.VITE_BASE_URL + "/leads/getAllLeads",
     );
-    dispatch(setLeadData(response.data.data));
+    dispatch(setLeadData(response.data));
   } catch (error) {
     dispatch(setLeadError(error.message));
   }
@@ -59,11 +59,25 @@ export const fetchLeadById = (leadId) => async (dispatch) => {
     const response = await axios.get(
       import.meta.env.VITE_BASE_URL + `/leads/getLeadById/${leadId}`,
     );
-    dispatch(setSelectedLead(response.data.data));
+    dispatch(setSelectedLead(response.data));
   } catch (error) {
     dispatch(setLeadError(error.message));
   }
 };
+
+// Fetch all leads by user ID
+export const fetchLeadsByUserId = (userId) => async (dispatch) => {
+  dispatch(setLeadLoading());
+  try {
+    const response = await axios.get(
+      import.meta.env.VITE_BASE_URL + `/leads/getLeadsByUserId/${userId}`,
+    );
+    dispatch(setLeadData(response.data));
+  } catch (error) {
+    dispatch(setLeadError(error.message));
+  }
+};
+
 
 // Add a new customer
 export const addLead = (newLead) => async (dispatch) => {

@@ -39,33 +39,46 @@ export const {
 } = taskSlice.actions;
 
 
-// Fetch all customers
+// Fetch all tasks
 export const fetchTaskData = () => async (dispatch) => {
   dispatch(setTaskLoading());
   try {
     const response = await axios.get(
       import.meta.env.VITE_BASE_URL + "/tasks/getAllTasks",
     );
-    dispatch(setTaskData(response.data.data));
+    dispatch(setTaskData(response.data));
   } catch (error) {
     dispatch(setTaskError(error.message));
   }
 };
 
-// Fetch customer by ID
+// Fetch task by ID
 export const fetchTaskById = (taskId) => async (dispatch) => {
   dispatch(setTaskLoading());
   try {
     const response = await axios.get(
       import.meta.env.VITE_BASE_URL + `/tasks/getTaskById/${taskId}`,
     );
-    dispatch(setSelectedTask(response.data.data));
+    dispatch(setSelectedTask(response.data));
   } catch (error) {
     dispatch(setTaskError(error.message));
   }
 };
 
-// Add a new customer
+// Fetch all tasks by user ID
+export const fetchTasksByUserId = (userId) => async (dispatch) => {
+  dispatch(setTaskLoading());
+  try {
+    const response = await axios.get(
+      import.meta.env.VITE_BASE_URL + `/tasks/getTasksByUserId/${userId}`,
+    );
+    dispatch(setTaskData(response.data));
+  } catch (error) {
+    dispatch(setTaskError(error.message));
+  }
+};
+
+// Add a new task
 export const addTask = (newTask) => async (dispatch) => {
   try {
     const response = await axios.post(
@@ -80,7 +93,7 @@ export const addTask = (newTask) => async (dispatch) => {
   }
 };
 
-// Edit a customer
+// Edit a task
 export const editTask = (taskId, updatedData) => async (dispatch) => {
   try {
     await axios.put(
@@ -123,7 +136,7 @@ export const bulkAssignTask = (taskIds = [], status = []) => async (dispatch) =>
   }
 };
 
-// Delete a customer
+// Delete a task
 export const deleteTask = (taskId) => async (dispatch) => {
   try {
     await axios.delete(

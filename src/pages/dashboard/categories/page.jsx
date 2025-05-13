@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCategoryData, selectCategoryData, selectCategoryLoading, selectCategoryError } from '../../../features/slices/categorySlice';
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
 
 const Categories = () => {
     const dispatch = useDispatch();
     const categories = useSelector(selectCategoryData);
+    const role = useSelector(selectSelectedRole);
     const loading = useSelector(selectCategoryLoading);
     const error = useSelector(selectCategoryError);
 
@@ -19,14 +21,16 @@ const Categories = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        description: '',
-        image: null
+        desc: '',
+        img: null
     });
     const [imagePreview, setImagePreview] = useState(null);
+    const roleId = localStorage.getItem('role');
+
 
     // Form handlers and modal functions
     const openAddModal = () => {
-        setFormData({ name: '', description: '', image: null });
+        setFormData({ name: '', desc: '', img: null });
         setImagePreview(null);
         setIsAddModalOpen(true);
     };
@@ -35,10 +39,10 @@ const Categories = () => {
         setSelectedCategory(category);
         setFormData({
             name: category.name,
-            description: category.description,
-            image: null
+            desc: category.desc,
+            img: null
         });
-        setImagePreview(category.image);
+        setImagePreview(category.img);
         setIsEditModalOpen(true);
     };
 
@@ -108,22 +112,16 @@ const Categories = () => {
         dispatch(fetchCategoryData());
     }, [dispatch]);
 
-    // Sample categories data
-    const categoriesData = [
-        { id: 1, name: 'Air Conditioners', description: 'Cooling solutions for homes and offices', productsCount: 15, image: '/images/categories/air-conditioners.jpg' },
-        { id: 2, name: 'Refrigerators', description: 'Keep food fresh and cool', productsCount: 12, image: '/images/categories/refrigerators.jpg' },
-        { id: 3, name: 'Washing Machines', description: 'Automatic and semi-automatic washing solutions', productsCount: 8, image: '/images/categories/washing-machines.jpg' },
-        { id: 4, name: 'Dishwashers', description: 'Efficient cleaning for your dishes', productsCount: 6, image: '/images/categories/dishwashers.jpg' },
-        { id: 5, name: 'Ovens', description: 'Baking and cooking appliances', productsCount: 9, image: '/images/categories/ovens.jpg' },
-        { id: 6, name: 'Stoves', description: 'Cooking solutions for your kitchen', productsCount: 7, image: '/images/categories/stoves.jpg' },
-        { id: 7, name: 'Water Heaters', description: 'Hot water solutions for your home', productsCount: 5, image: '/images/categories/water-heaters.jpg' },
-        { id: 8, name: 'Chimneys', description: 'Kitchen ventilation systems', productsCount: 4, image: '/images/categories/chimneys.jpg' },
-    ];
+    useEffect(() => {
+        if (roleId) {
+            dispatch(fetchRoleById(roleId));
+        }
+    }, [dispatch, roleId]);
 
-    // Filter categories based on search term
-    const filteredCategories = categoriesData.filter(category =>
-        category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        category.description.toLowerCase().includes(searchTerm.toLowerCase())
+    // Use Redux categories data for filtering
+    const filteredCategories = (categories || []).filter(category =>
+        (category.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (category.desc || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     if (loading) {
@@ -147,7 +145,7 @@ const Categories = () => {
         </div>;
     }
 
-    console.log(categories);
+    const permissions = role?.permissions;
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
@@ -186,6 +184,7 @@ const Categories = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                                 </svg>
                             </button>
+                            {/* {canAdd && ( */}
                             <button
                                 className={`p-1 rounded ${viewMode === 'list' ? 'bg-white text-blue-600 border border-blue-200' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
                                 onClick={() => setViewMode('list')}
@@ -194,6 +193,7 @@ const Categories = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
                             </button>
+                            {/* )} */}
                         </div>
 
                         <button
@@ -215,12 +215,12 @@ const Categories = () => {
                     {filteredCategories.map(category => (
                         <div key={category.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full">
                             <div className="relative">
-                                <div className="w-full h-40 bg-gray-200 flex items-center justify-center">
-                                    {category.image ? (
+                                <div className="w-full h-40 flex items-center justify-center">
+                                    {category.img ? (
                                         <img
-                                            src={category.image}
+                                            src={category.img}
                                             alt={category.name}
-                                            className="w-full h-40 object-cover"
+                                            className="w-auto h-40 object-fit mx-auto"
                                         />
                                     ) : (
                                         <svg className="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -231,12 +231,7 @@ const Categories = () => {
                             </div>
                             <div className="p-4 flex-grow flex flex-col">
                                 <h3 className="font-semibold text-gray-800 mb-1">{category.name}</h3>
-                                <p className="text-sm text-gray-500 mb-3 line-clamp-2">{category.description}</p>
-                                <div className="flex justify-between items-center mt-auto mb-4">
-                                    <span className="text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
-                                        {category.productsCount} Products
-                                    </span>
-                                </div>
+                                <p className="text-sm text-gray-500 mb-3 line-clamp-2">{category.desc}</p>
                                 <div className="flex gap-2 mt-auto">
                                     <button
                                         className="flex-1 text-blue-600 bg-blue-50 hover:bg-blue-100 py-2 rounded"
@@ -266,9 +261,6 @@ const Categories = () => {
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Description
                                 </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Products
-                                </th>
                                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Actions
                                 </th>
@@ -280,8 +272,8 @@ const Categories = () => {
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <div className="h-10 w-10 flex-shrink-0 bg-gray-200 rounded-md flex items-center justify-center">
-                                                {category.image ? (
-                                                    <img className="h-10 w-10 rounded-md object-cover" src={category.image} alt={category.name} />
+                                                {category.img ? (
+                                                    <img className="h-10 w-10 rounded-md object-cover" src={category.img} alt={category.name} />
                                                 ) : (
                                                     <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
@@ -294,12 +286,7 @@ const Categories = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="text-sm text-gray-900 max-w-xs truncate">{category.description}</div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            {category.productsCount}
-                                        </span>
+                                        <div className="text-sm text-gray-900 max-w-xs truncate">{category.desc}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button
@@ -374,8 +361,8 @@ const Categories = () => {
                                             Description
                                         </label>
                                         <textarea
-                                            name="description"
-                                            value={formData.description}
+                                            name="desc"
+                                            value={formData.desc}
                                             onChange={handleInputChange}
                                             rows="3"
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -504,12 +491,12 @@ const Categories = () => {
                                             Description
                                         </label>
                                         <textarea
-                                            name="description"
-                                            value={formData.description}
+                                            name="desc"
+                                            value={formData.desc}
                                             onChange={handleInputChange}
                                             rows="3"
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            placeholder="Enter category description"
+                                            placeholder="Enter category description "
                                         ></textarea>
                                     </div>
 

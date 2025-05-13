@@ -1,36 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Sidebar = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const role = useSelector(selectSelectedRole);
   const [hovered, setHovered] = useState(null);
   const [expandedItem, setExpandedItem] = useState(null);
   
+  const roleId = localStorage.getItem('role');
+
+  useEffect(() => {
+    if (roleId) {
+      dispatch(fetchRoleById(roleId));
+    }
+  }, [dispatch, roleId]);
+
+  const permissions = role?.permissions;
+
   const navItems = [
-    { label: 'Dashboard', path: '/dashboard', icon: '📊' },
-    { label: 'Users', path: '#', icon: '👤',
+    { label: 'Dashboard', path: '/dashboard', icon: '📊', module: 'dashboard' },
+    { label: 'Users', path: '#', icon: '👤', module: 'users',
       subItems: [
-        { label: 'Users', path: '/dashboard/users', icon: '👤' },
-        { label: 'Roles & Permissions', path: '/dashboard/roles-permissions', icon: '🔒' },
-        { label: 'Customers', path: '/dashboard/customers', icon: '👤' },
+        { label: 'Users', path: '/dashboard/users', icon: '👤', module: 'users' },
+        { label: 'Roles & Permissions', path: '/dashboard/roles-permissions', icon: '🔒', module: 'roles' },
+        { label: 'Customers', path: '/dashboard/customers', icon: '👤', module: 'customers' },
       ]
      },
     { 
       label: 'Products', 
       path: '/dashboard/products', 
       icon: '📦',
+      module: 'products',
       subItems: [
-        { label: 'Categories', path: '/dashboard/products/categories', icon: '🏷️' },
-        { label: 'Product List', path: '/dashboard/products', icon: '📋' }
+        { label: 'Categories', path: '/dashboard/products/categories', icon: '🏷️', slug: 'product-categories', module: 'product categories' },
+        { label: 'Product List', path: '/dashboard/products', icon: '📋', slug: 'products', module: 'product list' }
       ]
     },
-    { label: 'Tasks', path: '/dashboard/tasks', icon: '📝' },
-    { label: 'Protection Plans', path: '/dashboard/protection-plans', icon: '🔒' },
-    { label: 'Maintenance Requests', path: '/dashboard/maintenance-request', icon: '🔧' },
-    { label: 'Plans', path: '/dashboard/plans', icon: '💰' },
-    { label: 'Leads', path: '/dashboard/leads', icon: '👥' },
-    { label: 'Logout', path: '/logout', icon: '🚪' },
+    { label: 'Tasks', path: '/dashboard/tasks', icon: '📝', module: 'tasks' },
+    { label: 'Protection Plans', path: '/dashboard/protection-plans', icon: '🔒', module: 'protection plans' },
+    { label: 'Maintenance Requests', path: '/dashboard/maintenance-request', icon: '🔧', module: 'maintenance requests' },
+    { label: 'Plans', path: '/dashboard/plans', icon: '💰', module: 'plans' },
+    { label: 'Leads', path: '/dashboard/leads', icon: '👥', module: 'leads' },
+    { label: 'Logout', path: '/logout', icon: '🚪', module: 'logout' },
   ];
+
+  // Filter navItems based on permissions
+  const normalize = str => str.toLowerCase().replace(/\s|_/g, '');
+  const canRead = (module) => {
+    if (!permissions) return false;
+    return permissions.some(
+      (perm) =>
+        normalize(perm.module) === normalize(module) &&
+        (perm.read === true || perm.read === 'true')
+    );
+  };
+
+  // Filter navItems and subItems, but always include Dashboard and Logout
+  const dashboardItem = navItems.find(item => item.module === 'dashboard');
+  const logoutItem = navItems.find(item => item.module === 'logout');
+  const filteredNavItems = [
+    dashboardItem,
+    ...navItems
+      .filter(item => item.module !== 'dashboard' && item.module !== 'logout')
+      .map(item => {
+        if (item.subItems) {
+          const filteredSub = item.subItems.filter(sub => canRead(sub.module));
+          if (filteredSub.length > 0) {
+            return { ...item, subItems: filteredSub };
+          }
+          return null;
+        } else {
+          return canRead(item.module) ? item : null;
+        }
+      })
+      .filter(Boolean),
+    logoutItem
+  ].filter(Boolean);
 
   const toggleExpand = (path) => {
     if (expandedItem === path) {
@@ -50,7 +98,7 @@ const Sidebar = () => {
         
         <nav>
           <ul className="space-y-3">
-            {navItems.map((item) => {
+            {filteredNavItems.map((item) => {
               const isActive = location.pathname === item.path;
               const isHovered = hovered === item.path;
               const isExpanded = expandedItem === item.path;

@@ -10,88 +10,65 @@ import Avatar from '../../../components/ui/Avatar';
 import Modal from '../../../components/ui/Modal';
 import FormInput from '../../../components/ui/FormInput';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchLeadData, selectLeadData, selectLeadLoading, selectLeadError } from '../../../features/slices/leadSlice';
+import { fetchLeadData, selectLeadData, selectLeadLoading, selectLeadError, addLead, editLead } from '../../../features/slices/leadSlice';
+import { fetchUserData, selectUserData } from '../../../features/slices/userSlice';
 
 const Leads = () => {
   const dispatch = useDispatch();
-  const leads = useSelector(selectLeadData);
+  const leads = useSelector(selectLeadData) || [];
+  const users = useSelector(selectUserData) || [];
   const loading = useSelector(selectLeadLoading);
   const error = useSelector(selectLeadError);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [sortBy, setSortBy] = useState('newest');
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [currentLead, setCurrentLead] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     service: '',
-    status: 'New'
+    status: 'New',
+    notes: '',
+    assignee: '',
   });
+  const [noteInput, setNoteInput] = useState('');
+  const [assignInput, setAssignInput] = useState('');
 
   useEffect(() => {
     dispatch(fetchLeadData());
+    dispatch(fetchUserData());
   }, [dispatch]);
 
-  // Sample leads data
-  const [leadsData, setLeadsData] = useState([
-    { id: 1, name: 'John Smith', email: 'john.smith@example.com', phone: '(123) 456-7890', service: 'AC Installation', status: 'New', date: '2023-10-25' },
-    { id: 2, name: 'Emily Johnson', email: 'emily.j@example.com', phone: '(234) 567-8901', service: 'Refrigerator Repair', status: 'Contacted', date: '2023-10-24' },
-    { id: 3, name: 'Michael Brown', email: 'mbrown@example.com', phone: '(345) 678-9012', service: 'Washing Machine', status: 'Qualified', date: '2023-10-23' },
-    { id: 4, name: 'Sarah Wilson', email: 'sarah.w@example.com', phone: '(456) 789-0123', service: 'Dishwasher', status: 'New', date: '2023-10-22' },
-    { id: 5, name: 'David Miller', email: 'dmiller@example.com', phone: '(567) 890-1234', service: 'Microwave Repair', status: 'Contacted', date: '2023-10-21' },
-    { id: 6, name: 'Jessica Davis', email: 'jdavis@example.com', phone: '(678) 901-2345', service: 'Oven Installation', status: 'Qualified', date: '2023-10-20' },
-    { id: 7, name: 'Thomas Martinez', email: 'tmartinez@example.com', phone: '(789) 012-3456', service: 'Water Heater', status: 'Contacted', date: '2023-10-19' },
-    { id: 8, name: 'Jennifer Taylor', email: 'jtaylor@example.com', phone: '(890) 123-4567', service: 'AC Repair', status: 'New', date: '2023-10-18' },
-  ]);
-
   // Filter leads based on search term and filter status
-  const filteredLeads = leadsData.filter(lead => {
-    const matchesSearch = lead.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         lead.service.toLowerCase().includes(searchTerm.toLowerCase());
-    
+  const filteredLeads = leads.filter(lead => {
+    const name = lead.name || '';
+    const email = lead.email || '';
+    const service = lead.service || '';
+    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         service.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || lead.status === filterStatus;
-    
     return matchesSearch && matchesStatus;
   });
 
-  // Sort leads
-  const sortedLeads = [...filteredLeads].sort((a, b) => {
-    if (sortBy === 'newest') {
-      return new Date(b.date) - new Date(a.date);
-    } else if (sortBy === 'oldest') {
-      return new Date(a.date) - new Date(b.date);
-    } else if (sortBy === 'name') {
-      return a.name.localeCompare(b.name);
-    }
-    return 0;
-  });
+  // Pagination logic
+  const totalLeads = filteredLeads.length;
+  const totalPages = Math.ceil(totalLeads / pageSize);
+  const paginatedLeads = filteredLeads.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  useEffect(() => { setCurrentPage(1); }, [searchTerm, filterStatus, leads]);
 
-  // Status filter options
-  const statusOptions = [
-    { value: 'all', label: 'All Status' },
-    { value: 'New', label: 'New' },
-    { value: 'Contacted', label: 'Contacted' },
-    { value: 'Qualified', label: 'Qualified' }
-  ];
-
-  // Sort options
-  const sortOptions = [
-    { value: 'newest', label: 'Newest First' },
-    { value: 'oldest', label: 'Oldest First' },
-    { value: 'name', label: 'Name A-Z' }
-  ];
-  
   // Service options for the form
   const serviceOptions = [
     { value: 'AC Installation', label: 'AC Installation' },
@@ -103,87 +80,96 @@ const Leads = () => {
     { value: 'Oven Installation', label: 'Oven Installation' },
     { value: 'Water Heater', label: 'Water Heater' }
   ];
-  
+
+  // Status filter options
+  const statusOptions = [
+    { value: 'all', label: 'All Status' },
+    { value: 'New', label: 'New' },
+    { value: 'Contacted', label: 'Contacted' },
+    { value: 'Qualified', label: 'Qualified' }
+  ];
+
+
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
-  // Open add modal
+
+  // Add Lead Modal
   const openAddModal = () => {
     setFormData({
       name: '',
       email: '',
       phone: '',
       service: '',
-      status: 'New'
+      status: 'New',
+      notes: '',
+      assignee: '',
     });
     setIsAddModalOpen(true);
   };
-  
-  // Open edit modal and set current lead data
+
+  // Edit Lead Modal (status, notes, assignee)
   const openEditModal = (lead) => {
     setCurrentLead(lead);
     setFormData({
       status: lead.status,
+      notes: lead.notes || '',
+      assignee: lead.assignee || '',
     });
     setIsEditModalOpen(true);
   };
-  
-  // Open delete modal
-  const openDeleteModal = (lead) => {
+
+  // Add Note Modal
+  const openNoteModal = (lead) => {
     setCurrentLead(lead);
-    setIsDeleteModalOpen(true);
+    setNoteInput('');
+    setIsNoteModalOpen(true);
   };
-  
+
+  // Assign Modal
+  const openAssignModal = (lead) => {
+    setCurrentLead(lead);
+    setAssignInput(lead.assignee || '');
+    setIsAssignModalOpen(true);
+  };
+
   // Add a new lead
-  const handleAddLead = (e) => {
+  const handleAddLead = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      const newLead = {
-        id: Math.max(0, ...leadsData.map(lead => lead.id)) + 1,
-        ...formData,
-        date: new Date().toISOString().split('T')[0]
-      };
-      
-      setLeadsData([newLead, ...leadsData]);
-      setIsSubmitting(false);
-      setIsAddModalOpen(false);
-    }, 1000);
+    await dispatch(addLead({ ...formData, notes: formData.notes ? [formData.notes] : [] }));
+    setIsSubmitting(false);
+    setIsAddModalOpen(false);
   };
-  
-  // Update an existing lead
-  const handleUpdateLead = (e) => {
+
+  // Update status/notes/assignee
+  const handleUpdateLead = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      const updatedLeads = leadsData.map(lead => 
-        lead.id === currentLead.id ? { ...lead, status: formData.status } : lead
-      );
-      
-      setLeadsData(updatedLeads);
-      setIsSubmitting(false);
-      setIsEditModalOpen(false);
-    }, 1000);
+    await dispatch(editLead(currentLead._id || currentLead.id, formData));
+    setIsSubmitting(false);
+    setIsEditModalOpen(false);
   };
-  
-  // Delete a lead
-  const handleDeleteLead = () => {
+
+  // Add note to lead
+  const handleAddNote = async (e) => {
+    e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      const updatedLeads = leadsData.filter(lead => lead.id !== currentLead.id);
-      setLeadsData(updatedLeads);
-      setIsSubmitting(false);
-      setIsDeleteModalOpen(false);
-    }, 1000);
+    const notes = Array.isArray(currentLead.notes) ? [...currentLead.notes, noteInput] : [noteInput];
+    await dispatch(editLead(currentLead._id || currentLead.id, { ...currentLead, notes }));
+    setIsSubmitting(false);
+    setIsNoteModalOpen(false);
+  };
+
+  // Assign lead
+  const handleAssign = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    await dispatch(editLead(currentLead._id || currentLead.id, { ...currentLead, assignee: assignInput }));
+    setIsSubmitting(false);
+    setIsAssignModalOpen(false);
   };
 
   if (loading) {
@@ -193,9 +179,8 @@ const Leads = () => {
             <p className="mt-3 text-gray-600">Loading leads...</p>
         </div>
     </div>;
-}
-
-if (error) {
+  }
+  if (error) {
     return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
         <div className="text-center bg-red-100 rounded-xl p-6 max-w-md">
             <svg className="mx-auto h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -205,7 +190,7 @@ if (error) {
             <p className="mt-1 text-red-600">{error}</p>
         </div>
     </div>;
-}
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -221,18 +206,11 @@ if (error) {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        
         <FilterBar.Group>
           <Select
             options={statusOptions}
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-          />
-          
-          <Select
-            options={sortOptions}
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
           />
         </FilterBar.Group>
       </FilterBar>
@@ -243,32 +221,22 @@ if (error) {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Service
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignee</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {sortedLeads.map((lead) => (
-                <tr key={lead.id} className="hover:bg-gray-50">
+              {paginatedLeads.map((lead) => (
+                <tr key={lead._id || lead.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <Avatar initials={lead.name.charAt(0)} />
+                      <Avatar initials={(lead.name || '').charAt(0)} />
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">{lead.name}</div>
                       </div>
@@ -284,74 +252,76 @@ if (error) {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <StatusBadge status={lead.status} />
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{ASSIGNEE_OPTIONS.find(a => a.value === lead.assignee)?.label || 'Unassigned'}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-xs text-gray-700 max-w-xs truncate">
+                      {(Array.isArray(lead.notes) ? lead.notes.join('; ') : lead.notes) || ''}
+                    </div>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(lead.date).toLocaleDateString()}
+                    {lead.date ? new Date(lead.date).toLocaleDateString() : ''}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end items-center space-x-2">
-                      <Button 
-                        variant="primary" 
-                        size="sm"
-                        onClick={() => openEditModal(lead)}
-                        aria-label="Edit status"
-                      >
-                        Edit
-                      </Button>
-                      <Button 
-                        variant="danger" 
-                        size="sm"
-                        onClick={() => openDeleteModal(lead)}
-                        aria-label="Delete lead"
-                      >
-                        Delete
-                      </Button>
+                      <Button variant="primary" size="sm" onClick={() => openEditModal(lead)} aria-label="Edit status">Edit</Button>
+                      <Button variant="outline" size="sm" onClick={() => openNoteModal(lead)} aria-label="Add note">Add Note</Button>
+                      <Button variant="outline" size="sm" onClick={() => openAssignModal(lead)} aria-label="Assign">Assign</Button>
                     </div>
                   </td>
                 </tr>
               ))}
+              {paginatedLeads.length === 0 && (
+                <tr>
+                  <td colSpan="8" className="px-6 py-10 text-center text-gray-500">No leads found matching your filters.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
-        
         {/* Pagination */}
-        <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <Button variant="outline" size="sm">Previous</Button>
-            <Button variant="outline" size="sm">Next</Button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">1</span> to <span className="font-medium">{sortedLeads.length}</span> of <span className="font-medium">{leadsData.length}</span> results
-              </p>
+        {totalLeads > pageSize && (
+          <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
+            <div className="flex-1 flex justify-between sm:hidden">
+              <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button>
+              <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next</Button>
             </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                <Button variant="outline" className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                  <span className="sr-only">Previous</span>
-                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </Button>
-                <Button variant="outline" className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                  1
-                </Button>
-                <Button variant="primary" className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600 hover:bg-blue-100">
-                  2
-                </Button>
-                <Button variant="outline" className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                  3
-                </Button>
-                <Button variant="outline" className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                  <span className="sr-only">Next</span>
-                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                  </svg>
-                </Button>
-              </nav>
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{(totalLeads === 0 ? 0 : (currentPage - 1) * pageSize + 1)}</span> to <span className="font-medium">{Math.min(currentPage * pageSize, totalLeads)}</span> of <span className="font-medium">{totalLeads}</span> leads
+                </p>
+              </div>
+              <div>
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <Button variant="outline" className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
+                    <span className="sr-only">Previous</span>
+                    <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </Button>
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <Button
+                      key={i + 1}
+                      variant={currentPage === i + 1 ? 'primary' : 'outline'}
+                      className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium"
+                      onClick={() => setCurrentPage(i + 1)}
+                    >
+                      {i + 1}
+                    </Button>
+                  ))}
+                  <Button variant="outline" className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
+                    <span className="sr-only">Next</span>
+                    <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </Button>
+                </nav>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </Card>
 
       {/* Add Lead Modal */}
@@ -372,7 +342,6 @@ if (error) {
           required
           className="bg-white"
         />
-        
         <FormInput
           label="Email"
           id="email"
@@ -383,7 +352,6 @@ if (error) {
           required
           className="bg-white"
         />
-        
         <FormInput
           label="Phone"
           id="phone"
@@ -393,7 +361,6 @@ if (error) {
           required
           className="bg-white"
         />
-        
         <FormInput.Select
           label="Service"
           id="service"
@@ -404,63 +371,116 @@ if (error) {
           required
           className="bg-white"
         />
-        
         <FormInput.Select
           label="Status"
           id="status"
           name="status"
-          options={[
-            { value: 'New', label: 'New' },
-            { value: 'Contacted', label: 'Contacted' },
-            { value: 'Qualified', label: 'Qualified' }
-          ]}
+          options={statusOptions.slice(1)}
           value={formData.status}
           onChange={handleInputChange}
           required
           className="bg-white"
         />
+        <FormInput.Select
+          label="Assignee"
+          id="assignee"
+          name="assignee"
+          options={users.map(user => ({ value: user._id, label: user.name }))}
+          value={formData.assignee}
+          onChange={handleInputChange}
+          className="bg-white"
+        />
+        <FormInput
+          label="Notes"
+          id="notes"
+          name="notes"
+          value={formData.notes}
+          onChange={handleInputChange}
+          className="bg-white"
+          type="textarea"
+        />
       </Modal.Form>
 
-      {/* Edit Lead Modal */}
+      {/* Edit Lead Modal (status, notes, assignee) */}
       <Modal.Form
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        title={`Edit Status: ${currentLead?.name}`}
+        title={`Edit Lead: ${currentLead?.name}`}
         onSubmit={handleUpdateLead}
-        submitText="Update Status"
+        submitText="Update Lead"
+        isLoading={isSubmitting}
+      >
+        <FormInput.Select
+          label="Status"
+          id="edit-status"
+          name="status"
+          options={statusOptions.slice(1)}
+          value={formData.status}
+          onChange={handleInputChange}
+          required
+          className="bg-white"
+        />
+        <FormInput.Select
+          label="Assignee"
+          id="edit-assignee"
+          name="assignee"
+          options={users.map(user => ({ value: user._id, label: user.name }))}
+          value={formData.assignee}
+          onChange={handleInputChange}
+          className="bg-white"
+        />
+        <FormInput
+          label="Notes"
+          id="edit-notes"
+          name="notes"
+          value={formData.notes}
+          onChange={handleInputChange}
+          className="bg-white"
+          type="textarea"
+        />
+      </Modal.Form>
+
+      {/* Add Note Modal */}
+      <Modal.Form
+        isOpen={isNoteModalOpen}
+        onClose={() => setIsNoteModalOpen(false)}
+        onSubmit={handleAddNote}
+        title={`Add Note: ${currentLead?.name}`}
+        submitText="Add Note"
         isLoading={isSubmitting}
         size="sm"
       >
-        <div className="py-4">
-          <FormInput.Select
-            label="Status"
-            id="edit-status"
-            name="status"
-            options={[
-              { value: 'New', label: 'New' },
-              { value: 'Contacted', label: 'Contacted' },
-              { value: 'Qualified', label: 'Qualified' }
-            ]}
-            value={formData.status}
-            onChange={handleInputChange}
-            required
-            className="bg-white"
-          />
-        </div>
+        <FormInput
+          label="Note"
+          id="note-input"
+          name="note-input"
+          value={noteInput}
+          onChange={e => setNoteInput(e.target.value)}
+          className="bg-white"
+          type="textarea"
+        />
       </Modal.Form>
 
-      {/* Delete Confirmation Modal */}
-      <Modal.Confirm
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={handleDeleteLead}
-        title="Delete Lead"
-        message={`Are you sure you want to delete ${currentLead?.name}? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
-        variant="danger"
+      {/* Assign Modal */}
+      <Modal.Form
+        isOpen={isAssignModalOpen}
+        onClose={() => setIsAssignModalOpen(false)}
+        onSubmit={handleAssign}
+        title={`Assign Lead: ${currentLead?.name}`}
+        submitText="Assign"
         isLoading={isSubmitting}
-      />
+        size="sm"
+      >
+        <FormInput.Select
+          label="Assignee"
+          id="assign-input"
+          name="assign-input"
+          options={users.map(user => ({ value: user._id, label: user.name }))}
+          value={assignInput}
+          onChange={e => setAssignInput(e.target.value)}
+          className="bg-white"
+        />
+      </Modal.Form>
     </div>
   );
 };

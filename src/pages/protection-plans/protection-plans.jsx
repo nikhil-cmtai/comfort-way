@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { FiShield, FiCheckSquare, FiDollarSign, FiTool, FiHome, FiZap, FiUsers, FiPlus, FiMinus, FiAirplay, FiRefreshCw } from 'react-icons/fi';
+import { FiShield, FiCheckSquare, FiTool, FiHome, FiZap, FiUsers, FiAirplay, FiDollarSign } from 'react-icons/fi';
 import protectionBanner from '/images/products/protectionBanner.webp';
+import Select from '../../components/ui/Select';
 
 // Predefined plans
 const bhkPlans = [
@@ -433,31 +434,52 @@ function CustomPlanSexyBuilder({ appliances, selectedDuration }) {
   const [selectedAppliance, setSelectedAppliance] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [items, setItems] = useState([]);
+  const [requestType, setRequestType] = useState("");
+
+  // Request type options with prices
+  const requestTypeOptions = [
+    { value: '', label: '-- Select Request Type --', price: 0 },
+    { value: 'service', label: 'Service', price: 499 },
+    { value: 'repair', label: 'Repair', price: 599 },
+    { value: 'installation', label: 'Installation', price: 1699 },
+    { value: 'uninstallation', label: 'Uninstallation', price: 599 },
+    { value: 'amc', label: 'AMC', price: 2499 },
+  ];
+
+  // Appliance options for Select
+  const applianceOptions = [
+    { value: '', label: '-- Select Appliance --' },
+    ...appliances.map(item => ({ value: item.category, label: item.name }))
+  ];
 
   // Add item to right card
   const handleAdd = () => {
-    if (!selectedAppliance || quantity < 1) return;
-    const existing = items.find(i => i.category === selectedAppliance);
+    if (!selectedAppliance || quantity < 1 || !requestType) return;
+    const reqTypeObj = requestTypeOptions.find(opt => opt.value === requestType);
+    const existing = items.find(i => i.category === selectedAppliance && i.requestType === requestType);
     let newItems;
     if (existing) {
       newItems = items.map(i =>
-        i.category === selectedAppliance ? { ...i, quantity: i.quantity + quantity } : i
+        i.category === selectedAppliance && i.requestType === requestType
+          ? { ...i, quantity: i.quantity + quantity }
+          : i
       );
     } else {
       const product = appliances.find(a => a.category === selectedAppliance);
       newItems = [
         ...items,
-        { category: selectedAppliance, name: product.name, price: product.pricePerUnit, quantity }
+        { category: selectedAppliance, name: product.name, quantity, requestType, requestTypeLabel: reqTypeObj.label, price: reqTypeObj.price }
       ];
     }
     setItems(newItems);
     setSelectedAppliance("");
     setQuantity(1);
+    setRequestType("");
   };
 
   // Remove item
-  const handleRemove = (cat) => {
-    setItems(items.filter(i => i.category !== cat));
+  const handleRemove = (cat, reqType) => {
+    setItems(items.filter(i => !(i.category === cat && i.requestType === reqType)));
   };
 
   // Total
@@ -471,16 +493,19 @@ function CustomPlanSexyBuilder({ appliances, selectedDuration }) {
       <div className="bg-white rounded-2xl shadow-md p-8 flex flex-col justify-center border border-indigo-100">
         <h4 className="text-lg font-bold text-indigo-700 mb-4">Add Appliance</h4>
         <label className="block text-sm font-medium text-gray-700 mb-2">Select Appliance</label>
-        <select
+        <Select
           value={selectedAppliance}
           onChange={e => setSelectedAppliance(e.target.value)}
           className="w-full rounded-lg border border-gray-200 py-2 px-3 text-base mb-4 focus:ring-2 focus:ring-indigo-200"
-        >
-          <option value="">-- Select Appliance --</option>
-          {appliances.map(item => (
-            <option key={item.category} value={item.category}>{item.name}</option>
-          ))}
-        </select>
+          options={applianceOptions}
+        />
+        <label className="block text-sm font-medium text-gray-700 mb-2">Request Type</label>
+        <Select
+          value={requestType}
+          onChange={e => setRequestType(e.target.value)}
+          className="w-full rounded-lg border border-gray-200 py-2 px-3 text-base mb-4 focus:ring-2 focus:ring-indigo-200"
+          options={requestTypeOptions.map(opt => ({ ...opt, label: opt.label + (opt.price ? ` (₹${opt.price})` : '') }))}
+        />
         <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
         <input
           type="number"
@@ -493,7 +518,7 @@ function CustomPlanSexyBuilder({ appliances, selectedDuration }) {
         <button
           className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-2 rounded-lg font-semibold text-lg shadow hover:from-indigo-700 hover:to-blue-700 transition-all duration-200 mt-2"
           onClick={handleAdd}
-          disabled={!selectedAppliance || quantity < 1}
+          disabled={!selectedAppliance || quantity < 1 || !requestType}
         >
           Add
         </button>
@@ -506,16 +531,17 @@ function CustomPlanSexyBuilder({ appliances, selectedDuration }) {
         ) : (
           <ul className="mb-4 divide-y divide-indigo-100">
             {items.map(i => (
-              <li key={i.category} className="flex items-center justify-between py-2 group">
+              <li key={i.category + i.requestType} className="flex items-center justify-between py-2 group">
                 <div>
                   <span className="font-semibold text-gray-800">{i.name}</span>
                   <span className="ml-2 text-xs text-gray-500">x{i.quantity}</span>
+                  <span className="ml-2 text-xs text-indigo-500 bg-indigo-100 rounded px-2 py-0.5">{i.requestTypeLabel} (₹{i.price})</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-indigo-700">₹{i.price * i.quantity}</span>
                   <button
                     className="ml-2 text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded transition-all border border-transparent hover:border-red-200"
-                    onClick={() => handleRemove(i.category)}
+                    onClick={() => handleRemove(i.category, i.requestType)}
                   >Remove</button>
                 </div>
               </li>

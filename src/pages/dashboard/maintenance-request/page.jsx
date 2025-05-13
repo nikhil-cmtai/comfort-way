@@ -4,7 +4,12 @@ import { fetchMaintenanceRequestData, selectMaintenanceRequestData, selectMainte
 
 const MaintenanceRequest = () => {
   const dispatch = useDispatch();
-  const maintenanceRequests = useSelector(selectMaintenanceRequestData);
+  const maintenanceData = useSelector(selectMaintenanceRequestData) || {
+    pending: [],
+    inProgress: [],
+    completed: [],
+    cancelled: []
+  };
   const loading = useSelector(selectMaintenanceRequestLoading);
   const error = useSelector(selectMaintenanceRequestError);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -12,26 +17,6 @@ const MaintenanceRequest = () => {
   useEffect(() => {
     dispatch(fetchMaintenanceRequestData());
   }, [dispatch]);
-
-  console.log(maintenanceRequests);
-
-  const maintenanceData = {
-    pending: [
-      { id: 1, customer: 'John Smith', service: 'AC Repair', priority: 'High', date: '2023-10-24', address: '123 Main St, Apt 4B, New York', phone: '(123) 456-7890', description: 'AC not cooling properly, making strange noises when turned on.' },
-      { id: 2, customer: 'Emily Johnson', service: 'Refrigerator Service', priority: 'Medium', date: '2023-10-23', address: '456 Oak Ave, Chicago, IL', phone: '(234) 567-8901', description: 'Refrigerator not maintaining temperature and ice maker not working.' },
-    ],
-    inProgress: [
-      { id: 3, customer: 'Michael Brown', service: 'Washing Machine', priority: 'Low', date: '2023-10-22', address: '789 Pine St, Miami, FL', phone: '(345) 678-9012', description: 'Washing machine leaking water during spin cycle.' },
-      { id: 4, customer: 'Sarah Wilson', service: 'Dishwasher', priority: 'Medium', date: '2023-10-21', address: '321 Elm Rd, Seattle, WA', phone: '(456) 789-0123', description: 'Dishwasher not draining properly after cycle completes.' },
-    ],
-    completed: [
-      { id: 5, customer: 'David Miller', service: 'Microwave Repair', priority: 'Low', date: '2023-10-20', address: '654 Maple Dr, Boston, MA', phone: '(567) 890-1234', description: 'Microwave turntable not rotating and interior light not working.' },
-      { id: 6, customer: 'Jessica Davis', service: 'Oven Installation', priority: 'High', date: '2023-10-19', address: '987 Cedar Ln, Austin, TX', phone: '(678) 901-2345', description: 'Need new oven installed and old one removed.' },
-    ],
-    cancelled: [
-      { id: 7, customer: 'Thomas Martinez', service: 'Water Heater', priority: 'High', date: '2023-10-18', address: '246 Birch Blvd, Denver, CO', phone: '(789) 012-3456', description: 'Water heater not providing hot water and making popping sounds.' },
-    ]
-  };
 
   const getPriorityBadgeClass = (priority) => {
     switch(priority) {
@@ -43,17 +28,23 @@ const MaintenanceRequest = () => {
   };
 
   // Filter data based on active filter
-  const filteredData = activeFilter === 'all' 
-    ? { ...maintenanceData } 
-    : { [activeFilter]: maintenanceData[activeFilter] };
+  const filteredData = (() => {
+    if (activeFilter === 'all') {
+      return { ...maintenanceData };
+    } else if (maintenanceData[activeFilter]) {
+      return { [activeFilter]: maintenanceData[activeFilter] };
+    } else {
+      return {};
+    }
+  })();
 
-  // Calculate counts
+  // Calculate counts safely
   const counts = {
     all: Object.values(maintenanceData).flat().length,
-    pending: maintenanceData.pending.length,
-    inProgress: maintenanceData.inProgress.length,
-    completed: maintenanceData.completed.length,
-    cancelled: maintenanceData.cancelled.length
+    pending: (maintenanceData.pending || []).length,
+    inProgress: (maintenanceData.inProgress || []).length,
+    completed: (maintenanceData.completed || []).length,
+    cancelled: (maintenanceData.cancelled || []).length
   };
 
   // Get column title
@@ -69,24 +60,22 @@ const MaintenanceRequest = () => {
 
   if (loading) {
     return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-            <p className="mt-3 text-gray-600">Loading maintenance requests...</p>
-        </div>
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+        <p className="mt-3 text-gray-600">Loading maintenance requests...</p>
+      </div>
     </div>;
-}
+  }
 
-if (error) {
+  if (error) {
     return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
-        <div className="text-center bg-red-100 rounded-xl p-6 max-w-md">
-            <svg className="mx-auto h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h2 className="mt-2 text-lg font-semibold text-red-800">Error</h2>
-            <p className="mt-1 text-red-600">{error}</p>
-        </div>
+      <div className="text-center bg-red-100 rounded-xl p-6 max-w-md">
+        <div className="mx-auto h-12 w-12 text-red-500 flex items-center justify-center text-3xl font-bold">!</div>
+        <h2 className="mt-2 text-lg font-semibold text-red-800">Error</h2>
+        <p className="mt-1 text-red-600">{error}</p>
+      </div>
     </div>;
-}
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -108,7 +97,6 @@ if (error) {
           <span>All</span>
           <span className="bg-white bg-opacity-90 text-xs px-2 py-1 rounded-full">{counts.all}</span>
         </button>
-
         <button 
           className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
             activeFilter === 'pending' 
@@ -120,7 +108,6 @@ if (error) {
           <span>Pending</span>
           <span className="bg-white bg-opacity-90 text-xs px-2 py-1 rounded-full">{counts.pending}</span>
         </button>
-
         <button 
           className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
             activeFilter === 'inProgress' 
@@ -132,7 +119,6 @@ if (error) {
           <span>In Progress</span>
           <span className="bg-white bg-opacity-90 text-xs px-2 py-1 rounded-full">{counts.inProgress}</span>
         </button>
-
         <button 
           className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
             activeFilter === 'completed' 
@@ -144,7 +130,6 @@ if (error) {
           <span>Completed</span>
           <span className="bg-white bg-opacity-90 text-xs px-2 py-1 rounded-full">{counts.completed}</span>
         </button>
-
         <button 
           className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
             activeFilter === 'cancelled' 
@@ -156,13 +141,9 @@ if (error) {
           <span>Cancelled</span>
           <span className="bg-white bg-opacity-90 text-xs px-2 py-1 rounded-full">{counts.cancelled}</span>
         </button>
-
         <div className="ml-auto">
           <button className="bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 px-4 rounded-lg transition-colors flex items-center gap-1 border border-blue-200">
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            New Request
+            + New Request
           </button>
         </div>
       </div>
@@ -182,10 +163,9 @@ if (error) {
                 <span className="bg-white text-xs px-2 py-1 rounded-full shadow-sm">{requests.length}</span>
               </h2>
             </div>
-            
             <div className="p-3 max-h-[calc(100vh-260px)] overflow-y-auto">
               <div className="space-y-3">
-                {requests.map(request => (
+                {(requests && requests.length > 0) ? requests.map(request => (
                   <div key={request.id} className="bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow p-4">
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="font-semibold text-gray-800">{request.service}</h3>
@@ -193,38 +173,31 @@ if (error) {
                         {request.priority}
                       </span>
                     </div>
-                    
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">{request.description}</p>
-                    
                     <div className="flex items-center mb-3">
                       <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium text-sm">
-                        {request.customer.charAt(0)}
+                        {request.customer?.charAt(0) || '?'}
                       </div>
                       <div className="ml-2">
-                        <div className="text-sm font-medium">{request.customer}</div>
-                        <div className="text-xs text-gray-500">{request.phone}</div>
+                        <div className="text-sm font-medium">{request.customer || 'Unknown'}</div>
+                        <div className="text-xs text-gray-500">{request.phone || '-'}</div>
                       </div>
                     </div>
-                    
                     <div className="text-xs text-gray-500 flex justify-between items-center pt-2 border-t">
-                      <span>{new Date(request.date).toLocaleDateString()}</span>
+                      <span>{request.date ? new Date(request.date).toLocaleDateString() : '-'}</span>
                       <div className="flex gap-2">
                         <button className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded">Edit</button>
                         <button className="text-gray-600 bg-gray-50 hover:bg-gray-100 px-2 py-1 rounded">Details</button>
                       </div>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <div className="h-12 w-12 mx-auto text-gray-300 mb-3 flex items-center justify-center text-3xl">—</div>
+                    <p>No requests in this status</p>
+                  </div>
+                )}
               </div>
-              
-              {requests.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  <svg className="h-12 w-12 mx-auto text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                  <p>No requests in this status</p>
-                </div>
-              )}
             </div>
           </div>
         ))}

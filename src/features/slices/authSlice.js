@@ -216,6 +216,7 @@ export const deleteUser = (userId) => async (dispatch) => {
 // Logout
 export const logout = () => (dispatch) => {
   localStorage.removeItem("token");
+  localStorage.removeItem("userId");
   dispatch(clearAuth());
 };
 

@@ -40,7 +40,7 @@ const RolePermissionsPage = () => {
   const router = useNavigate();
 
   const handleEdit = (id) => {
-    router(`/dashboard/role-permissions/${id}`);
+    router(`/dashboard/roles-permissions/${id}`);
   };
 
   const openDeleteModal = (role) => {

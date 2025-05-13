@@ -7,6 +7,8 @@ const Header = () => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false); // For desktop dropdown
   const userDropdownRef = useRef(null); // For dropdown
   const devicePlansRef = useRef(null); // Ref for mega menu area
+  const role = localStorage.getItem("role");
+  const token = localStorage.getItem("token");
 
   const devicePlans = [
     { name: 'AC', path: '/maintenance-repair/ac', new: true },
@@ -26,16 +28,14 @@ const Header = () => {
     { name: 'About Us', path: '/about' },
   ];
 
-
-
   const legals = [
     { name: 'Privacy Policy', path: '/privacy-policy' },
     { name: 'Terms of Service', path: '/terms-of-service' },
   ];
 
   const userDropdownItems = [
-    { name: 'Sign In/Sign Up', path: '/sign-in' },
-    { name: 'My Profile', path: '/sign-in' },
+    { name: role && token ? 'Sign Out' : 'Sign In/Sign Up', path: role && token ? '/sign-in' : '/sign-in', signOut: !!(role && token) },
+    { name: 'My Profile', path: '/profile' },
     { name: 'Raise Service Request', path: '/raise-request' },
     { name: 'Help & Support', path: '/contact' },
   ];
@@ -141,7 +141,7 @@ const Header = () => {
             onClick={() => setIsUserDropdownOpen((open) => !open)}
           >
             <User className="mr-2 h-5 w-5 text-indigo-600" />
-            Sign In/Up
+            {role && token ? "Sign Out" : "Sign In/Up"}
           </button>
 
           {/* User Dropdown (all screens) */}
@@ -161,7 +161,14 @@ const Header = () => {
                       to={item.path}
                       className={`block px-4 py-2 text-sm ${item.separator ? 'text-gray-500' : 'text-gray-700'} hover:bg-gray-100 hover:text-gray-900`}
                       role="menuitem"
-                      onClick={() => setIsUserDropdownOpen(false)}
+                      onClick={() => {
+                        setIsUserDropdownOpen(false);
+                        if (item.signOut) {
+                          localStorage.removeItem('role');
+                          localStorage.removeItem('token');
+                          window.location.href = '/sign-in';
+                        }
+                      }}
                     >
                       {item.name}
                     </Link>

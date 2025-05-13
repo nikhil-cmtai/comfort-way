@@ -1,14 +1,29 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchStats, selectStats} from '../../features/slices/statSlice';
+import { FiUsers, FiList, FiBox, FiShield, FiShoppingCart, FiUserCheck, FiRepeat, FiTool, FiClipboard } from 'react-icons/fi';
+
+const statMeta = {
+  categories:      { label: 'Categories',      icon: <FiList />,         color: 'bg-blue-100 text-blue-600' },
+  maintenances:    { label: 'Maintenances',    icon: <FiTool />,         color: 'bg-green-100 text-green-600' },
+  products:        { label: 'Products',        icon: <FiBox />,          color: 'bg-purple-100 text-purple-600' },
+  protectionPlans: { label: 'Protection Plans',icon: <FiShield />,       color: 'bg-yellow-100 text-yellow-600' },
+  purchasedPlans:  { label: 'Purchased Plans', icon: <FiShoppingCart />, color: 'bg-pink-100 text-pink-600' },
+  roles:           { label: 'Roles',           icon: <FiUserCheck />,    color: 'bg-indigo-100 text-indigo-600' },
+  serviceHistory:  { label: 'Service History', icon: <FiRepeat />,       color: 'bg-orange-100 text-orange-600' },
+  services:        { label: 'Services',        icon: <FiClipboard />,    color: 'bg-teal-100 text-teal-600' },
+  tasks:           { label: 'Tasks',           icon: <FiClipboard />,    color: 'bg-red-100 text-red-600' },
+  users:           { label: 'Users',           icon: <FiUsers />,        color: 'bg-gray-100 text-gray-600' },
+};
 
 const Dashboard = () => {
-  // Sample data for the dashboard
-  const stats = [
-    { id: 1, title: 'Total Leads', value: '248', change: '+12%', icon: '👥', color: 'bg-blue-500' },
-    { id: 2, title: 'Maintenance Requests', value: '32', change: '+5%', icon: '🔧', color: 'bg-amber-500' },
-    { id: 3, title: 'Products', value: '156', change: '+8%', icon: '📦', color: 'bg-green-500' },
-    { id: 4, title: 'Revenue', value: '$12,420', change: '+18%', icon: '💰', color: 'bg-purple-500' },
-  ];
+  const dispatch = useDispatch();
+  const stats = useSelector(selectStats);
+
+  useEffect(() => {
+    dispatch(fetchStats());
+  }, [dispatch]);
 
   const recentRequests = [
     { id: 1, name: 'John Smith', service: 'AC Repair', date: '24 Oct', status: 'Pending' },
@@ -16,6 +31,7 @@ const Dashboard = () => {
     { id: 3, name: 'Michael Davis', service: 'Washing Machine', date: '20 Oct', status: 'In Progress' },
     { id: 4, name: 'Sarah Wilson', service: 'Dishwasher Installation', date: '18 Oct', status: 'Completed' },
   ];
+  
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -25,24 +41,28 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat) => (
-          <div key={stat.id} className="bg-white rounded-xl shadow-sm p-6 transition-all hover:shadow-md">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h2 className="text-sm text-gray-500 font-medium">{stat.title}</h2>
-                <p className="text-2xl font-bold text-gray-800 mt-1">{stat.value}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {stats && Object.entries(stats)
+          .filter(([key]) => key !== 'roles' && key !== 'tasks')
+          .map(([key, value]) => {
+            const meta = statMeta[key] || { label: key.charAt(0).toUpperCase() + key.slice(1), icon: <FiBox />, color: 'bg-blue-100 text-blue-600' };
+            return (
+              <div
+                key={key}
+                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between border border-gray-100 hover:shadow-2xl hover:scale-105 transition-all duration-200"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <div>
+                    <h2 className="text-md font-semibold text-gray-600">{meta.label}</h2>
+                    <p className="text-3xl font-extrabold text-gray-900 mt-2">{value}</p>
+                  </div>
+                  <div className={`w-12 h-12 flex items-center justify-center rounded-xl ${meta.color} text-2xl`}>
+                    {meta.icon}
+                  </div>
+                </div>
               </div>
-              <div className={`${stat.color} text-white p-3 rounded-lg`}>
-                <span className="text-xl">{stat.icon}</span>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <span className="text-green-500 text-sm font-medium">{stat.change}</span>
-              <span className="text-gray-400 text-xs ml-2">vs last month</span>
-            </div>
-          </div>
-        ))}
+            );
+          })}
       </div>
 
       {/* Charts and Recent Activity */}
@@ -105,13 +125,15 @@ const Dashboard = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-gray-500">{request.date}</p>
-                  <span className={`text-xs px-2 py-1 rounded-full inline-block mt-1 
+                  <span className={
+                    `text-xs px-2 py-1 rounded-full inline-block mt-1 
                     ${request.status === 'Completed' 
                       ? 'bg-green-100 text-green-600' 
                       : request.status === 'Pending' 
                         ? 'bg-amber-100 text-amber-600'
                         : 'bg-blue-100 text-blue-600'
-                    }`}>
+                    }`
+                  }>
                     {request.status}
                   </span>
                 </div>
@@ -125,5 +147,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-    

@@ -1,18 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '../../../components/ui/button';
 import Modal from '../../../components/ui/Modal';
 import FormInput from '../../../components/ui/FormInput';
 import Card from '../../../components/ui/Card';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTaskData, selectTaskData, selectTaskLoading, selectTaskError, deleteTask } from '../../../features/slices/taskSlice';
+import { fetchTaskData, selectTaskData, selectTaskLoading, selectTaskError, addTask, editTask, deleteTask } from '../../../features/slices/taskSlice';
+import { fetchUserData, selectUserData } from '../../../features/slices/userSlice';
 
-const USERS_TEAMS = [
-  { value: 'john', label: 'John Smith' },
-  { value: 'emily', label: 'Emily Johnson' },
-  { value: 'tech', label: 'Tech Solutions Team' },
-  { value: 'sarah', label: 'Sarah Wilson' },
-  { value: 'green', label: 'Green Meadows Team' },
-];
 
 const STATUS_OPTIONS = [
   { value: 'todo', label: 'To Do' },
@@ -20,8 +14,19 @@ const STATUS_OPTIONS = [
   { value: 'done', label: 'Done' },
 ];
 
+const PRIORITY_OPTIONS = [
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'High' },
+];
+
 const TasksPage = () => {
-  const [tasks, setTasks] = useState([]);
+  const dispatch = useDispatch();
+  const tasks = useSelector(selectTaskData);
+  const users = useSelector(selectUserData);
+  const loading = useSelector(selectTaskLoading);
+  const error = useSelector(selectTaskError);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,16 +37,17 @@ const TasksPage = () => {
     assignee: '',
     status: 'todo',
     dueDate: '',
+    priority: 'medium',
   });
+
+  useEffect(() => {
+    dispatch(fetchTaskData());
+    dispatch(fetchUserData());
+  }, [dispatch]);
 
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Handle select changes
-  const handleSelectChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -53,6 +59,7 @@ const TasksPage = () => {
       assignee: '',
       status: 'todo',
       dueDate: '',
+      priority: 'medium',
     });
     setIsModalOpen(true);
   };
@@ -66,44 +73,42 @@ const TasksPage = () => {
       assignee: task.assignee,
       status: task.status,
       dueDate: task.dueDate,
+      priority: task.priority || 'medium',
     });
     setIsEditModalOpen(true);
   };
 
   // Add task
-  const handleAddTask = (e) => {
+  const handleAddTask = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setTasks([
-        {
-          id: Date.now(),
-          ...formData,
-        },
-        ...tasks,
-      ]);
-      setIsSubmitting(false);
-      setIsModalOpen(false);
-    }, 500);
+    await dispatch(addTask(formData));
+    setIsSubmitting(false);
+    setIsModalOpen(false);
   };
 
   // Update task
-  const handleUpdateTask = (e) => {
+  const handleUpdateTask = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setTasks(tasks.map((task) =>
-        task.id === currentTask.id ? { ...task, ...formData } : task
-      ));
-      setIsSubmitting(false);
-      setIsEditModalOpen(false);
-    }, 500);
+    await dispatch(editTask(currentTask._id || currentTask.id, formData));
+    setIsSubmitting(false);
+    setIsEditModalOpen(false);
   };
 
   // Delete task
-  const handleDeleteTask = (taskId) => {
-    setTasks(tasks.filter((task) => task.id !== taskId));
+  const handleDeleteTask = async (taskId) => {
+    setIsSubmitting(true);
+    await dispatch(deleteTask(taskId));
+    setIsSubmitting(false);
   };
+
+  if (loading) {
+    return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">Loading tasks...</div>;
+  }
+  if (error) {
+    return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center text-red-600">{error}</div>;
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -120,6 +125,7 @@ const TasksPage = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignee</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -127,24 +133,25 @@ const TasksPage = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {tasks.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="px-6 py-10 text-center text-gray-500">
+                  <td colSpan="7" className="px-6 py-10 text-center text-gray-500">
                     No tasks found. Create your first task!
                   </td>
                 </tr>
               )}
               {tasks.map((task) => (
-                <tr key={task.id} className="hover:bg-gray-50">
+                <tr key={task._id || task.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">{task.title}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{task.description}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {USERS_TEAMS.find(u => u.value === task.assignee)?.label || task.assignee}
+                    {users.find(u => u.id === task.assignee)?.name || task.assignee}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap capitalize">{STATUS_OPTIONS.find(s => s.value === task.status)?.label}</td>
+                  <td className="px-6 py-4 whitespace-nowrap capitalize">{PRIORITY_OPTIONS.find(p => p.value === (task.priority || 'medium'))?.label}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{task.dueDate}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end items-center space-x-2">
                       <Button variant="primary" size="sm" onClick={() => openEditModal(task)}>Edit</Button>
-                      <Button variant="danger" size="sm" onClick={() => handleDeleteTask(task.id)}>Delete</Button>
+                      <Button variant="danger" size="sm" onClick={() => handleDeleteTask(task._id || task.id)}>Delete</Button>
                     </div>
                   </td>
                 </tr>
@@ -191,12 +198,13 @@ const TasksPage = () => {
             onChange={handleInputChange}
             required
             className="bg-white md:col-span-2"
+            type="textarea"
           />
           <FormInput.Select
             label="Assignee"
             id="add-assignee"
             name="assignee"
-            options={USERS_TEAMS}
+            options={users.map(user => ({ value: user.id, label: user.name }))}
             value={formData.assignee}
             onChange={handleInputChange}
             required
@@ -208,6 +216,16 @@ const TasksPage = () => {
             name="status"
             options={STATUS_OPTIONS}
             value={formData.status}
+            onChange={handleInputChange}
+            required
+            className="bg-white"
+          />
+          <FormInput.Select
+            label="Priority"
+            id="add-priority"
+            name="priority"
+            options={PRIORITY_OPTIONS}
+            value={formData.priority}
             onChange={handleInputChange}
             required
             className="bg-white"
@@ -252,12 +270,13 @@ const TasksPage = () => {
             onChange={handleInputChange}
             required
             className="bg-white md:col-span-2"
+            type="textarea"
           />
           <FormInput.Select
             label="Assignee"
             id="edit-assignee"
             name="assignee"
-            options={USERS_TEAMS}
+            options={users.map(user => ({ value: user.id, label: user.name }))}
             value={formData.assignee}
             onChange={handleInputChange}
             required
@@ -269,6 +288,16 @@ const TasksPage = () => {
             name="status"
             options={STATUS_OPTIONS}
             value={formData.status}
+            onChange={handleInputChange}
+            required
+            className="bg-white"
+          />
+          <FormInput.Select
+            label="Priority"
+            id="edit-priority"
+            name="priority"
+            options={PRIORITY_OPTIONS}
+            value={formData.priority}
             onChange={handleInputChange}
             required
             className="bg-white"

@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import RootLayout from '../layouts/website/RootLayout';
 import ProtectedRoute from './protectedRoute';
+import { Navigate } from 'react-router-dom';
 
 // Import your page components here
 import Home from '../pages/home/home';
@@ -96,8 +97,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'profile',
-        // element: <ProtectedRoute><ProfilePage /></ProtectedRoute>,
-        element: <ProfilePage />,
+        element: (
+          <ProtectedRoute>
+            {localStorage.getItem('role') === 'NpkR5K3M242WKHPdVTTw' ? <ProfilePage /> : <Navigate to="/sign-in" replace />}
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'maintenance-repair/:product',
@@ -162,7 +166,7 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute><RolePermissions /></ProtectedRoute>,
       },
       {
-        path: 'role-permissions/:id',
+        path: 'roles-permissions/:id',
         element: <ProtectedRoute><EditRole /></ProtectedRoute>,
       },
     ],

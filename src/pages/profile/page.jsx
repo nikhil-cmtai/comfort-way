@@ -1,37 +1,51 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchUser, updateUser } from '../../features/slices/authSlice';
-import { FiUser, FiMail, FiPhone, FiHome, FiEdit, FiChevronRight, FiSettings, FiShield, FiClock, FiCalendar, FiMapPin, FiTool, FiAward } from 'react-icons/fi';
+import { FiUser, FiMail, FiPhone, FiEdit, FiChevronRight, FiSettings, FiShield, FiClock, FiCalendar, FiMapPin, FiTool, FiAward, FiCreditCard } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import Avatar from '../../components/ui/Avatar';
 import PageHeader from '../../components/ui/PageHeader';
+import { fetchUserById, selectSelectedUser } from '../../features/slices/userSlice';
+import {fetchServiceHistoriesByUserId, selectServiceHistoryData, selectServiceHistoryError, selectServiceHistoryLoading} from '../../features/slices/serviceHistorySlice';
+import { fetchPurchasedPlansByUserId, selectSelectedPurchasedPlan, selectPurchasedPlanError, selectPurchasedPlanLoading } from '../../features/slices/purchasedPlanSlice';
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
-  const { user, isLoading } = useSelector((state) => state.auth);
+  const selectedUser = useSelector(selectSelectedUser);
+  const serviceHistory = useSelector(selectServiceHistoryData);
+  const isLoading = useSelector(selectServiceHistoryLoading);
+  const purchasedPlan = useSelector(selectSelectedPurchasedPlan);
+  const purchasedPlanLoading = useSelector(selectPurchasedPlanLoading);
+  const purchasedPlanError = useSelector(selectPurchasedPlanError);
+  const error = useSelector(selectServiceHistoryError);
   const [isEditing, setIsEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
     phoneNumber: '',
     address: ''
   });
-  const [activeTab, setActiveTab] = useState('profile');
 
   useEffect(() => {
-    dispatch(fetchUser());
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      dispatch(fetchUserById(userId));
+      dispatch(fetchServiceHistoriesByUserId(userId));
+      dispatch(fetchPurchasedPlansByUserId(userId));
+    }
   }, [dispatch]);
 
+
   useEffect(() => {
-    if (user) {
+    if (selectedUser) {
       setFormData({
-        displayName: user.displayName || '',
-        email: user.email || '',
-        phoneNumber: user.phoneNumber || '',
-        address: user.address || ''
+        displayName: selectedUser.name || '',
+        email: selectedUser.email || '',
+        phoneNumber: selectedUser.phoneNumber || '',
+        address: selectedUser.address || ''
       });
     }
-  }, [user]);
+  }, [selectedUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,42 +61,25 @@ const ProfilePage = () => {
     setIsEditing(false);
   };
 
-  // Mock service history data (this would come from an API in a real app)
-  const serviceHistory = [
-    {
-      id: '1',
-      service: 'AC Repair',
-      date: '2023-12-15',
-      status: 'Completed',
-      technician: 'John Smith',
-      details: 'Fixed compressor and replaced filter',
-      image: 'https://images.unsplash.com/photo-1615876234886-fd9a39fda97f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTh8fGFpcmNvbmRpdGlvbmVyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60'
-    },
-    {
-      id: '2',
-      service: 'Refrigerator Maintenance',
-      date: '2024-02-20',
-      status: 'Completed',
-      technician: 'Sarah Johnson',
-      details: 'Regular maintenance and cleaning',
-      image: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cmVmcmlnZXJhdG9yfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60'
-    },
-    {
-      id: '3',
-      service: 'Washing Machine Repair',
-      date: '2024-04-10',
-      status: 'In Progress',
-      technician: 'Mike Davis',
-      details: 'Replacing motor belt',
-      image: 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8d2FzaGluZyUyMG1hY2hpbmV8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
-    }
-  ];
-
-  // Stats for dashboard view
   const stats = [
-    { id: 1, name: 'Total Services', value: '7', icon: <FiTool className="h-6 w-6" /> },
-    { id: 2, name: 'Active Requests', value: '1', icon: <FiClock className="h-6 w-6" /> },
-    { id: 3, name: 'Completed', value: '6', icon: <FiAward className="h-6 w-6" /> }
+    {
+      id: 1,
+      name: 'Total Services',
+      value: serviceHistory.length,
+      icon: <FiTool className="h-6 w-6" />
+    },
+    {
+      id: 2,
+      name: 'Completed Services',
+      value: serviceHistory.filter(service => service.status == 'completed').length,
+      icon: <FiAward className="h-6 w-6" />
+    },
+    {
+      id: 3,
+      name: 'In Progress',
+      value: serviceHistory.filter(service => service.status == 'in-progress').length,
+      icon: <FiClock className="h-6 w-6" />
+    }
   ];
 
   if (isLoading) {
@@ -125,7 +122,7 @@ const ProfilePage = () => {
             </span>
             <div className="flex-1">
               <p className="text-sm text-gray-500 mb-1">Full Name</p>
-              <p className="font-medium text-gray-900 text-lg">{user?.displayName || 'Not provided'}</p>
+              <p className="font-medium text-gray-900 text-lg">{selectedUser?.name || 'Not provided'}</p>
             </div>
           </div>
 
@@ -135,7 +132,7 @@ const ProfilePage = () => {
             </span>
             <div className="flex-1">
               <p className="text-sm text-gray-500 mb-1">Email</p>
-              <p className="font-medium text-gray-900 text-lg">{user?.email || 'Not provided'}</p>
+              <p className="font-medium text-gray-900 text-lg">{selectedUser?.email || 'Not provided'}</p>
             </div>
           </div>
 
@@ -145,7 +142,7 @@ const ProfilePage = () => {
             </span>
             <div className="flex-1">
               <p className="text-sm text-gray-500 mb-1">Phone</p>
-              <p className="font-medium text-gray-900 text-lg">{user?.phoneNumber || 'Not provided'}</p>
+              <p className="font-medium text-gray-900 text-lg">{selectedUser?.phoneNumber || 'Not provided'}</p>
             </div>
           </div>
 
@@ -155,7 +152,7 @@ const ProfilePage = () => {
             </span>
             <div className="flex-1">
               <p className="text-sm text-gray-500 mb-1">Address</p>
-              <p className="font-medium text-gray-900 text-lg">{user?.address || 'Not provided'}</p>
+              <p className="font-medium text-gray-900 text-lg">{selectedUser?.address || 'Not provided'}</p>
             </div>
           </div>
         </div>
@@ -356,7 +353,7 @@ const ProfilePage = () => {
     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen py-10 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
         <PageHeader
-          title={user?.displayName ? `Welcome, ${user.displayName}` : 'My Profile'}
+            title={selectedUser?.name ? `Welcome, ${selectedUser.name}` : 'My Profile'}
           description="Manage your account, view your service history, and update your details."
          
         />
@@ -372,13 +369,13 @@ const ProfilePage = () => {
             >
               <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 text-center">
                 <Avatar
-                  initials={user?.displayName ? user.displayName.charAt(0) : 'U'}
-                  src={user?.photoURL}
+                  initials={selectedUser?.name ? selectedUser.name.charAt(0) : 'U'}
+                  src={selectedUser?.photoURL}
                   size="lg"
                   className="mb-2 shadow-lg mx-auto"
                 />
-                <h2 className="font-bold text-white text-xl mt-2">{user?.displayName || 'User'}</h2>
-                <p className="text-blue-100 mt-1">{user?.email || 'No email'}</p>
+                <h2 className="font-bold text-white text-xl mt-2">{selectedUser?.name || 'User'}</h2>
+                  <p className="text-blue-100 mt-1">{selectedUser?.email || 'No email'}</p>
                 <div className="mt-2 inline-block px-3 py-1 bg-white/20 rounded-full text-xs text-white">
                   Premium Member
                 </div>
@@ -412,27 +409,15 @@ const ProfilePage = () => {
                   </motion.button>
                   <motion.button 
                     whileHover={{ x: 2 }}
-                    onClick={() => setActiveTab('settings')}
+                    onClick={() => setActiveTab('managePlan')}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all ${
-                      activeTab === 'settings' 
+                      activeTab === 'managePlan' 
                         ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-medium shadow' 
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
-                    <FiSettings className="w-5 h-5" />
-                    <span>Settings</span>
-                  </motion.button>
-                  <motion.button 
-                    whileHover={{ x: 2 }}
-                    onClick={() => setActiveTab('security')}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all ${
-                      activeTab === 'security' 
-                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-medium shadow' 
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <FiShield className="w-5 h-5" />
-                    <span>Security</span>
+                    <FiCreditCard className="w-5 h-5" />
+                    <span>Manage Plan</span>
                   </motion.button>
                 </nav>
                 <div className="mt-8">
@@ -456,38 +441,55 @@ const ProfilePage = () => {
             )}
             
             {activeTab === 'services' && renderServiceHistory()}
-            
-            {activeTab === 'settings' && (
+
+            {activeTab === 'managePlan' && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="bg-white rounded-xl shadow-md overflow-hidden"
+                className="bg-white rounded-xl shadow-md overflow-hidden p-8 flex flex-col items-center justify-center min-h-[300px]"
               >
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6">
-                  <h2 className="text-2xl font-bold text-white mb-2">Settings</h2>
-                  <p className="text-blue-100 text-sm">Manage your account preferences</p>
-                </div>
-                <div className="p-6">
-                  <p className="text-gray-600">Account settings and preferences will be available here.</p>
-                </div>
-              </motion.div>
-            )}
-            
-            {activeTab === 'security' && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white rounded-xl shadow-md overflow-hidden"
-              >
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6">
-                  <h2 className="text-2xl font-bold text-white mb-2">Security</h2>
-                  <p className="text-blue-100 text-sm">Manage your account security</p>
-                </div>
-                <div className="p-6">
-                  <p className="text-gray-600">Security settings and password change options will be available here.</p>
-                </div>
+                <FiCreditCard className="w-12 h-12 text-blue-500 mb-4" />
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Manage Your Plan</h2>
+                {purchasedPlanLoading ? (
+                  <div className="flex flex-col items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-blue-500 mb-4"></div>
+                    <p className="text-blue-500">Loading plan details...</p>
+                  </div>
+                ) : purchasedPlanError ? (
+                  <p className="text-red-500">{purchasedPlanError}</p>
+                ) : !purchasedPlan ? (
+                  <p className="text-gray-500">No plan found for your account.</p>
+                ) : (
+                  <div className="w-full max-w-md bg-blue-50 rounded-xl shadow p-6 mt-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-lg font-semibold text-blue-700">{purchasedPlan.planName || 'Plan'}</span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${purchasedPlan.active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>{purchasedPlan.active ? 'Active' : 'Inactive'}</span>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between text-gray-700">
+                        <span>Price:</span>
+                        <span className="font-medium">₹{purchasedPlan.price}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-700">
+                        <span>Period:</span>
+                        <span className="font-medium">{purchasedPlan.period || purchasedPlan.duration || '-'} {purchasedPlan.period ? '' : 'months'}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-700">
+                        <span>Amount Paid:</span>
+                        <span className="font-medium">₹{purchasedPlan.amount || purchasedPlan.price}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-700">
+                        <span>Start Date:</span>
+                        <span className="font-medium">{purchasedPlan.startDate ? new Date(purchasedPlan.startDate).toLocaleDateString() : '-'}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-700">
+                        <span>End Date:</span>
+                        <span className="font-medium">{purchasedPlan.endDate ? new Date(purchasedPlan.endDate).toLocaleDateString() : '-'}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
           </div>

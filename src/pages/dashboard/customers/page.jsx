@@ -10,9 +10,13 @@ import Avatar from '../../../components/ui/Avatar';
 import Modal from '../../../components/ui/Modal';
 import FormInput from '../../../components/ui/FormInput';
 import { useSelector, useDispatch } from 'react-redux';
+import { fetchCustomers, selectUserData, selectUserLoading, selectUserError, addUser, editUser, deleteUser } from '../../../features/slices/userSlice';
 
 const CustomersPage = () => {
   const dispatch = useDispatch();
+  const customers = useSelector(selectUserData);
+  const loading = useSelector(selectUserLoading);
+  const error = useSelector(selectUserError);
   
   // State for filters and search
   const [searchTerm, setSearchTerm] = useState('');
@@ -30,59 +34,52 @@ const CustomersPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    password: '',
     phone: '',
     address: '',
-    status: 'Active',
-    customerType: 'Individual'
+    role: 'NpkR5K3M242WKHPdVTTw',
+    status: 'active',
+    provider: 'manual',
+    createdOn: '',
+    updatedOn: '',
   });
 
-  // Sample customer data (will be replaced with API call)
-  const [customersData, setCustomersData] = useState([
-    { id: 1, name: 'John Smith', email: 'john.smith@example.com', phone: '(123) 456-7890', address: '123 Main St, Anytown', status: 'Active', customerType: 'Individual', joinDate: '2023-05-15' },
-    { id: 2, name: 'Emily Johnson', email: 'emily.j@example.com', phone: '(234) 567-8901', address: '456 Oak Ave, Somewhere', status: 'Active', customerType: 'Individual', joinDate: '2023-06-22' },
-    { id: 3, name: 'Tech Solutions Inc', email: 'info@techsolutions.com', phone: '(345) 678-9012', address: '789 Business Blvd, Cityville', status: 'Active', customerType: 'Business', joinDate: '2023-04-10' },
-    { id: 4, name: 'Sarah Wilson', email: 'sarah.w@example.com', phone: '(456) 789-0123', address: '321 Pine Rd, Townsville', status: 'Inactive', customerType: 'Individual', joinDate: '2023-02-18' },
-    { id: 5, name: 'Green Meadows LLC', email: 'contact@greenmeadows.com', phone: '(567) 890-1234', address: '555 Corporate Way, Metropolis', status: 'Active', customerType: 'Business', joinDate: '2023-08-05' },
-    { id: 6, name: 'Michael Davis', email: 'mdavis@example.com', phone: '(678) 901-2345', address: '777 Vista Ln, Suburbia', status: 'Active', customerType: 'Individual', joinDate: '2023-03-30' },
-    { id: 7, name: 'Sunshine Cafe', email: 'hello@sunshinecafe.com', phone: '(789) 012-3456', address: '888 Culinary Ave, Foodtown', status: 'Inactive', customerType: 'Business', joinDate: '2023-01-12' },
-    { id: 8, name: 'Jennifer Taylor', email: 'jtaylor@example.com', phone: '(890) 123-4567', address: '999 Sunset Dr, Beachside', status: 'Active', customerType: 'Individual', joinDate: '2023-07-08' },
-  ]);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  useEffect(() => {
+    dispatch(fetchCustomers());
+  }, [dispatch]);
 
   // Filter customers based on search term and filter status
-  const filteredCustomers = customersData.filter(customer => {
-    const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          customer.address.toLowerCase().includes(searchTerm.toLowerCase());
-    
+  const filteredCustomers = customers.filter(customer => {
+    const name = customer.name || '';
+    const email = customer.email || '';
+    const address = customer.address || '';
+    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          address.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || customer.status === filterStatus;
-    
     return matchesSearch && matchesStatus;
   });
 
-  // Sort customers
-  const sortedCustomers = [...filteredCustomers].sort((a, b) => {
-    if (sortBy === 'newest') {
-      return new Date(b.joinDate) - new Date(a.joinDate);
-    } else if (sortBy === 'oldest') {
-      return new Date(a.joinDate) - new Date(b.joinDate);
-    } else if (sortBy === 'name') {
-      return a.name.localeCompare(b.name);
-    }
-    return 0;
-  });
+
+  // Pagination logic
+  const totalCustomers = filteredCustomers.length;
+  const totalPages = Math.ceil(totalCustomers / pageSize);
+  const paginatedCustomers = filteredCustomers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  // Reset to page 1 on filter/sort/search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterStatus, sortBy, customers]);
 
   // Status filter options
   const statusOptions = [
     { value: 'all', label: 'All Status' },
     { value: 'Active', label: 'Active' },
     { value: 'Inactive', label: 'Inactive' }
-  ];
-
-  // Sort options
-  const sortOptions = [
-    { value: 'newest', label: 'Newest First' },
-    { value: 'oldest', label: 'Oldest First' },
-    { value: 'name', label: 'Name A-Z' }
   ];
   
   // Customer type options for the form
@@ -102,10 +99,14 @@ const CustomersPage = () => {
     setFormData({
       name: '',
       email: '',
+      password: '',
       phone: '',
       address: '',
-      status: 'Active',
-      customerType: 'Individual'
+      role: 'NpkR5K3M242WKHPdVTTw',
+      status: 'active',
+      provider: 'manual',
+      createdOn: new Date().toISOString(),
+      updatedOn: new Date().toISOString(),
     });
     setIsAddModalOpen(true);
   };
@@ -116,10 +117,14 @@ const CustomersPage = () => {
     setFormData({
       name: customer.name,
       email: customer.email,
+      password: '',
       phone: customer.phone,
       address: customer.address,
-      status: customer.status,
-      customerType: customer.customerType
+      role: customer.role || 'NpkR5K3M242WKHPdVTTw',
+      status: customer.status || 'active',
+      provider: customer.provider || 'manual',
+      createdOn: customer.createdOn || customer.createdAt || '',
+      updatedOn: new Date().toISOString(),
     });
     setIsEditModalOpen(true);
   };
@@ -131,53 +136,38 @@ const CustomersPage = () => {
   };
   
   // Add a new customer
-  const handleAddCustomer = (e) => {
+  const handleAddCustomer = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      const newCustomer = {
-        id: Math.max(0, ...customersData.map(customer => customer.id)) + 1,
-        ...formData,
-        joinDate: new Date().toISOString().split('T')[0]
-      };
-      
-      setCustomersData([newCustomer, ...customersData]);
-      setIsSubmitting(false);
-      setIsAddModalOpen(false);
-    }, 1000);
+    await dispatch(addUser(formData));
+    setIsSubmitting(false);
+    setIsAddModalOpen(false);
   };
   
   // Update an existing customer
-  const handleUpdateCustomer = (e) => {
+  const handleUpdateCustomer = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      const updatedCustomers = customersData.map(customer => 
-        customer.id === currentCustomer.id ? { ...customer, ...formData } : customer
-      );
-      
-      setCustomersData(updatedCustomers);
-      setIsSubmitting(false);
-      setIsEditModalOpen(false);
-    }, 1000);
+    const { password, ...rest } = formData;
+    await dispatch(editUser(currentCustomer._id || currentCustomer.id, rest));
+    setIsSubmitting(false);
+    setIsEditModalOpen(false);
   };
   
   // Delete a customer
-  const handleDeleteCustomer = () => {
+  const handleDeleteCustomer = async () => {
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      const updatedCustomers = customersData.filter(customer => customer.id !== currentCustomer.id);
-      setCustomersData(updatedCustomers);
-      setIsSubmitting(false);
-      setIsDeleteModalOpen(false);
-    }, 1000);
+    await dispatch(deleteUser(currentCustomer._id || currentCustomer.id));
+    setIsSubmitting(false);
+    setIsDeleteModalOpen(false);
   };
+
+  if (loading) {
+    return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">Loading customers...</div>;
+  }
+  if (error) {
+    return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center text-red-600">{error}</div>;
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -202,19 +192,6 @@ const CustomersPage = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         
-        <FilterBar.Group>
-          <Select
-            options={statusOptions}
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          />
-          
-          <Select
-            options={sortOptions}
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          />
-        </FilterBar.Group>
       </FilterBar>
 
       {/* Customers Table */}
@@ -233,13 +210,7 @@ const CustomersPage = () => {
                   Address
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Join Date
                 </th>
                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -247,11 +218,11 @@ const CustomersPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {sortedCustomers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-gray-50">
+              {paginatedCustomers.map((customer) => (
+                <tr key={customer._id || customer.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <Avatar initials={customer.name.charAt(0)} />
+                      <Avatar initials={(customer.name || '').charAt(0)} />
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">{customer.name}</div>
                       </div>
@@ -265,16 +236,10 @@ const CustomersPage = () => {
                     <div className="text-sm text-gray-900">{customer.address}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{customer.customerType}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
                     <StatusBadge 
                       status={customer.status} 
                       type="default"
                     />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(customer.joinDate).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end items-center space-x-2">
@@ -297,7 +262,7 @@ const CustomersPage = () => {
                 </tr>
               ))}
               
-              {sortedCustomers.length === 0 && (
+              {paginatedCustomers.length === 0 && (
                 <tr>
                   <td colSpan="7" className="px-6 py-10 text-center text-gray-500">
                     No customers found matching your filters.
@@ -309,44 +274,47 @@ const CustomersPage = () => {
         </div>
         
         {/* Pagination */}
-        <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <Button variant="outline" size="sm">Previous</Button>
-            <Button variant="outline" size="sm">Next</Button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">1</span> to <span className="font-medium">{sortedCustomers.length}</span> of <span className="font-medium">{customersData.length}</span> customers
-              </p>
+        {totalCustomers > pageSize && (
+          <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
+            <div className="flex-1 flex justify-between sm:hidden">
+              <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button>
+              <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next</Button>
             </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                <Button variant="outline" className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                  <span className="sr-only">Previous</span>
-                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </Button>
-                <Button variant="outline" className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                  1
-                </Button>
-                <Button variant="primary" className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600 hover:bg-blue-100">
-                  2
-                </Button>
-                <Button variant="outline" className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                  3
-                </Button>
-                <Button variant="outline" className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                  <span className="sr-only">Next</span>
-                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                  </svg>
-                </Button>
-              </nav>
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{(totalCustomers === 0 ? 0 : (currentPage - 1) * pageSize + 1)}</span> to <span className="font-medium">{Math.min(currentPage * pageSize, totalCustomers)}</span> of <span className="font-medium">{totalCustomers}</span> customers
+                </p>
+              </div>
+              <div>
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <Button variant="outline" className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
+                    <span className="sr-only">Previous</span>
+                    <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </Button>
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <Button
+                      key={i + 1}
+                      variant={currentPage === i + 1 ? 'primary' : 'outline'}
+                      className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium"
+                      onClick={() => setCurrentPage(i + 1)}
+                    >
+                      {i + 1}
+                    </Button>
+                  ))}
+                  <Button variant="outline" className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
+                    <span className="sr-only">Next</span>
+                    <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </Button>
+                </nav>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </Card>
 
       {/* Add Customer Modal */}
@@ -368,7 +336,6 @@ const CustomersPage = () => {
             required
             className="bg-white"
           />
-          
           <FormInput
             label="Email"
             id="add-email"
@@ -379,7 +346,16 @@ const CustomersPage = () => {
             required
             className="bg-white"
           />
-          
+          <FormInput
+            label="Password"
+            id="add-password"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            required
+            className="bg-white"
+          />
           <FormInput
             label="Phone"
             id="add-phone"
@@ -389,18 +365,6 @@ const CustomersPage = () => {
             required
             className="bg-white"
           />
-          
-          <FormInput.Select
-            label="Customer Type"
-            id="add-customer-type"
-            name="customerType"
-            options={customerTypeOptions}
-            value={formData.customerType}
-            onChange={handleInputChange}
-            required
-            className="bg-white"
-          />
-          
           <div className="md:col-span-2">
             <FormInput
               label="Address"
@@ -410,8 +374,15 @@ const CustomersPage = () => {
               onChange={handleInputChange}
               required
               className="bg-white"
+              type="textarea"
             />
           </div>
+          {/* Hidden fields for role, status, provider, createdOn, updatedOn */}
+          <input type="hidden" name="role" value={formData.role} />
+          <input type="hidden" name="status" value={formData.status} />
+          <input type="hidden" name="provider" value={formData.provider} />
+          <input type="hidden" name="createdOn" value={formData.createdOn} />
+          <input type="hidden" name="updatedOn" value={formData.updatedOn} />
         </div>
       </Modal.Form>
 
@@ -434,7 +405,6 @@ const CustomersPage = () => {
             required
             className="bg-white"
           />
-          
           <FormInput
             label="Email"
             id="edit-email"
@@ -445,7 +415,6 @@ const CustomersPage = () => {
             required
             className="bg-white"
           />
-          
           <FormInput
             label="Phone"
             id="edit-phone"
@@ -455,32 +424,6 @@ const CustomersPage = () => {
             required
             className="bg-white"
           />
-          
-          <FormInput.Select
-            label="Customer Type"
-            id="edit-customer-type"
-            name="customerType"
-            options={customerTypeOptions}
-            value={formData.customerType}
-            onChange={handleInputChange}
-            required
-            className="bg-white"
-          />
-          
-          <FormInput.Select
-            label="Status"
-            id="edit-status"
-            name="status"
-            options={[
-              { value: 'Active', label: 'Active' },
-              { value: 'Inactive', label: 'Inactive' }
-            ]}
-            value={formData.status}
-            onChange={handleInputChange}
-            required
-            className="bg-white"
-          />
-          
           <div className="md:col-span-2">
             <FormInput
               label="Address"
@@ -490,8 +433,17 @@ const CustomersPage = () => {
               onChange={handleInputChange}
               required
               className="bg-white"
+              type="textarea"
             />
           </div>
+        </div>
+        {/* Info section for read-only fields */}
+        <div className="mt-4 p-3 bg-gray-50 rounded border text-xs text-gray-700 space-y-1">
+          <div><b>Role:</b> {formData.role}</div>
+          <div><b>Status:</b> {formData.status}</div>
+          <div><b>Provider:</b> {formData.provider}</div>
+          <div><b>Created On:</b> {formData.createdOn ? new Date(formData.createdOn).toLocaleString() : ''}</div>
+          <div><b>Updated On:</b> {formData.updatedOn ? new Date(formData.updatedOn).toLocaleString() : ''}</div>
         </div>
       </Modal.Form>
 

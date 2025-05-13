@@ -44,9 +44,9 @@ export const fetchMaintenanceRequestData = () => async (dispatch) => {
   dispatch(setMaintenanceRequestLoading());
   try {
     const response = await axios.get(
-      import.meta.env.VITE_BASE_URL + "/maintenance/getAllRequests",
+      import.meta.env.VITE_BASE_URL + "/maintenances/getAllRequests",
     );
-    dispatch(setMaintenanceRequestData(response.data.data));
+    dispatch(setMaintenanceRequestData(response.data));
   } catch (error) {
     dispatch(setMaintenanceRequestError(error.message));
   }
@@ -57,9 +57,9 @@ export const fetchMaintenanceRequestById = (maintenanceRequestId) => async (disp
   dispatch(setMaintenanceRequestLoading());
   try {
     const response = await axios.get(
-      import.meta.env.VITE_BASE_URL + `/maintenance/getRequestById/${maintenanceRequestId}`,
+      import.meta.env.VITE_BASE_URL + `/maintenances/getRequestById/${maintenanceRequestId}`,
     );
-    dispatch(setSelectedMaintenanceRequest(response.data.data));
+    dispatch(setSelectedMaintenanceRequest(response.data));
   } catch (error) {
     dispatch(setMaintenanceRequestError(error.message));
   }
@@ -69,7 +69,7 @@ export const fetchMaintenanceRequestById = (maintenanceRequestId) => async (disp
 export const addMaintenanceRequest = (newMaintenanceRequest) => async (dispatch) => {
   try {
     const response = await axios.post(
-      import.meta.env.VITE_BASE_URL + "/maintenance/newRequest",
+      import.meta.env.VITE_BASE_URL + "/maintenances/newRequest",
       newMaintenanceRequest,
     );
     dispatch(fetchMaintenanceRequestData());
@@ -84,7 +84,7 @@ export const addMaintenanceRequest = (newMaintenanceRequest) => async (dispatch)
 export const editMaintenanceRequest = (maintenanceRequestId, updatedData) => async (dispatch) => {
   try {
     await axios.put(
-      import.meta.env.VITE_BASE_URL + `/maintenance/updateRequest/${maintenanceRequestId}`,
+      import.meta.env.VITE_BASE_URL + `/maintenances/updateRequest/${maintenanceRequestId}`,
       updatedData,
     );
     dispatch(fetchMaintenanceRequestData());
@@ -99,7 +99,7 @@ export const editMaintenanceRequest = (maintenanceRequestId, updatedData) => asy
 export const deleteMaintenanceRequest = (maintenanceRequestId) => async (dispatch) => {
   try {
     await axios.delete(
-      import.meta.env.VITE_BASE_URL + `/maintenance/deleteRequest/${maintenanceRequestId}`,
+      import.meta.env.VITE_BASE_URL + `/maintenances/deleteRequest/${maintenanceRequestId}`,
     );
     dispatch(fetchMaintenanceRequestData());
     return true;

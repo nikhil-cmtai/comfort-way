@@ -5,28 +5,28 @@ import { Link } from 'react-router-dom';
 const stats = [
   {
     label: 'Happy Customers',
-    value: 15000,
+    value: 150,
     icon: <FiSmile className="w-10 h-10" />,
     color: 'from-indigo-600 to-blue-600',
     description: 'Customers trust us for quality service',
   },
   {
     label: 'Appliances Repaired',
-    value: 7800,
+    value: 1500,
     icon: <FiTool className="w-10 h-10" />,
     color: 'from-blue-600 to-cyan-600',
     description: 'Expert repairs across all brands',
   },
   {
     label: '5-Star Reviews',
-    value: 1200,
+    value: 135,
     icon: <FiStar className="w-10 h-10" />,
     color: 'from-amber-500 to-orange-600',
     description: 'Consistently rated excellent',
   },
   {
     label: 'Expert Technicians',
-    value: 50,
+    value: 60,
     icon: <FiUsers className="w-10 h-10" />,
     color: 'from-purple-600 to-pink-600',
     description: 'Certified professionals',

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import PageHeader from '../../../components/ui/PageHeader';
 import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/button';
@@ -8,13 +9,21 @@ import FilterBar from '../../../components/ui/FilterBar';
 import Select from '../../../components/ui/Select';
 import Avatar from '../../../components/ui/Avatar';
 import Modal from '../../../components/ui/Modal';
-import FormInput from '../../../components/ui/FormInput';
-import { FiShield, FiUsers, FiHome, FiZap, FiCheckSquare, FiInfo } from 'react-icons/fi';
-import { useSelector, useDispatch } from 'react-redux';
+import {
+  fetchPurchasedPlanData,
+  selectPurchasedPlanData,
+  selectPurchasedPlanLoading,
+  selectPurchasedPlanError
+} from '../../../features/slices/purchasedPlanSlice';
+import {
+  fetchProtectionData,
+  selectProtectionData,
+  selectProtectionLoading,
+  selectProtectionError
+} from '../../../features/slices/protectionSlice';
 
 const PlansPage = () => {
   const dispatch = useDispatch();
-  
   // State for filters and search
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPlan, setFilterPlan] = useState('all');
@@ -25,131 +34,36 @@ const PlansPage = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
 
-  // Sample plans data
-  const plans = [
-    { id: 1, name: '1 BHK', price: 5999, icon: <FiHome className="w-6 h-6 text-indigo-600" /> },
-    { id: 2, name: '2 BHK', price: 7799, icon: <FiUsers className="w-6 h-6 text-blue-600" /> },
-    { id: 3, name: '3 BHK', price: 9599, icon: <FiZap className="w-6 h-6 text-purple-600" /> },
-    { id: 4, name: '4 BHK', price: 11999, icon: <FiShield className="w-6 h-6 text-yellow-500" /> },
-    { id: 5, name: 'Custom Plan', price: 0, icon: <FiShield className="w-6 h-6 text-green-600" /> },
-  ];
-  
-  // Sample subscription data
-  const [subscriptionsData, setSubscriptionsData] = useState([
-    { 
-      id: 1, 
-      customerId: 1, 
-      customerName: 'John Smith', 
-      customerEmail: 'john.smith@example.com',
-      planId: 2, 
-      status: 'Active', 
-      startDate: '2023-05-15', 
-      endDate: '2024-05-14',
-      price: 7799,
-      paymentStatus: 'Paid',
-      appliances: ['AC', 'Refrigerator', 'Washing Machine', 'Water Purifier', 'Microwave']
-    },
-    { 
-      id: 2, 
-      customerId: 3, 
-      customerName: 'Tech Solutions Inc', 
-      customerEmail: 'info@techsolutions.com',
-      planId: 4, 
-      status: 'Active', 
-      startDate: '2023-07-10', 
-      endDate: '2024-07-09',
-      price: 11999,
-      paymentStatus: 'Paid',
-      appliances: ['AC', 'Refrigerator', 'Washing Machine', 'Water Purifier', 'Microwave', 'Geyser', 'Dishwasher', 'Oven']
-    },
-    { 
-      id: 3, 
-      customerId: 5, 
-      customerName: 'Green Meadows LLC', 
-      customerEmail: 'contact@greenmeadows.com',
-      planId: 3, 
-      status: 'Active', 
-      startDate: '2023-06-01', 
-      endDate: '2024-05-31',
-      price: 9599,
-      paymentStatus: 'Paid',
-      appliances: ['AC', 'Refrigerator', 'Washing Machine', 'Water Purifier', 'Microwave', 'Geyser']
-    },
-    { 
-      id: 4, 
-      customerId: 2, 
-      customerName: 'Emily Johnson', 
-      customerEmail: 'emily.j@example.com',
-      planId: 1, 
-      status: 'Active', 
-      startDate: '2023-04-20', 
-      endDate: '2024-04-19',
-      price: 5999,
-      paymentStatus: 'Paid',
-      appliances: ['AC', 'Refrigerator', 'Washing Machine']
-    },
-    { 
-      id: 5, 
-      customerId: 7, 
-      customerName: 'Sunshine Cafe', 
-      customerEmail: 'hello@sunshinecafe.com',
-      planId: 5, 
-      status: 'Expired', 
-      startDate: '2022-12-15', 
-      endDate: '2023-12-14',
-      price: 8599,
-      paymentStatus: 'Paid',
-      appliances: ['AC', 'Refrigerator', 'Water Purifier', 'Oven', 'Hob', 'Microwave']
-    },
-    { 
-      id: 6, 
-      customerId: 4, 
-      customerName: 'Sarah Wilson', 
-      customerEmail: 'sarah.w@example.com',
-      planId: 2, 
-      status: 'Pending', 
-      startDate: '2023-09-01', 
-      endDate: '2024-08-31',
-      price: 7799,
-      paymentStatus: 'Due',
-      appliances: ['AC', 'Refrigerator', 'Washing Machine', 'Water Purifier', 'Microwave']
-    },
-    { 
-      id: 7, 
-      customerId: 8, 
-      customerName: 'Jennifer Taylor', 
-      customerEmail: 'jtaylor@example.com',
-      planId: 2, 
-      status: 'Active', 
-      startDate: '2023-08-15', 
-      endDate: '2024-08-14',
-      price: 7799,
-      paymentStatus: 'Paid',
-      appliances: ['AC', 'Refrigerator', 'Washing Machine', 'Water Purifier', 'Microwave']
-    },
-    { 
-      id: 8, 
-      customerId: 6, 
-      customerName: 'Michael Davis', 
-      customerEmail: 'mdavis@example.com',
-      planId: 3, 
-      status: 'Cancelled', 
-      startDate: '2023-02-10', 
-      endDate: '2024-02-09',
-      price: 9599,
-      paymentStatus: 'Refunded',
-      appliances: ['AC', 'Refrigerator', 'Washing Machine', 'Water Purifier', 'Microwave', 'Geyser']
-    },
-  ]);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  // Fetch live data on mount
+  useEffect(() => {
+    dispatch(fetchPurchasedPlanData());
+    dispatch(fetchProtectionData());
+  }, [dispatch]);
+
+  // Selectors for live data
+  const purchasedPlans = useSelector(selectPurchasedPlanData) || [];
+  const purchasedPlansLoading = useSelector(selectPurchasedPlanLoading);
+  const purchasedPlansError = useSelector(selectPurchasedPlanError);
+  const protectionPlans = useSelector(selectProtectionData) || [];
+  const protectionPlansLoading = useSelector(selectProtectionLoading);
+  const protectionPlansError = useSelector(selectProtectionError);
+
+  // Helper: get plan by id
+  const getPlanById = (planId) => {
+    return protectionPlans.find(plan => plan.id === planId) || { name: 'Unknown Plan', price: 0 };
+  };
 
   // Filter subscriptions based on search term and filters
-  const filteredSubscriptions = subscriptionsData.filter(subscription => {
-    const matchesSearch = subscription.customerName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          subscription.customerEmail.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesPlan = filterPlan === 'all' || subscription.planId === parseInt(filterPlan);
+  const filteredSubscriptions = purchasedPlans.filter(subscription => {
+    const plan = getPlanById(subscription.planId);
+    const matchesSearch = (subscription.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      subscription.customerEmail?.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesPlan = filterPlan === 'all' || subscription.planId === filterPlan;
     const matchesStatus = filterStatus === 'all' || subscription.status === filterStatus;
-    
     return matchesSearch && matchesPlan && matchesStatus;
   });
 
@@ -162,20 +76,32 @@ const PlansPage = () => {
     } else if (sortBy === 'name') {
       return a.customerName.localeCompare(b.customerName);
     } else if (sortBy === 'price-high') {
-      return b.price - a.price;
+      return getPlanById(b.planId).price - getPlanById(a.planId).price;
     } else if (sortBy === 'price-low') {
-      return a.price - b.price;
+      return getPlanById(a.planId).price - getPlanById(b.planId).price;
     }
     return 0;
   });
 
+  // Pagination logic
+  const totalSubscriptions = sortedSubscriptions.length;
+  const totalPages = Math.ceil(totalSubscriptions / pageSize);
+  const paginatedSubscriptions = sortedSubscriptions.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  // Reset to page 1 if filters/search change and currentPage is out of range
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
+
   // Plan filter options
   const planOptions = [
     { value: 'all', label: 'All Plans' },
-    ...plans.map(plan => ({
-      value: plan.id.toString(),
-      label: plan.name
-    }))
+    ...protectionPlans.map(plan => ({ value: plan.id, label: plan.bhk || plan.name || 'Unnamed Plan' }))
   ];
 
   // Status filter options
@@ -198,26 +124,45 @@ const PlansPage = () => {
   
   // View subscription details
   const viewSubscriptionDetails = (subscription) => {
+    const plan = getPlanById(subscription.planId);
     setSelectedSubscription({
       ...subscription,
-      planName: plans.find(plan => plan.id === subscription.planId)?.name || 'Unknown Plan'
+      planName: plan.bhk || plan.name || 'Unknown Plan',
+      planPrice: plan.price || 0
     });
     setIsViewModalOpen(true);
   };
 
-  // Get plan details by ID
-  const getPlanById = (planId) => {
-    return plans.find(plan => plan.id === planId) || { name: 'Unknown Plan', icon: null };
-  };
-
   // Format date to readable format
   const formatDate = (dateString) => {
+    if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
     });
   };
+
+  // Loading and error states
+  if (purchasedPlansLoading || protectionPlansLoading) {
+    return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+        <p className="mt-3 text-gray-600">Loading subscriptions...</p>
+      </div>
+    </div>;
+  }
+  if (purchasedPlansError || protectionPlansError) {
+    return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+      <div className="text-center bg-red-100 rounded-xl p-6 max-w-md">
+        <svg className="mx-auto h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h2 className="mt-2 text-lg font-semibold text-red-800">Error</h2>
+        <p className="mt-1 text-red-600">{purchasedPlansError || protectionPlansError}</p>
+      </div>
+    </div>;
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -285,13 +230,13 @@ const PlansPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {sortedSubscriptions.map((subscription) => {
+              {paginatedSubscriptions.map((subscription) => {
                 const plan = getPlanById(subscription.planId);
                 return (
                   <tr key={subscription.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <Avatar initials={subscription.customerName.charAt(0)} />
+                        <Avatar initials={subscription.customerName?.charAt(0) || '?'} />
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">{subscription.customerName}</div>
                           <div className="text-sm text-gray-500">{subscription.customerEmail}</div>
@@ -299,15 +244,10 @@ const PlansPage = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 mr-2">
-                          {plan.icon}
-                        </div>
-                        <div className="text-sm text-gray-900">{plan.name}</div>
-                      </div>
+                      <div className="text-sm text-gray-900">{plan.bhk || plan.name}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">₹{subscription.price}</div>
+                      <div className="text-sm text-gray-900">₹{plan.price}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{formatDate(subscription.startDate)}</div>
@@ -316,12 +256,7 @@ const PlansPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusBadge 
                         status={subscription.status}
-                        type={
-                          subscription.status === 'Active' ? 'default' :
-                          subscription.status === 'Pending' ? 'default' :
-                          subscription.status === 'Expired' ? 'default' :
-                          'default'
-                        }
+                        type="default"
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -348,7 +283,7 @@ const PlansPage = () => {
                 )
               })}
               
-              {sortedSubscriptions.length === 0 && (
+              {paginatedSubscriptions.length === 0 && (
                 <tr>
                   <td colSpan="7" className="px-6 py-10 text-center text-gray-500">
                     No subscriptions found matching your filters.
@@ -362,37 +297,58 @@ const PlansPage = () => {
         {/* Pagination */}
         <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
           <div className="flex-1 flex justify-between sm:hidden">
-            <Button variant="outline" size="sm">Previous</Button>
-            <Button variant="outline" size="sm">Next</Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            >Previous</Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              disabled={currentPage === totalPages || totalPages === 0}
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            >Next</Button>
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">1</span> to <span className="font-medium">{sortedSubscriptions.length}</span> of <span className="font-medium">{subscriptionsData.length}</span> subscriptions
+                {totalSubscriptions === 0 ? (
+                  <>Showing 0 of 0 subscriptions</>
+                ) : (
+                  <>Showing <span className="font-medium">{(currentPage - 1) * pageSize + 1}</span> to <span className="font-medium">{Math.min(currentPage * pageSize, totalSubscriptions)}</span> of <span className="font-medium">{totalSubscriptions}</span> subscriptions</>
+                )}
               </p>
             </div>
             <div>
               <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                <Button variant="outline" className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <Button 
+                  variant="outline" 
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                >
                   <span className="sr-only">Previous</span>
-                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
+                  {'<'}
                 </Button>
-                <Button variant="outline" className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                  1
-                </Button>
-                <Button variant="primary" className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600 hover:bg-blue-100">
-                  2
-                </Button>
-                <Button variant="outline" className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                  3
-                </Button>
-                <Button variant="outline" className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <Button
+                    key={i + 1}
+                    variant={currentPage === i + 1 ? 'primary' : 'outline'}
+                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium"
+                    onClick={() => setCurrentPage(i + 1)}
+                  >
+                    {i + 1}
+                  </Button>
+                ))}
+                <Button 
+                  variant="outline" 
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                >
                   <span className="sr-only">Next</span>
-                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                  </svg>
+                  {'>'}
                 </Button>
               </nav>
             </div>
@@ -411,9 +367,6 @@ const PlansPage = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
               <div className="flex items-center">
-                <div className="mr-3">
-                  {getPlanById(selectedSubscription.planId).icon}
-                </div>
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">{selectedSubscription.planName}</h3>
                   <p className="text-sm text-gray-600">ID: #{selectedSubscription.id}</p>
@@ -430,7 +383,7 @@ const PlansPage = () => {
                 <h4 className="text-sm font-medium text-gray-500 mb-2">Customer Information</h4>
                 <div className="flex items-center mb-2">
                   <Avatar 
-                    initials={selectedSubscription.customerName.charAt(0)} 
+                    initials={selectedSubscription.customerName?.charAt(0) || '?'} 
                     size="sm"
                     className="mr-2"
                   />
@@ -449,7 +402,7 @@ const PlansPage = () => {
                   <span className="font-medium">End Date:</span> {formatDate(selectedSubscription.endDate)}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <span className="font-medium">Price:</span> ₹{selectedSubscription.price}
+                  <span className="font-medium">Price:</span> ₹{selectedSubscription.planPrice}
                 </p>
                 <p className="text-sm text-gray-600">
                   <span className="font-medium">Payment Status:</span> 
@@ -462,17 +415,19 @@ const PlansPage = () => {
               </div>
             </div>
             
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="text-sm font-medium text-gray-500 mb-2">Covered Appliances</h4>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {selectedSubscription.appliances.map((appliance, index) => (
-                  <div key={index} className="flex items-center">
-                    <FiCheckSquare className="text-green-500 mr-1" />
-                    <span className="text-sm text-gray-700">{appliance}</span>
-                  </div>
-                ))}
+            {selectedSubscription.appliances && (
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h4 className="text-sm font-medium text-gray-500 mb-2">Covered Appliances</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {selectedSubscription.appliances.map((appliance, index) => (
+                    <div key={index} className="flex items-center">
+                      <span className="text-green-600 font-bold mr-1">✓</span>
+                      <span className="text-sm text-gray-700">{appliance}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
             
             <div className="flex justify-end">
               <Button 

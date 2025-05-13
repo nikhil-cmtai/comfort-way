@@ -4,7 +4,7 @@ import { fetchProductData, selectProductData, selectProductLoading, selectProduc
 
 const Products = () => {
   const dispatch = useDispatch();
-  const products = useSelector(selectProductData);
+  const productsData = useSelector(selectProductData);
   const loading = useSelector(selectProductLoading);
   const error = useSelector(selectProductError);
 
@@ -21,16 +21,14 @@ const Products = () => {
   const [formData, setFormData] = useState({
     name: '',
     category: '',
-    price: '',
-    stock: '',
     featured: false,
-    image: null
+    img: null
   });
   const [imagePreview, setImagePreview] = useState(null);
 
   // Form handlers and modal functions
   const openAddModal = () => {
-    setFormData({ name: '', category: '', price: '', stock: '', featured: false, image: null });
+    setFormData({ name: '', category: '', featured: false, img: null });
     setImagePreview(null);
     setIsAddModalOpen(true);
   };
@@ -40,12 +38,10 @@ const Products = () => {
     setFormData({
       name: product.name,
       category: product.category,
-      price: product.price,
-      stock: product.stock,
       featured: product.featured,
-      image: null
+      img: null
     });
-    setImagePreview(product.image);
+    setImagePreview(product.img);
     setIsEditModalOpen(true);
   };
 
@@ -76,7 +72,7 @@ const Products = () => {
     if (file) {
       setFormData({
         ...formData,
-        image: file
+        img: file
       });
 
       const reader = new FileReader();
@@ -104,18 +100,6 @@ const Products = () => {
     dispatch(fetchProductData());
   }, [dispatch]);
 
-  // Sample products data
-  const productsData = [
-    { id: 1, name: 'Air Conditioner Model X', category: 'Air Conditioners', price: 899, stock: 15, image: '/images/products/ac-2.webp', featured: true },
-    { id: 2, name: 'Refrigerator Pro Cool', category: 'Refrigerators', price: 1299, stock: 8, image: '/images/products/fridge.webp', featured: false },
-    { id: 3, name: 'Washing Machine Deluxe', category: 'Washing Machines', price: 749, stock: 12, image: '/images/products/washing-machine.webp', featured: true },
-    { id: 4, name: 'Smart Dishwasher', category: 'Dishwashers', price: 649, stock: 5, image: '/images/products/Dishwasher.webp', featured: false },
-    { id: 5, name: 'Electric Oven 3000', category: 'Ovens', price: 549, stock: 10, image: '/images/products/oven.webp', featured: false },
-    { id: 6, name: 'Premium Gas Stove', category: 'Stoves', price: 399, stock: 20, image: '/images/products/Hob.webp', featured: true },
-    { id: 7, name: 'Water Heater Pro', category: 'Water Heaters', price: 299, stock: 18, image: '/images/products/Geyser.webp', featured: false },
-    { id: 8, name: 'Kitchen Chimney Deluxe', category: 'Chimneys', price: 349, stock: 7, image: '/images/products/Chimney.webp', featured: false },
-  ];
-
   // Get unique categories
   const categories = ['all', ...new Set(productsData.map(product => product.category))];
 
@@ -127,17 +111,6 @@ const Products = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const getStockStatusClass = (stock) => {
-    if (stock <= 5) return 'bg-red-100 text-red-800';
-    if (stock <= 10) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-green-100 text-green-800';
-  };
-
-  const getStockStatusText = (stock) => {
-    if (stock <= 5) return 'Low Stock';
-    if (stock <= 10) return 'Medium Stock';
-    return 'In Stock';
-  };
 
   if (loading) {
     return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
@@ -160,7 +133,7 @@ const Products = () => {
     </div>;
   }
 
-  console.log(products);
+  console.log(productsData);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -242,9 +215,9 @@ const Products = () => {
             <div key={product.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
               <div className="relative">
                 <img
-                  src={product.image}
+                  src={product.img}
                   alt={product.name}
-                  className="w-full h-48 object-cover"
+                  className="w-auto h-48 object-fit mx-auto"
                 />
                 {product.featured && (
                   <span className="absolute top-2 left-2 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-md border border-blue-200">
@@ -255,14 +228,7 @@ const Products = () => {
               <div className="p-4">
                 <h3 className="font-semibold text-gray-800 mb-1">{product.name}</h3>
                 <p className="text-sm text-gray-500 mb-2">{product.category}</p>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-lg font-bold text-gray-800">${product.price}</span>
-                  <span className={`text-xs px-2 py-1 rounded-full ${getStockStatusClass(product.stock)}`}>
-                    {getStockStatusText(product.stock)}
-                  </span>
-                </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-500">{product.stock} in stock</span>
                   <div className="flex gap-2">
                     <button
                       className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded"
@@ -293,12 +259,6 @@ const Products = () => {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Category
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Price
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Stock
-                </th>
                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
@@ -310,7 +270,7 @@ const Products = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="h-10 w-10 flex-shrink-0">
-                        <img className="h-10 w-10 rounded-md object-cover" src={product.image} alt={product.name} />
+                        <img className="h-10 w-10 rounded-md object-cover" src={product.img} alt={product.name} />
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">{product.name}</div>
@@ -324,17 +284,6 @@ const Products = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{product.category}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">${product.price}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStockStatusClass(product.stock)}`}>
-                        {product.stock}
-                      </span>
-                      <span className="ml-2 text-sm text-gray-500">{getStockStatusText(product.stock)}</span>
-                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button
@@ -422,41 +371,6 @@ const Products = () => {
                     </select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Price ($)*
-                      </label>
-                      <input
-                        type="number"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="0.00"
-                        min="0"
-                        step="0.01"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Stock*
-                      </label>
-                      <input
-                        type="number"
-                        name="stock"
-                        value={formData.stock}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="0"
-                        min="0"
-                        required
-                      />
-                    </div>
-                  </div>
-
                   <div className="flex items-center">
                     <input
                       type="checkbox"
@@ -490,16 +404,16 @@ const Products = () => {
                         Choose Image
                       </label>
                       <span className="ml-3 text-sm text-gray-500">
-                        {formData.image ? formData.image.name : "No file chosen"}
+                        {formData.img ? formData.img.name : "No file chosen"}
                       </span>
                     </div>
 
-                    {imagePreview && (
+                    {(imagePreview || formData.image || (selectedProduct && selectedProduct.image)) && (
                       <div className="mt-3">
                         <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
                         <div className="relative w-full h-40 bg-gray-100 rounded-md overflow-hidden">
                           <img
-                            src={imagePreview}
+                            src={imagePreview || (selectedProduct && selectedProduct.image) || ''}
                             alt="Product preview"
                             className="w-full h-full object-cover"
                           />
@@ -507,7 +421,7 @@ const Products = () => {
                             type="button"
                             className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
                             onClick={() => {
-                              setFormData({ ...formData, image: null });
+                              setFormData({ ...formData, img: null });
                               setImagePreview(null);
                             }}
                           >
@@ -605,41 +519,6 @@ const Products = () => {
                     </select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Price ($)*
-                      </label>
-                      <input
-                        type="number"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="0.00"
-                        min="0"
-                        step="0.01"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Stock*
-                      </label>
-                      <input
-                        type="number"
-                        name="stock"
-                        value={formData.stock}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="0"
-                        min="0"
-                        required
-                      />
-                    </div>
-                  </div>
-
                   <div className="flex items-center">
                     <input
                       type="checkbox"
@@ -673,16 +552,16 @@ const Products = () => {
                         {imagePreview ? "Change Image" : "Choose Image"}
                       </label>
                       <span className="ml-3 text-sm text-gray-500">
-                        {formData.image ? formData.image.name : imagePreview ? "Current image" : "No file chosen"}
+                        {formData.img ? formData.img.name : imagePreview ? "Current image" : "No file chosen"}
                       </span>
                     </div>
 
-                    {imagePreview && (
+                    {(imagePreview || formData.img || (selectedProduct && selectedProduct.img)) && (
                       <div className="mt-3">
                         <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
                         <div className="relative w-full h-40 bg-gray-100 rounded-md overflow-hidden">
                           <img
-                            src={imagePreview}
+                            src={imagePreview || (selectedProduct && selectedProduct.img) || ''}
                             alt="Product preview"
                             className="w-full h-full object-cover"
                           />
@@ -690,7 +569,7 @@ const Products = () => {
                             type="button"
                             className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
                             onClick={() => {
-                              setFormData({ ...formData, image: null });
+                              setFormData({ ...formData, img: null });
                               setImagePreview(null);
                             }}
                           >
