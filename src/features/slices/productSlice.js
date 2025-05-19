@@ -46,7 +46,7 @@ export const fetchProductData = () => async (dispatch) => {
 export const fetchProductByCategory = (category) => async (dispatch) => {
     dispatch(setProductLoading(true));
     try {
-        const response = await axios.get(import.meta.env.VITE_BASE_URL + "/products/getProductByCategory/" + category);
+        const response = await axios.get(import.meta.env.VITE_BASE_URL + "/products/getProductsByCategory/" + category);
         dispatch(setProductData(response.data.data));
     } catch (error) {
         dispatch(setProductError(error.message));

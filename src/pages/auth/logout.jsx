@@ -10,6 +10,9 @@ const Logout = () => {
   useEffect(() => {
     // Remove token from localStorage
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('role');
+    localStorage.removeItem('isAuthenticated');
 
     // Optional: Clear Redux state
     dispatch(logout());

@@ -1,151 +1,16 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  FiWind, 
-  FiDroplet, 
-  FiBox, 
-  FiZap, 
-  FiCoffee, 
   FiHome, 
   FiSliders, 
   FiGrid, 
-  FiCpu,
   FiShoppingCart,
   FiArrowRight,
 } from 'react-icons/fi';
-import {FaFire, FaSnowflake} from 'react-icons/fa';
 import BannerBuyRent from '/images/products/buy-rent-banner.jpg';
 import { fetchCategoryData, selectCategoryData, selectCategoryLoading, selectCategoryError } from '../../features/slices/categorySlice';
 import { useDispatch, useSelector } from 'react-redux';
 
-const categories = [
-  {
-    key: 'ac',
-    name: 'AC (Air Conditioner)',
-    icon: <FiWind className="w-8 h-8 text-blue-500" />,
-    img: '/images/products/ac-2.webp',
-    brands: ['Daikin', 'Voltas', 'LG', 'Samsung', 'Blue Star', 'Hitachi'],
-    buy: true,
-    rent: true,
-  },
-  {
-    key: 'air-purifier',
-    name: 'Air Purifier',
-    icon: <FaSnowflake className="w-8 h-8 text-blue-400" />,
-    img: '/images/products/Air-purifier.webp',
-    brands: ['Philips', 'LG', 'Samsung', 'Blue Star', 'Hitachi'],
-    buy: true,
-    rent: false,
-  },
-  {
-    key: 'chopper',
-    name: 'Chopper',
-    icon: <FiGrid className="w-8 h-8 text-pink-500" />, // Grid icon for Chopper
-    img: '/images/products/Chopper.webp',
-    brands: ['Bajaj', 'Havells', 'Panasonic', 'Samsung', 'LG'],
-    buy: true,
-    rent: false,
-  },
-  {
-    key: 'blender',
-    name: 'Blender',
-    icon: <FiSliders className="w-8 h-8 text-yellow-500" />, // Sliders for blending
-    img: '/images/products/Blender.webp',
-    brands: ['Bajaj', 'Havells', 'Panasonic', 'Samsung', 'LG'],
-    buy: true,
-    rent: false,
-  },
-  {
-    key: 'iron',
-    name: 'Iron',
-    icon: <FiCpu className="w-8 h-8 text-gray-500" />, // CPU-like for heating device
-    img: '/images/products/Iron.webp',
-    brands: ['Bajaj', 'Havells', 'Panasonic', 'Samsung', 'LG'],
-    buy: true,
-    rent: false,
-  },
-  {
-    key: 'geyser',
-    name: 'Geyser',
-    icon: <FaFire className="w-8 h-8 text-red-500" />,
-    img: '/images/products/Geyser.webp',
-    brands: ['Bajaj', 'Havells', 'Panasonic', 'Samsung', 'LG'],
-    buy: true,
-    rent: false,
-  },
-  {
-    key: 'boiler',
-    name: 'Boiler',
-    icon: <FiCoffee className="w-8 h-8 text-orange-500" />, // Coffee icon for Boiler
-    img: '/images/products/Boiler.webp',
-    brands: ['Bajaj', 'Havells', 'Panasonic', 'Samsung', 'LG'],
-    buy: true,
-    rent: false,
-  },
-  {
-    key: 'juicer',
-    name: 'Juicer',
-    icon: <FiDroplet className="w-8 h-8 text-green-500" />,
-    img: '/images/products/Juicer.webp',
-    brands: ['Bajaj', 'Havells', 'Panasonic', 'Samsung', 'LG'],
-    buy: true,
-    rent: false,
-  },
-  {
-    key: 'microwave',
-    name: 'Microwave',
-    icon: <FiHome className="w-8 h-8 text-indigo-500" />, // Home icon for kitchen appliance
-    img: '/images/products/Microwave.webp',
-    brands: ['Bajaj', 'Havells', 'Panasonic', 'Samsung', 'LG'],
-    buy: true,
-    rent: false,
-  },
-  {
-    key: 'washing-machine',
-    name: 'Washing Machine',
-    icon: <FiZap className="w-8 h-8 text-green-500" />,
-    img: '/images/products/Washing-machine.webp',
-    brands: ['LG', 'Samsung', 'IFB', 'Bosch', 'Whirlpool'],
-    buy: true,
-    rent: false,
-  },
-  {
-    key: 'chimney',
-    name: 'Chimney',
-    icon: <FiWind className="w-8 h-8 text-gray-400" />, // Wind icon for airflow
-    img: '/images/products/Chimney.webp',
-    brands: ['Bajaj', 'Havells', 'Panasonic', 'Samsung', 'LG'],
-    buy: true,
-    rent: false,
-  },
-  {
-    key: 'hob',
-    name: 'Hob',
-    icon: <FaFire className="w-8 h-8 text-red-400" />, // Fire icon for Hob burners
-    img: '/images/products/Hob.webp',
-    brands: ['Bajaj', 'Havells', 'Panasonic', 'Samsung', 'LG'],
-    buy: true,
-    rent: false,
-  },
-  {
-    key: 'water-purifier',
-    name: 'Water Purifier',
-    icon: <FiDroplet className="w-8 h-8 text-indigo-500" />,
-    img: '/images/products/Water-purifier.webp',
-    brands: ['Kent', 'Aquaguard', 'Livpure', 'Pureit', 'AO Smith'],
-    buy: true,
-    rent: true,
-  },
-  {
-    key: 'refrigerator',
-    name: 'Refrigerator',
-    icon: <FiBox className="w-8 h-8 text-purple-500" />,
-    img: '/images/products/Refrigerator.webp',
-    brands: ['LG', 'Samsung', 'Whirlpool', 'Godrej', 'Haier'],
-    buy: true,
-    rent: false,
-  },
-];
 
   export default function BuyRent() {
   const dispatch = useDispatch();
@@ -188,9 +53,9 @@ const categories = [
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-            {categories.map((cat) => (
+            {categoryData.map((cat) => (
               <Link
-                to={`/buy-rent/${cat.key}`}
+                to={`/buy-rent/${cat.name}`}
                 key={cat.key}
                 className={
                   `relative bg-white rounded-2xl shadow-2xl border-2 border-gray-100 hover:border-blue-500 transition-all duration-300 flex flex-col overflow-hidden group hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400`
@@ -203,8 +68,7 @@ const categories = [
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-green-400 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg z-20 uppercase tracking-wider animate-bounce">Best Value</div>
                 )}
                 <div className="flex flex-col items-center p-6 cursor-pointer">
-                  <img src={cat.img} alt={cat.name} className="h-20 w-20 object-contain mb-3 drop-shadow-xl rounded-xl group-hover:scale-110 transition-transform duration-300" />
-                  {cat.icon}
+                  <img src={cat.img} alt={cat.name} className="h-36 w-auto object-contain mb-3 drop-shadow-xl rounded-xl group-hover:scale-110 transition-transform duration-300" />
                   <h3 className="text-lg font-bold text-gray-900 mt-2 mb-1 group-hover:text-indigo-700 transition-colors duration-300">{cat.name}</h3>
                   <span className="text-xs text-blue-600 font-semibold flex items-center gap-1">See Details <FiArrowRight className="ml-1" /></span>
                 </div>

@@ -48,6 +48,16 @@ export const fetchCategoryById = (id) => async (dispatch) => {
     }
 }
 
+export const fetchCategoryByName = (name) => async (dispatch) => {
+    dispatch(setCategoryLoading(true));
+    try {
+        const response = await axios.get(import.meta.env.VITE_BASE_URL + "/categories/getCategoryByName/" + name);
+        dispatch(setSelectedCategory(response.data.data));
+    } catch (error) {
+        dispatch(setCategoryError(error.message));
+    }
+}       
+
 export const addCategory = (formData) => async (dispatch) => {
     dispatch(setCategoryLoading(true));
     try {

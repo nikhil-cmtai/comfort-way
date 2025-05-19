@@ -1,60 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiCheckSquare, FiHome, FiShield, FiZap } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-
-// Featured plans data - showing only 3 of 4 available plans
-const featuredPlans = [
-  {
-    bhk: '1 BHK',
-    original: 9999,
-    discount: 40,
-    price: 5999,
-    features: [
-      'All appliances covered',
-      'Unlimited repairs',
-      'Free service visits',
-      'Genuine parts guarantee',
-    ],
-    icon: <FiHome className="w-6 h-6 text-indigo-600" />,
-    highlight: false,
-    color: 'from-indigo-600 to-blue-500',
-    delay: '0s',
-  },
-  {
-    bhk: '2 BHK',
-    original: 12999,
-    discount: 40,
-    price: 7799,
-    features: [
-      'All appliances covered',
-      'Unlimited repairs',
-      'Free service visits',
-      'Genuine parts guarantee',
-      'Priority support',
-    ],
-    icon: <FiShield className="w-6 h-6 text-blue-600" />,
-    highlight: true, // Most popular
-    color: 'from-blue-600 to-indigo-500',
-    delay: '0.15s',
-  },
-  {
-    bhk: '3 BHK',
-    original: 15999,
-    discount: 40,
-    price: 9599,
-    features: [
-      'All appliances covered',
-      'Unlimited repairs',
-      'Free service visits',
-      'Genuine parts guarantee',
-      'Priority support',
-    ],
-    icon: <FiZap className="w-6 h-6 text-purple-600" />,
-    highlight: false,
-    color: 'from-purple-600 to-indigo-500',
-    delay: '0.3s',
-  },
-];
+import { fetchProtectionData, selectProtectionData, selectProtectionLoading, selectProtectionError } from '../../features/slices/protectionSlice';
+import { useSelector, useDispatch } from 'react-redux';
 
 const customPlan = {
   title: 'Custom Plan',
@@ -69,7 +17,25 @@ const customPlan = {
 };
 
 const ProtectionPlansSection = () => {
+  const dispatch = useDispatch();
+  const protectionData = useSelector(selectProtectionData);
+  const loading = useSelector(selectProtectionLoading);
+  const error = useSelector(selectProtectionError);
   const [planType, setPlanType] = useState('home');
+
+
+  useEffect(() => {
+    dispatch(fetchProtectionData());
+  }, [dispatch]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-50 to-blue-50 relative overflow-hidden">
       {/* Decorative elements */}
@@ -105,7 +71,7 @@ const ProtectionPlansSection = () => {
         {/* Plans Layout */}
         {planType === 'home' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch mb-10">
-            {featuredPlans.map((plan, idx) => {
+            {protectionData.slice(0, 3).map((plan, idx) => {
               const maxFeatures = 3;
               const showMore = plan.features.length > maxFeatures;
               return (
@@ -131,9 +97,7 @@ const ProtectionPlansSection = () => {
                   <div className="absolute top-2 right-3 bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full shadow-sm group-hover:bg-green-200 transition-colors duration-300">40% OFF</div>
                   
                   <div className="p-4 text-center border-b border-indigo-100 bg-gradient-to-br from-indigo-50/60 to-white/80 transition-all duration-300 group-hover:from-indigo-100/80 group-hover:to-white">
-                    <div className="inline-block p-2 rounded-full bg-indigo-100 mb-3 shadow-md group-hover:scale-110 group-hover:rotate-6 transition-all duration-500" style={{boxShadow: '0 0 16px 0 rgba(99,102,241,0.15)'}}>
-                      {React.cloneElement(plan.icon, { className: "w-6 h-6 " + plan.icon.props.className.split(" ").filter(cls => cls.includes("text-")).join(" ") })}
-                    </div>
+
                     <h3 className="text-lg font-bold text-gray-800 mb-1 tracking-wide uppercase">{plan.bhk}</h3>
                     <div className="flex items-center justify-center gap-1.5 mb-1">
                       <span className="text-sm text-gray-400 line-through font-medium">₹{plan.original.toLocaleString()}</span>

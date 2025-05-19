@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiFilter, FiArrowRight, FiCheckCircle, FiStar } from 'react-icons/fi';
+import { FiArrowRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
 // Category filters

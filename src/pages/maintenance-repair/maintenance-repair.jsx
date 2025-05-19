@@ -1,19 +1,9 @@
 import React, { useEffect } from 'react';
-import { FiTool, FiClock, FiCheckCircle, FiMessageSquare, FiUser, FiMail, FiPhone, FiHash, FiEdit3, FiArrowRight, FiStar, FiShield, FiTruck, FiThumbsUp } from 'react-icons/fi';
+import { FiArrowRight, FiStar, FiShield, FiTruck, FiThumbsUp } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import maintenance from '/images/maintenance-banner.jpg';  
 import { fetchCategoryData, selectCategoryData, selectCategoryLoading, selectCategoryError } from '../../features/slices/categorySlice';
 import { useDispatch, useSelector } from 'react-redux';
-
-// Device plans data with image and description
-const devicePlansData = [
-  { id: 'ac', label: 'AC', img: '/images/products/ac-2.webp', desc: 'AC Repair, Installation & Service', popular: true  },
-  { id: 'ro', label: 'RO', img: '/images/products/Water-purifier.webp', desc: 'Water Purifier Filter Change', popular: true },
-  { id: 'electrician', label: 'Electrician', img: '/images/products/electrician.webp', desc: 'Electrician Service & Repair' },
-  { id: 'plumbing', label: 'Plumbing', img: '/images/products/plumbing.webp', desc: 'Plumbing Service & Repair' },
-  { id: 'home-appliances', label: 'Home Appliances', img: '/images/products/home-appliances.jpeg', desc: 'Home Appliance Repair & Maintenance' },
-  { id: 'kitchen-appliances', label: 'Kitchen Appliances', img: '/images/products/kitchen-appliances.webp', desc: 'Kitchen Appliance Repair & Maintenance' },
-];
 
 const galleryImages = [
   { src: '/images/gallery/Image1.jpeg', alt: 'Technician repairing AC' },
@@ -115,7 +105,7 @@ const MaintenanceRepair = () => {
           </div>
           
           <div className="grid grid-cols-3 justify-center gap-6 md:gap-8">
-          {devicePlansData.map((item, index) => (
+          {categories.map((item, index) => (
             <Link
               to={`/maintenance-repair/${item.category || item.id}`}
               key={item.id || item.category || index}
@@ -136,7 +126,7 @@ const MaintenanceRepair = () => {
               <img
                 src={item.img}
                 alt={item.label || item.name}
-                className="w-full h-48 object-cover rounded-t-2xl"
+                className="w-auto h-48 object-contain rounded-t-2xl"
                 onError={e => { e.target.src = '/images/placeholder.png'; }}
               />
               {/* Card Content */}

@@ -98,7 +98,7 @@ export const addUser = (newUser) => async (dispatch) => {
 export const editUser = (userId, updatedData) => async (dispatch) => {
   try {
     await axios.put(
-        import.meta.env.VITE_BASE_URL + `/auth/users/${userId}`,
+        import.meta.env.VITE_BASE_URL + `/auth/updateUser/${userId}`,
       updatedData,
     );
     dispatch(fetchUserData());

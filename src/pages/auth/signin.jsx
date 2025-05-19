@@ -31,8 +31,11 @@ const Signin = () => {
 
       if (res?.token) {
         const role = res?.user?.role;
-        localStorage.setItem("userId", res?.user?.role);
-        navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
+        localStorage.setItem("userId", res?.user?.uid);
+        localStorage.setItem("role", role);
+        setTimeout(() => {
+          navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
+        }, 300);
       } else {
         setLocalError('Invalid email or password');
       }

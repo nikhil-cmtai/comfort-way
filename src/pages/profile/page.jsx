@@ -4,7 +4,7 @@ import { FiUser, FiMail, FiPhone, FiEdit, FiChevronRight, FiSettings, FiShield, 
 import { motion } from 'framer-motion';
 import Avatar from '../../components/ui/Avatar';
 import PageHeader from '../../components/ui/PageHeader';
-import { fetchUserById, selectSelectedUser } from '../../features/slices/userSlice';
+import { fetchUserById, selectSelectedUser, editUser } from '../../features/slices/userSlice';
 import {fetchServiceHistoriesByUserId, selectServiceHistoryData, selectServiceHistoryError, selectServiceHistoryLoading} from '../../features/slices/serviceHistorySlice';
 import { fetchPurchasedPlansByUserId, selectSelectedPurchasedPlan, selectPurchasedPlanError, selectPurchasedPlanLoading } from '../../features/slices/purchasedPlanSlice';
 
@@ -25,6 +25,7 @@ const ProfilePage = () => {
     phoneNumber: '',
     address: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -57,8 +58,13 @@ const ProfilePage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateUser(formData));
-    setIsEditing(false);
+    setIsSubmitting(true);
+    dispatch(editUser(selectedUser.id, formData));
+    fetchUserById(selectedUser.id);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsEditing(false);
+    }, 1500); // Simulate update delay
   };
 
   const stats = [
@@ -244,8 +250,19 @@ const ProfilePage = () => {
           <button
             type="submit"
             className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-md hover:shadow-lg transition-all focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            disabled={isSubmitting}
           >
-            Save Changes
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Updating...
+              </>
+            ) : (
+              'Save Changes'
+            )}
           </button>
         </div>
       </form>

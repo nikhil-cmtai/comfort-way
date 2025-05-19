@@ -1,77 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiShield, FiCheckSquare, FiTool, FiHome, FiZap, FiUsers, FiAirplay, FiDollarSign } from 'react-icons/fi';
 import protectionBanner from '/images/products/protectionBanner.webp';
 import Select from '../../components/ui/Select';
-
-// Predefined plans
-const bhkPlans = [
-  {
-    bhk: '1 BHK',
-    original: 9999,
-    discount: 40,
-    price: 5999,
-    features: [
-      'All appliances covered',
-      'Unlimited repairs',
-      'Free service visits',
-      'Genuine parts guarantee',
-      'Priority support',
-    ],
-    icon: <FiHome className="w-10 h-10 text-indigo-600" />,
-    highlight: false,
-  },
-  {
-    bhk: '2 BHK',
-    original: 12999,
-    discount: 40,
-    price: 7799,
-    features: [
-      'All appliances covered',
-      'Unlimited repairs',
-      'Free service visits',
-      'Genuine parts guarantee',
-      'Priority support',
-      'Annual maintenance check',
-    ],
-    icon: <FiUsers className="w-10 h-10 text-blue-600" />,
-    highlight: true, // Most popular
-  },
-  {
-    bhk: '3 BHK',
-    original: 15999,
-    discount: 40,
-    price: 9599,
-    features: [
-      'All appliances covered',
-      'Unlimited repairs',
-      'Free service visits',
-      'Genuine parts guarantee',
-      'Priority support',
-      'Annual maintenance check',
-      'AC deep cleaning',
-    ],
-    icon: <FiZap className="w-10 h-10 text-purple-600" />,
-    highlight: false,
-  },
-  {
-    bhk: '4 BHK',
-    original: 19999,
-    discount: 40,
-    price: 11999,
-    features: [
-      'All appliances covered',
-      'Unlimited repairs',
-      'Free service visits',
-      'Genuine parts guarantee',
-      'Priority support',
-      'Annual maintenance check',
-      'AC deep cleaning',
-      'Dedicated relationship manager',
-    ],
-    icon: <FiShield className="w-10 h-10 text-yellow-500" />,
-    highlight: false,
-  },
-];
+import { fetchProtectionData, selectProtectionData, selectProtectionLoading, selectProtectionError } from '../../features/slices/protectionSlice';
+import { useSelector, useDispatch } from 'react-redux';
 
 
 const appliances = [
@@ -99,7 +31,12 @@ const durations = [
 ];
 
 export default function ProtectionPlans() {
-  // Custom plan state
+  const dispatch = useDispatch();
+  const protectionData = useSelector(selectProtectionData);
+  const loading = useSelector(selectProtectionLoading);
+  const error = useSelector(selectProtectionError);
+
+
   const [selectedDuration, setSelectedDuration] = useState(durations[0]);
   const [applianceSelections, setApplianceSelections] = useState(
     appliances.reduce((acc, appliance) => {
@@ -108,30 +45,10 @@ export default function ProtectionPlans() {
     }, {})
   );
 
-  // Handle appliance quantity change
-  const handleApplianceChange = (category, change) => {
-    setApplianceSelections(prev => {
-      const newValue = Math.max(0, prev[category] + change);
-      return { ...prev, [category]: newValue };
-    });
-  };
+  useEffect(() => {
+    dispatch(fetchProtectionData());
+  }, [dispatch]);
 
-  // Calculate custom plan price
-  const calculateCustomPlanPrice = () => {
-    const basePrice = Object.entries(applianceSelections).reduce((total, [category, quantity]) => {
-      const appliance = appliances.find(a => a.category === category);
-      return total + (appliance?.pricePerUnit * quantity || 0);
-    }, 0);
-    
-    return {
-      basePrice,
-      finalPrice: Math.round(basePrice * selectedDuration.multiplier),
-      originalPrice: Math.round(basePrice * selectedDuration.multiplier * 1.4) // 40% off calculation
-    };
-  };
-
-  const customPricing = calculateCustomPlanPrice();
-  const hasSelectedAppliances = Object.values(applianceSelections).some(qty => qty > 0);
 
   return (
     <div className="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen">
@@ -178,7 +95,7 @@ export default function ProtectionPlans() {
           <p className="text-lg text-gray-600 text-center mb-12 sm:mb-14 max-w-2xl mx-auto">One plan covers all your appliances. Unlimited repairs, free service visits, and more. Select your home type below:</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 items-stretch">
-            {bhkPlans.map((plan, idx) => {
+            {protectionData.map((plan, idx) => {
               const maxFeatures = 4;
               const showMore = plan.features.length > maxFeatures;
               return (
@@ -195,9 +112,6 @@ export default function ProtectionPlans() {
                   {/* Discount Badge */}
                   <div className="absolute top-4 right-4 bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full shadow">40% OFF</div>
                   <div className="p-6 text-center border-b border-indigo-100 bg-gradient-to-br from-indigo-50/60 to-white/80">
-                    <div className="inline-block p-2 rounded-full bg-indigo-100 mb-3 shadow-lg" style={{boxShadow: '0 0 24px 0 rgba(99,102,241,0.15)'}}>
-                      {plan.icon}
-                    </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-1 tracking-wide uppercase">{plan.bhk}</h3>
                     <div className="flex items-center justify-center gap-2 mb-1">
                       <span className="text-base text-gray-400 line-through font-medium">₹{plan.original.toLocaleString()}</span>
