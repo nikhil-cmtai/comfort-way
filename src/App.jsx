@@ -9,6 +9,7 @@ import Maintenance from './pages/Maintenance';
 // Google client ID from environment variables
 // If not available, this will need to be set in the .env file
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = import.meta.env.VITE_GOOGLE_CLIENT_SECRET;
 const MAINTENANCE_MODE = import.meta.env.VITE_MAINTENANCE === 'true';
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
   }
   return (
     <Provider store={store}>
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} clientSecret={GOOGLE_CLIENT_SECRET}>
         <AuthInitializer />
         <RouterProvider router={router} />
       </GoogleOAuthProvider>

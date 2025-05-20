@@ -3,8 +3,10 @@ import { FiLogIn, FiMail, FiLock, FiLoader } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGoogleLogin } from '@react-oauth/google';
 import { login, loginWithGoogle, setError } from '../../features/slices/authSlice';
+// Firebase imports (frontend only)
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import '../../firebase'; // Make sure firebase is initialized in frontend only
 
 const Signin = () => {
   const dispatch = useDispatch();
@@ -28,7 +30,6 @@ const Signin = () => {
     setLocalError('');
     try {
       const res = await dispatch(login(formData));
-
       if (res?.token) {
         const role = res?.user?.role;
         localStorage.setItem("userId", res?.user?.uid);
@@ -44,31 +45,30 @@ const Signin = () => {
     }
   };
 
-  const googleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      setIsGoogleLoading(true);
-      setLocalError('');
-      try {
-        const res = await dispatch(loginWithGoogle(tokenResponse.access_token));
-        if (res?.token) {
-          const role = res?.user?.role;
-          localStorage.setItem("userId", res?.user?.role);
-          navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
-        } else {
-          setLocalError('Google sign-in failed. Please try again.');
-        }
-      } catch (err) {
-        setLocalError(err?.message || 'Google sign-in failed.');
-      } finally {
-        setIsGoogleLoading(false);
+  // Google sign-in with Firebase Auth (frontend only)
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    setLocalError('');
+    try {
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
+      const res = await dispatch(loginWithGoogle(idToken));
+      if (res?.token) {
+        const role = res?.user?.role;
+        localStorage.setItem("userId", res?.user?.uid);
+        localStorage.setItem("role", role);
+        navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
+      } else {
+        setLocalError('Google sign-in failed. Please try again.');
       }
-    },
-    onError: (err) => {
-      setLocalError('Google sign-in failed: ' + err?.error || 'Unknown error');
-    },
-    flow: 'implicit',
-    popup: true,
-  });
+    } catch (err) {
+      setLocalError(err?.message || 'Google sign-in failed.');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-blue-200 via-indigo-200 to-blue-300 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -164,7 +164,7 @@ const Signin = () => {
         </div>
 
         <button
-          onClick={googleLogin}
+          onClick={handleGoogleSignIn}
           type="button"
           disabled={isGoogleLoading}
           className="w-full flex justify-center items-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 hover:bg-gray-50"
