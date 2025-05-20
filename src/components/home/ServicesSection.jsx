@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiArrowRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectServiceData, fetchServiceData } from '../../features/slices/serviceSlice';
 
 // Category filters
 const categories = [
@@ -11,18 +13,15 @@ const categories = [
   { id: 'water', label: 'Water', items: ['water-purifier', 'geyser', 'boiler'] },
 ];
 
-const services = [
-  { id: 'ac', label: 'AC', img: '/images/products/ac-2.webp', desc: 'AC Repair, Installation & Service', popular: true  },
-  { id: 'ro', label: 'RO', img: '/images/products/Water-purifier.webp', desc: 'Water Purifier Filter Change', popular: true },
-  { id: 'electrician', label: 'Electrician', img: '/images/products/electrician.webp', desc: 'Electrician Service & Repair' },
-  { id: 'plumbing', label: 'Plumbing', img: '/images/products/plumbing.webp', desc: 'Plumbing Service & Repair' },
-  { id: 'home-appliances', label: 'Home Appliances', img: '/images/products/home-appliances.jpeg', desc: 'Home Appliance Repair & Maintenance' },
-  { id: 'kitchen-appliances', label: 'Kitchen Appliances', img: '/images/products/kitchen-appliances.webp', desc: 'Kitchen Appliance Repair & Maintenance' },
-];
-
 const ServicesSection = () => {
+  const dispatch = useDispatch();
+  const services = useSelector(selectServiceData);
   const [activeFilter, setActiveFilter] = useState('all');
   const [hoverIndex, setHoverIndex] = useState(null);
+
+  useEffect(() => {
+    dispatch(fetchServiceData());
+  }, [dispatch]);
 
   // Filter services based on selected category
   const filteredServices = services.filter(service => {

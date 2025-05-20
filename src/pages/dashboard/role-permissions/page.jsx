@@ -17,7 +17,9 @@ const DEFAULT_PERMISSIONS = [
   { module: "tasks", create: false, read: false, update: false, delete: false },
   { module: "product categories", create: false, read: false, update: false, delete: false },
   { module: "product list", create: false, read: false, update: false, delete: false },
-  { module: "roles", create: false, read: false, update: false, delete: false }
+  { module: "roles", create: false, read: false, update: false, delete: false },
+  { module: "services", create: false, read: false, update: false, delete: false },
+  { module: "service history", create: false, read: false, update: false, delete: false }
 ];
 
 const RolePermissionsPage = () => {

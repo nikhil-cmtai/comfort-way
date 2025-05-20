@@ -36,8 +36,8 @@ import Tasks from '../pages/dashboard/tasks/page';
 import Users from '../pages/dashboard/users/page';
 import RolePermissions from '../pages/dashboard/role-permissions/page';
 import EditRole from '../pages/dashboard/role-permissions/edit-role';
-
-
+import ServicesPage from '../pages/dashboard/services/page';
+import ServiceHistory from '../pages/dashboard/serviceHistory/page';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -168,6 +168,14 @@ export const router = createBrowserRouter([
       {
         path: 'roles-permissions/:id',
         element: <ProtectedRoute><EditRole /></ProtectedRoute>,
+      },
+      {
+        path: 'services',
+        element: <ProtectedRoute><ServicesPage /></ProtectedRoute>,
+      },
+      {
+        path: 'service-history',
+        element: <ProtectedRoute><ServiceHistory /></ProtectedRoute>,
       },
     ],
   },

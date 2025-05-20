@@ -44,7 +44,7 @@ export const fetchServiceHistoryData = () => async (dispatch) => {
   dispatch(setServiceHistoryLoading());
   try {
     const response = await axios.get(
-      import.meta.env.VITE_BASE_URL + "/serviceHistory/getAllServiceHistories",
+      import.meta.env.VITE_BASE_URL + "/serviceHistory/getServiceHistories",
     );
     dispatch(setServiceHistoryData(response.data));
   } catch (error) {

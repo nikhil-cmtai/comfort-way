@@ -107,8 +107,8 @@ const MaintenanceRepair = () => {
           <div className="grid grid-cols-3 justify-center gap-6 md:gap-8">
           {categories.map((item, index) => (
             <Link
-              to={`/maintenance-repair/${item.category || item.id}`}
-              key={item.id || item.category || index}
+              to={`/maintenance-repair/${item.name}`}  
+              key={item.id || item.name || index}
               className="group relative bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col p-0 hover:-translate-y-2 cursor-pointer overflow-hidden max-w-xs w-full mx-auto min-h-[340px]"
               style={{ textDecoration: 'none' }}
               onMouseEnter={() => setHoverIndex(index)}

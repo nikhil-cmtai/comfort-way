@@ -8,19 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 const appliances = [
   { name: 'AC', category: 'ac', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1499 },
-  { name: 'Air Purifier', category: 'air-purifier', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1299 },
-  { name: 'Chopper', category: 'chopper', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1199 },
-  { name: 'Blender', category: 'blender', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
-  { name: 'Iron', category: 'iron', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
-  { name: 'Geyser', category: 'geyser', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
-  { name: 'Boiler', category: 'boiler', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
-  { name: 'Juicer', category: 'juicer', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
-  { name: 'Microwave', category: 'microwave', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
-  { name: 'Washing Machine', category: 'washing-machine', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
-  { name: 'Chimney', category: 'chimney', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
-  { name: 'Hob', category: 'hob', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
   { name: 'Water Purifier', category: 'water-purifier', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
-  { name: 'Refrigerator', category: 'refrigerator', icon: <FiAirplay className="w-5 h-5" />, pricePerUnit: 1099 },
 ];
 
 // Plan duration options

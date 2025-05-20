@@ -68,7 +68,7 @@ import { useDispatch, useSelector } from 'react-redux';
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-green-400 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg z-20 uppercase tracking-wider animate-bounce">Best Value</div>
                 )}
                 <div className="flex flex-col items-center p-6 cursor-pointer">
-                  <img src={cat.img} alt={cat.name} className="h-36 w-auto object-contain mb-3 drop-shadow-xl rounded-xl group-hover:scale-110 transition-transform duration-300" />
+                  <img src={cat.img} alt={cat.name} className="h-36 w-auto object-contain mb-3 rounded-xl group-hover:scale-110 transition-transform duration-300" />
                   <h3 className="text-lg font-bold text-gray-900 mt-2 mb-1 group-hover:text-indigo-700 transition-colors duration-300">{cat.name}</h3>
                   <span className="text-xs text-blue-600 font-semibold flex items-center gap-1">See Details <FiArrowRight className="ml-1" /></span>
                 </div>

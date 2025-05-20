@@ -25,10 +25,12 @@ const Sidebar = () => {
     { label: 'Users', path: '#', icon: '👤', module: 'users',
       subItems: [
         { label: 'Users', path: '/dashboard/users', icon: '👤', module: 'users' },
-        { label: 'Roles & Permissions', path: '/dashboard/roles-permissions', icon: '🔒', module: 'roles' },
+        { label: 'Roles & Permissions', path: '/dashboard/roles-permissions', icon: '🔒', module: 'roles-permissions' },
         { label: 'Customers', path: '/dashboard/customers', icon: '👤', module: 'customers' },
       ]
      },
+     { label: 'Services', path: '/dashboard/services', icon: '🔧', module: 'services',},
+     { label: 'Service History', path: '/dashboard/service-history', icon: '📝', module: 'serviceHistory' },
     { 
       label: 'Products', 
       path: '/dashboard/products', 
