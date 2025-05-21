@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchMaintenanceRequestData, selectMaintenanceRequestData, selectMaintenanceRequestLoading, selectMaintenanceRequestError } from '../../../features/slices/maintenanceSlice';
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
+
+// Utility function to get permissions for a module
+function getModulePermission(permissions, moduleName) {
+    return permissions?.find(p => p.module === moduleName) || {};
+} 
 
 const MaintenanceRequest = () => {
   const dispatch = useDispatch();
@@ -10,13 +16,19 @@ const MaintenanceRequest = () => {
     completed: [],
     cancelled: []
   };
+  const role = useSelector(selectSelectedRole);
   const loading = useSelector(selectMaintenanceRequestLoading);
   const error = useSelector(selectMaintenanceRequestError);
   const [activeFilter, setActiveFilter] = useState('all');
-
+  const roleId = localStorage.getItem('role');
+  
   useEffect(() => {
     dispatch(fetchMaintenanceRequestData());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchRoleById(roleId));
+  }, [dispatch, roleId]);
 
   const getPriorityBadgeClass = (priority) => {
     switch(priority) {
@@ -76,6 +88,9 @@ const MaintenanceRequest = () => {
       </div>
     </div>;
   }
+
+  const permissions = role?.permissions || [];
+  const maintenancePerm = getModulePermission(permissions, 'maintenance requests');
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -141,11 +156,13 @@ const MaintenanceRequest = () => {
           <span>Cancelled</span>
           <span className="bg-white bg-opacity-90 text-xs px-2 py-1 rounded-full">{counts.cancelled}</span>
         </button>
+        {maintenancePerm.create && (
         <div className="ml-auto">
           <button className="bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 px-4 rounded-lg transition-colors flex items-center gap-1 border border-blue-200">
             + New Request
           </button>
         </div>
+        )}
       </div>
 
       {/* Kanban Board */}
@@ -186,8 +203,12 @@ const MaintenanceRequest = () => {
                     <div className="text-xs text-gray-500 flex justify-between items-center pt-2 border-t">
                       <span>{request.date ? new Date(request.date).toLocaleDateString() : '-'}</span>
                       <div className="flex gap-2">
+                        {maintenancePerm.update && (
                         <button className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded">Edit</button>
+                        )}
+                        {maintenancePerm.read && (
                         <button className="text-gray-600 bg-gray-50 hover:bg-gray-100 px-2 py-1 rounded">Details</button>
+                        )}
                       </div>
                     </div>
                   </div>

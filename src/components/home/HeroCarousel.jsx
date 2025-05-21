@@ -52,37 +52,46 @@ const HeroCarousel = () => {
 
   const slides = [
     {
-      bgImage: 'url("/images/hero-bg-1.jpg")', // Replace with actual image path
+      bgImage: 'url("/images/hero-bg-1.jpg")',
       bgFallback: 'bg-gradient-to-r from-gray-900 to-indigo-900',
-      imageUrl: '/images/products/ac-2.webp', // Replace with actual image
+      imageUrl: '/images/products/ac-2.webp',
       imageFallback: 'https://dummyimage.com/400x300/4366d6/ffffff&text=Maintenance+Repair',
       title: 'Professional Appliance',
       highlight: 'Maintenance & Repair',
       highlightColor: 'text-indigo-300',
       subText: 'Expert technicians for all your appliance repair and maintenance needs',
-      badges: ['Same-Day Service', 'Experienced Technicians', '90-Day Warranty']
+      badges: ['Same-Day Service', 'Experienced Technicians', '90-Day Warranty'],
+      buttonText: 'Book Now',
+      buttonLink: '/maintenance-repair',
+      buttonColor: 'from-indigo-600 to-blue-600'
     },
     {
-      bgImage: 'url("/images/hero-bg-2.jpg")', // Replace with actual image path
+      bgImage: 'url("/images/hero-bg-2.jpg")',
       bgFallback: 'bg-gradient-to-r from-gray-900 to-blue-900',
-      imageUrl: '/images/products/fridge.webp', // Replace with actual image
+      imageUrl: '/images/products/fridge.webp',
       imageFallback: 'https://dummyimage.com/400x300/0d9488/ffffff&text=Buy+Appliances',
       title: 'Premium Home Appliances',
       highlight: 'Buy New Devices',
       highlightColor: 'text-cyan-300',
       subText: 'Top quality home appliances with professional installation included',
-      badges: ['Premium Brands', 'Free Installation', 'Extended Warranty']
+      badges: ['Premium Brands', 'Free Installation', 'Extended Warranty'],
+      buttonText: 'Buy Now',
+      buttonLink: '/buy-rent',
+      buttonColor: 'from-cyan-600 to-blue-600'
     },
     {
-      bgImage: 'url("/images/hero-bg-3.jpg")', // Replace with actual image path
+      bgImage: 'url("/images/hero-bg-3.jpg")',
       bgFallback: 'bg-gradient-to-r from-gray-900 to-purple-900',
-      imageUrl: '/images/products/Washing-machine.webp', // Replace with actual image
+      imageUrl: '/images/products/Washing-machine.webp',
       imageFallback: 'https://dummyimage.com/400x300/6266f1/ffffff&text=Rent+Appliances',
       title: 'Affordable Solutions with',
       highlight: 'Appliance Rentals',
       highlightColor: 'text-yellow-300',
       subText: 'Flexible rental options for all major home appliances with maintenance included',
-      badges: ['No Upfront Cost', 'Free Maintenance', 'Flexible Duration']
+      badges: ['No Upfront Cost', 'Free Maintenance', 'Flexible Duration'],
+      buttonText: 'Book Now',
+      buttonLink: '/contact',
+      buttonColor: 'from-yellow-600 to-orange-600'
     },
   ];
 
@@ -99,10 +108,8 @@ const HeroCarousel = () => {
                 backgroundPosition: 'center',
               }}
             >
-              {/* Enhanced dark overlay with gradient */}
               <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/80 to-black/70 z-0"></div>
               
-              {/* Add animated particles in background */}
               <div className="absolute inset-0 overflow-hidden z-0">
                 {[...Array(10)].map((_, i) => (
                   <div 
@@ -121,7 +128,6 @@ const HeroCarousel = () => {
               
               <div className="mx-auto max-w-7xl px-3 md:px-6 lg:px-8 relative z-10 w-full">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-20 items-center">
-                  {/* Text Content with enhanced animations - Moved up for mobile */}
                   <div className="text-center md:text-left order-1">
                     <div className="space-y-2 md:space-y-4 pb-6 md:pb-6">
                       <div className="space-y-0.5 md:space-y-2">
@@ -134,27 +140,22 @@ const HeroCarousel = () => {
                         </p>
                       </div>
                       
-                      
-                      {/* Enhanced Call to Action Button */}
                       <div className="mt-4 md:mt-8">
                         <Link 
-                          to="/maintenance-repair" 
-                          className="inline-flex items-center bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold text-sm md:text-base py-2 md:py-3.5 px-6 md:px-8 rounded-full shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 group border border-indigo-400/20"
+                          to={slide.buttonLink}
+                          className={`inline-flex items-center bg-gradient-to-r ${slide.buttonColor} text-white font-bold text-sm md:text-base py-2 md:py-3.5 px-6 md:px-8 rounded-full shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 group border border-indigo-400/20`}
                         >
-                          Book Now
+                          {slide.buttonText}
                           <FiArrowRight className="ml-1.5 md:ml-2 group-hover:translate-x-1 transition-transform duration-300 text-sm md:text-base" />
                         </Link>
                       </div>
                     </div>
                   </div>
 
-                  {/* Image with enhanced animation - Moved down for mobile */} 
                   <div className="hidden md:flex justify-center items-center order-2 mt-1.5 md:mt-0">
                     <div className="group relative w-full max-w-[130px] xs:max-w-[160px] sm:max-w-[200px] md:max-w-md mx-auto">
-                      {/* Enhanced background glow effect */}
                       <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-xl opacity-70 group-hover:opacity-100 group-hover:bg-indigo-600/30 transition-all duration-500"></div>
                       
-                      {/* Image with improved styling */}
                       <div className="relative z-10 bg-gradient-to-br from-white/15 to-white/5 p-0.5 md:p-2 rounded-xl md:rounded-3xl border border-white/30 shadow-xl backdrop-blur-sm transform transition duration-700 group-hover:scale-105 group-hover:rotate-1">
                         <img 
                           src={slide.imageUrl} 
@@ -164,7 +165,6 @@ const HeroCarousel = () => {
                           onError={(e) => { e.target.src = slide.imageFallback; }}
                         />
                         
-                        {/* Enhanced floating badge */}
                         <div className="absolute -top-1 -right-1 md:-top-4 md:-right-4 bg-gradient-to-r from-indigo-600 to-blue-500 text-white px-1.5 py-0.5 md:px-4 md:py-1.5 rounded-full text-[8px] md:text-sm font-medium shadow-lg transform transition-transform duration-500 group-hover:scale-110">
                           Premium
                         </div>

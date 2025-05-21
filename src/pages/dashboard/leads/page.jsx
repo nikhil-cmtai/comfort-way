@@ -12,10 +12,18 @@ import FormInput from '../../../components/ui/FormInput';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchLeadData, selectLeadData, selectLeadLoading, selectLeadError, addLead, editLead } from '../../../features/slices/leadSlice';
 import { fetchUserData, selectUserData } from '../../../features/slices/userSlice';
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
+
+// Utility function to get permissions for a module
+function getModulePermission(permissions, moduleName) {
+    return permissions?.find(p => p.module === moduleName) || {};
+} 
+
 
 const Leads = () => {
   const dispatch = useDispatch();
   const leads = useSelector(selectLeadData) || [];
+  const role = useSelector(selectSelectedRole);
   const users = useSelector(selectUserData) || [];
   const loading = useSelector(selectLeadLoading);
   const error = useSelector(selectLeadError);
@@ -32,6 +40,7 @@ const Leads = () => {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [currentLead, setCurrentLead] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const roleId = localStorage.getItem('role');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -50,6 +59,10 @@ const Leads = () => {
     dispatch(fetchLeadData());
     dispatch(fetchUserData());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchRoleById(roleId));
+  }, [dispatch, roleId]);
 
   // Filter leads based on search term and filter status
   const filteredLeads = leads.filter(lead => {
@@ -192,6 +205,9 @@ const Leads = () => {
     </div>;
   }
 
+  const permissions = role?.permissions || [];
+  const leadPerm = getModulePermission(permissions, 'leads');
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <PageHeader 
@@ -265,9 +281,15 @@ const Leads = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end items-center space-x-2">
+                      {leadPerm.update && (
                       <Button variant="primary" size="sm" onClick={() => openEditModal(lead)} aria-label="Edit status">Edit</Button>
+                      )}
+                      {leadPerm.update && (
                       <Button variant="outline" size="sm" onClick={() => openNoteModal(lead)} aria-label="Add note">Add Note</Button>
+                      )}
+                      {leadPerm.update && (
                       <Button variant="outline" size="sm" onClick={() => openAssignModal(lead)} aria-label="Assign">Assign</Button>
+                      )}
                     </div>
                   </td>
                 </tr>

@@ -25,8 +25,8 @@ const Sidebar = () => {
     { label: 'Users', path: '#', icon: '👤', module: 'users',
       subItems: [
         { label: 'Users', path: '/dashboard/users', icon: '👤', module: 'users' },
-        { label: 'Roles & Permissions', path: '/dashboard/roles-permissions', icon: '🔒', module: 'roles-permissions' },
-        { label: 'Customers', path: '/dashboard/customers', icon: '👤', module: 'customers' },
+        { label: 'Roles & Permissions', path: '/dashboard/role-permissions', icon: '🔒', module: 'role-permissions' },
+        { label: 'Customers', path: '/dashboard/customers', icon: '👤', module: 'users' },
       ]
      },
      { label: 'Services', path: '/dashboard/services', icon: '🔧', module: 'services',},

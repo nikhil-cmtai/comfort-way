@@ -6,7 +6,7 @@ import Card from '../../../components/ui/Card';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTaskData, selectTaskData, selectTaskLoading, selectTaskError, addTask, editTask, deleteTask } from '../../../features/slices/taskSlice';
 import { fetchUserData, selectUserData } from '../../../features/slices/userSlice';
-
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
 
 const STATUS_OPTIONS = [
   { value: 'todo', label: 'To Do' },
@@ -24,6 +24,8 @@ const TasksPage = () => {
   const dispatch = useDispatch();
   const tasks = useSelector(selectTaskData);
   const users = useSelector(selectUserData);
+  const role = useSelector(selectSelectedRole);
+  const roleId = localStorage.getItem('role');
   const loading = useSelector(selectTaskLoading);
   const error = useSelector(selectTaskError);
 
@@ -44,6 +46,10 @@ const TasksPage = () => {
     dispatch(fetchTaskData());
     dispatch(fetchUserData());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchRoleById(roleId));
+  }, [dispatch, roleId]);
 
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -110,11 +116,16 @@ const TasksPage = () => {
     return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center text-red-600">{error}</div>;
   }
 
+  const permissions = role?.permissions || [];
+  const taskPerm = getModulePermission(permissions, 'tasks');
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Tasks</h1>
+        <h1 className="text-2xl font-bold">Tasks</h1  >
+        {taskPerm.create && (
         <Button variant="primary" onClick={openAddModal}>Create Task</Button>
+        )}
       </div>
       <Card padding={false}>
         <div className="overflow-x-auto">
@@ -150,8 +161,12 @@ const TasksPage = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{task.dueDate}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end items-center space-x-2">
+                      {taskPerm.update && (
                       <Button variant="primary" size="sm" onClick={() => openEditModal(task)}>Edit</Button>
+                      )}
+                      {taskPerm.delete && (
                       <Button variant="danger" size="sm" onClick={() => handleDeleteTask(task._id || task.id)}>Delete</Button>
+                      )}
                     </div>
                   </td>
                 </tr>

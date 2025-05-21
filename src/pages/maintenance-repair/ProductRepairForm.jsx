@@ -3,18 +3,19 @@ import { useParams } from 'react-router-dom';
 import { FiUser, FiMail, FiPhone, FiMapPin, FiEdit3, FiCheckCircle, FiArrowRight } from 'react-icons/fi';
 import { addMaintenanceRequest } from '../../features/slices/maintenanceSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCategoryData, selectCategoryLoading, selectCategoryError, fetchCategoryData } from '../../features/slices/categorySlice';
-import { fetchServiceByName, selectSelectedService, selectServiceLoading, selectServiceError } from '../../features/slices/serviceSlice';
+import { selectSelectedCategory, selectCategoryLoading, selectCategoryError, fetchCategoryByName } from '../../features/slices/categorySlice';
+import { fetchProductByCategory, selectProductData, selectProductError, selectProductLoading } from '../../features/slices/productSlice';
+
 
 const ProductRepairForm = () => {
   const dispatch = useDispatch();
-  const { serviceType } = useParams();
-  const serviceData = useSelector(selectSelectedService);
-  const serviceLoading = useSelector(selectServiceLoading);
-  const serviceError = useSelector(selectServiceError);
-  const categoryData = useSelector(selectCategoryData);
+  const { name } = useParams();
+  const categoryData = useSelector(selectSelectedCategory);
   const categoryLoading = useSelector(selectCategoryLoading);
   const categoryError = useSelector(selectCategoryError);
+  const productData = useSelector(selectProductData);
+  const productLoading = useSelector(selectProductLoading);
+  const productError = useSelector(selectProductError);
 
 
   const [formData, setFormData] = useState({
@@ -31,14 +32,21 @@ const ProductRepairForm = () => {
 
 
   useEffect(() => {
-    dispatch(fetchCategoryData());
-  }, [dispatch]);
+    console.log("name", name);
+    if (name) {
+      dispatch(fetchCategoryByName(name));
+    }
+  }, [dispatch, name]);
+
 
   useEffect(() => {
-    if (serviceType) {
-      dispatch(fetchServiceByName(serviceType));
+    if (categoryData && categoryData.id) {
+      dispatch(fetchProductByCategory(categoryData.id));
     }
-  }, [dispatch, serviceType]);
+  }, [dispatch, categoryData]);
+
+  console.log("productData", productData); 
+  console.log("categoryData", categoryData);
 
 
   const handleChange = (e) => {
@@ -110,48 +118,6 @@ const ProductRepairForm = () => {
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Select Your Appliance</h2>
           <p className="text-gray-500 text-base mb-2">Choose the appliance you need service for</p>
-        </div>
-      </section>
-
-      {/* Device Cards Grid Above Form (all products) */}
-      <section className="py-8 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="w-full overflow-x-auto pb-4">
-          <div className="grid grid-cols-3 justify-center gap-6 md:gap-8">
-          {categoryData.map((item, index) => (
-              <div key={item.id || index} className="relative bg-white rounded-2xl shadow group flex flex-col items-center overflow-hidden">
-                {/* Badge */}
-                {item.popular && (
-                  <div className="absolute top-3 left-3 z-10">
-                    <div className="bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-full shadow">
-                      POPULAR
-                    </div>
-                  </div>
-                )}
-                {/* Card Image */}
-                <img
-                  src={item.img}
-                  alt={item.label || item.name}
-                  className="w-auto h-48 object-contain rounded-t-2xl"
-                  onError={e => { e.target.src = '/images/placeholder.png'; }}
-                />
-                {/* Card Content */}
-                <div className="flex flex-col flex-1 px-4 py-4">
-                  <h3 className="font-bold text-xl text-center mt-2 mb-1 text-gray-900">
-                    {item.label || item.name}
-                  </h3>
-                  <p className="text-gray-500 text-center text-sm mb-4">
-                    {item.desc}
-                  </p>
-                  <div className="mt-auto text-center">
-                  </div>
-                </div>
-                {/* Corner Accent */}
-                <div className="absolute bottom-0 right-0 w-20 h-20 bg-indigo-50 rounded-tl-full transform scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-              </div>
-          ))}
-          </div>
-          </div>
         </div>
       </section>
 
@@ -250,8 +216,8 @@ const ProductRepairForm = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-800"
                     >
                       <option value="" disabled>Select a category</option>
-                      {categoryData.map((type) => (
-                        <option key={type.category} value={type.category}>
+                      {productData.map((type) => (
+                        <option key={type.id} value={type.id}>
                           {type.name}
                         </option>
                       ))}
@@ -300,6 +266,52 @@ const ProductRepairForm = () => {
                 <p className="mt-3 text-sm text-gray-500">Our support team typically responds within 2 hours during business hours</p>
               </div>
             </form>
+          </div>
+        </div>
+      </section>
+
+            {/* Device Cards Grid Above Form (all products) */}
+            <section className="py-8 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="w-full overflow-x-auto pb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-center gap-6 md:gap-8">
+          {productData && productData.length > 0 ? (
+            productData.map((item, index) => (
+              <div key={item.id || index} className="relative bg-white rounded-2xl shadow group flex flex-col items-center overflow-hidden">
+                {/* Badge */}
+                {item.popular && (
+                  <div className="absolute top-3 left-3 z-10">
+                    <div className="bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-full shadow">
+                      POPULAR
+                    </div>
+                  </div>
+                )}
+                {/* Card Image */}
+                <img
+                  src={item.img}
+                  alt={item.label || item.name}
+                  className="w-auto h-48 object-contain rounded-t-2xl"
+                  onError={e => { e.target.src = '/images/placeholder.png'; }}
+                />
+                {/* Card Content */}
+                <div className="flex flex-col flex-1 px-4 py-4">
+                  <h3 className="font-bold text-xl text-center mt-2 mb-1 text-gray-900">
+                    {item.label || item.name}
+                  </h3>
+                  <p className="text-gray-500 text-center text-sm mb-4">
+                    {item.desc}
+                  </p>
+                  <div className="mt-auto text-center">
+                  </div>
+                </div>
+                {/* Corner Accent */}
+                <div className="absolute bottom-0 right-0 w-20 h-20 bg-indigo-50 rounded-tl-full transform scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full text-center text-gray-500 py-8">No products found for this category.</div>
+          )}
+          </div>
           </div>
         </div>
       </section>

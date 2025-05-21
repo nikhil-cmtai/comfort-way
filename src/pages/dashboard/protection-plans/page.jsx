@@ -2,12 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { FiCheck, FiEdit, FiTrash2, FiPlus } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProtectionData, selectProtectionData, selectProtectionLoading, selectProtectionError, addProtectionPlan, editProtectionPlan, deleteProtectionPlan } from '../../../features/slices/protectionSlice';
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
+
+// Utility function to get permissions for a module
+function getModulePermission(permissions, moduleName) {
+    return permissions?.find(p => p.module === moduleName) || {};
+} 
 
 const ProtectionPlans = () => {
   const dispatch = useDispatch();
   const protectionData = useSelector(selectProtectionData);
   const isLoading = useSelector(selectProtectionLoading);
   const error = useSelector(selectProtectionError);
+  const role = useSelector(selectSelectedRole);
+  const roleId = localStorage.getItem('role');
 
   // State management
   const [viewMode, setViewMode] = useState('grid');
@@ -30,6 +38,10 @@ const ProtectionPlans = () => {
   useEffect(() => {
     dispatch(fetchProtectionData());  
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchRoleById(roleId));
+  }, [dispatch, roleId]);
 
   // Form handlers and modal functions
   const openAddModal = () => {
@@ -159,6 +171,9 @@ const ProtectionPlans = () => {
     </div>;
   }
 
+  const permissions = role?.permissions || [];
+  const protectionPerm = getModulePermission(permissions, 'protection plans');
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="mb-6">
@@ -188,24 +203,29 @@ const ProtectionPlans = () => {
           {/* View Toggle and Add Button */}
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex rounded-lg border border-gray-300 p-1">
-              <button
-                className={`p-1 rounded ${viewMode === 'grid' ? 'bg-white text-blue-600 border border-blue-200' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
-                onClick={() => setViewMode('grid')}
+              {protectionPerm.read && (
+                <button
+                  className={`p-1 rounded ${viewMode === 'grid' ? 'bg-white text-blue-600 border border-blue-200' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
+                  onClick={() => setViewMode('grid')}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
               </button>
-              <button
-                className={`p-1 rounded ${viewMode === 'list' ? 'bg-white text-blue-600 border border-blue-200' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
-                onClick={() => setViewMode('list')}
+              )}
+              {protectionPerm.read && (
+                <button
+                  className={`p-1 rounded ${viewMode === 'list' ? 'bg-white text-blue-600 border border-blue-200' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
+                  onClick={() => setViewMode('list')}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
-              </button>
+                      </button>
+                      )}
             </div>
 
+            {protectionPerm.create && (
             <button
               className="bg-white hover:bg-gray-100 text-blue-700 py-2 px-4 rounded-lg transition-colors flex items-center gap-1 border border-blue-200"
               onClick={openAddModal}
@@ -213,6 +233,7 @@ const ProtectionPlans = () => {
               <FiPlus className="h-4 w-4" />
               Add Plan
             </button>
+            )}
           </div>
         </div>
       </div>
@@ -257,18 +278,22 @@ const ProtectionPlans = () => {
                       )}
                     </ul>
                     <div className="flex gap-2 mt-auto">
+                      {protectionPerm.update && (
                       <button
                         className="flex-1 text-blue-600 bg-blue-50 hover:bg-blue-100 py-2 rounded"
                         onClick={() => openEditModal(plan)}
                       >
                         Edit
                       </button>
+                      )}
+                      {protectionPerm.delete && (
                       <button
                         className="flex-1 text-red-600 bg-red-50 hover:bg-red-100 py-2 rounded"
                         onClick={() => openDeleteModal(plan)}
                       >
                         Delete
                       </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -319,18 +344,22 @@ const ProtectionPlans = () => {
                           ) : 'No'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          {protectionPerm.update && (
                           <button 
                             className="text-blue-600 hover:text-blue-900 mr-3"
                             onClick={() => openEditModal(plan)}
                           >
                             <FiEdit className="h-4 w-4" />
                           </button>
+                          )}
+                          {protectionPerm.delete && (
                           <button 
                             className="text-red-600 hover:text-red-900"
                             onClick={() => openDeleteModal(plan)}
-                          >
+                          > 
                             <FiTrash2 className="h-4 w-4" />
                           </button>
+                          )}
                         </td>
                       </tr>
                     ))}

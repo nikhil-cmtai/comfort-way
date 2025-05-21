@@ -5,16 +5,23 @@ import Button from '../../../components/ui/button';
 import SearchInput from '../../../components/ui/SearchInput';
 import StatusBadge from '../../../components/ui/StatusBadge';
 import FilterBar from '../../../components/ui/FilterBar';
-import Select from '../../../components/ui/Select';
 import Avatar from '../../../components/ui/Avatar';
 import Modal from '../../../components/ui/Modal';
 import FormInput from '../../../components/ui/FormInput';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCustomers, selectUserData, selectUserLoading, selectUserError, addUser, editUser, deleteUser } from '../../../features/slices/userSlice';
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
+
+// Utility function to get permissions for a module
+function getModulePermission(permissions, moduleName) {
+    return permissions?.find(p => p.module === moduleName) || {};
+} 
 
 const CustomersPage = () => {
   const dispatch = useDispatch();
   const customers = useSelector(selectUserData);
+  const role = useSelector(selectSelectedRole);
+  const roleId = localStorage.getItem('role');
   const loading = useSelector(selectUserLoading);
   const error = useSelector(selectUserError);
   
@@ -52,6 +59,10 @@ const CustomersPage = () => {
     dispatch(fetchCustomers());
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(fetchRoleById(roleId));
+  }, [dispatch, roleId]);
+
   // Filter customers based on search term and filter status
   const filteredCustomers = customers.filter(customer => {
     const name = customer.name || '';
@@ -75,18 +86,6 @@ const CustomersPage = () => {
     setCurrentPage(1);
   }, [searchTerm, filterStatus, sortBy, customers]);
 
-  // Status filter options
-  const statusOptions = [
-    { value: 'all', label: 'All Status' },
-    { value: 'Active', label: 'Active' },
-    { value: 'Inactive', label: 'Inactive' }
-  ];
-  
-  // Customer type options for the form
-  const customerTypeOptions = [
-    { value: 'Individual', label: 'Individual' },
-    { value: 'Business', label: 'Business' }
-  ];
   
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -169,18 +168,23 @@ const CustomersPage = () => {
     return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center text-red-600">{error}</div>;
   }
 
+  const permissions = role?.permissions || [];
+  const customerPerm = getModulePermission(permissions, 'users');
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <PageHeader 
         title="Customers Management" 
         description="Manage your customer database and information"
         actions={
-          <Button 
-            variant="primary" 
-            onClick={openAddModal}
-          >
-            Add Customer
-          </Button>
+          customerPerm.create && (
+            <Button 
+              variant="primary" 
+              onClick={openAddModal}
+            >
+              Add Customer
+            </Button>
+          )
         }
       />
 
@@ -243,6 +247,7 @@ const CustomersPage = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end items-center space-x-2">
+                      {customerPerm.update && (
                       <Button 
                         variant="primary" 
                         size="sm"
@@ -250,6 +255,8 @@ const CustomersPage = () => {
                       >
                         Edit
                       </Button>
+                      )}
+                      {customerPerm.delete && (
                       <Button 
                         variant="danger" 
                         size="sm"
@@ -257,6 +264,7 @@ const CustomersPage = () => {
                       >
                         Delete
                       </Button>
+                      )}
                     </div>
                   </td>
                 </tr>

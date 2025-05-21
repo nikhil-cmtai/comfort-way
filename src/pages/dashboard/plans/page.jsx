@@ -19,11 +19,22 @@ import {
   fetchProtectionData,
   selectProtectionData,
   selectProtectionLoading,
-  selectProtectionError
+  selectProtectionError,
+  addProtectionPlan,
+  editProtectionPlan,
+  deleteProtectionPlan
 } from '../../../features/slices/protectionSlice';
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
+
+// Utility function to get permissions for a module
+function getModulePermission(permissions, moduleName) {
+    return permissions?.find(p => p.module === moduleName) || {};
+} 
 
 const PlansPage = () => {
   const dispatch = useDispatch();
+  const role = useSelector(selectSelectedRole);
+  const roleId = localStorage.getItem('role');
   // State for filters and search
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPlan, setFilterPlan] = useState('all');
@@ -33,6 +44,13 @@ const PlansPage = () => {
   // Modal states
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
+  const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
+  const [planForm, setPlanForm] = useState({ name: '', price: '', bhk: '' });
+  const [modalLoading, setModalLoading] = useState(false);
+  const [modalError, setModalError] = useState('');
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,6 +61,10 @@ const PlansPage = () => {
     dispatch(fetchPurchasedPlanData());
     dispatch(fetchProtectionData());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchRoleById(roleId));
+  }, [dispatch, roleId]);
 
   // Selectors for live data
   const purchasedPlans = useSelector(selectPurchasedPlanData) || [];
@@ -143,6 +165,59 @@ const PlansPage = () => {
     });
   };
 
+  // Add/Edit Modal Handlers
+  const openAddModal = () => {
+    setModalMode('add');
+    setPlanForm({ name: '', price: '', bhk: '' });
+    setIsAddEditModalOpen(true);
+    setModalError('');
+  };
+  const openEditModal = (plan) => {
+    setModalMode('edit');
+    setSelectedPlan(plan);
+    setPlanForm({ name: plan.name || '', price: plan.price || '', bhk: plan.bhk || '' });
+    setIsAddEditModalOpen(true);
+    setModalError('');
+  };
+  const handlePlanFormChange = (e) => {
+    const { name, value } = e.target;
+    setPlanForm((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleAddEditSubmit = async (e) => {
+    e.preventDefault();
+    setModalLoading(true);
+    setModalError('');
+    try {
+      if (modalMode === 'add') {
+        await dispatch(addProtectionPlan(planForm));
+      } else if (modalMode === 'edit' && selectedPlan) {
+        await dispatch(editProtectionPlan({ id: selectedPlan.id, ...planForm }));
+      }
+      setIsAddEditModalOpen(false);
+    } catch (err) {
+      setModalError('Failed to save plan.');
+    } finally {
+      setModalLoading(false);
+    }
+  };
+  // Delete Modal Handlers
+  const openDeleteModal = (plan) => {
+    setSelectedPlan(plan);
+    setIsDeleteModalOpen(true);
+  };
+  const handleDelete = async () => {
+    setModalLoading(true);
+    setModalError('');
+    try {
+      await dispatch(deleteProtectionPlan(selectedPlan.id));
+      setIsDeleteModalOpen(false);
+    } catch (err) {
+      setModalError('Failed to delete plan.');
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
   // Loading and error states
   if (purchasedPlansLoading || protectionPlansLoading) {
     return <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
@@ -164,12 +239,25 @@ const PlansPage = () => {
     </div>;
   }
 
+  const permissions = role?.permissions || [];
+  const planPerm = getModulePermission(permissions, 'plans');
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <PageHeader 
-        title="Plan Subscriptions" 
-        description="View and manage customer plan subscriptions"
-      />
+      <div className="flex items-center justify-between mb-4">
+        <PageHeader 
+          title="Plan Subscriptions" 
+          description="View and manage customer plan subscriptions"
+        />
+        {planPerm.create && (
+        <Button 
+          variant="primary"
+          onClick={openAddModal}
+        >
+          + Add Plan
+        </Button>
+        )}
+      </div>
 
       {/* Filter Bar */}
       <FilterBar>
@@ -270,7 +358,8 @@ const PlansPage = () => {
                         }
                       />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex gap-2 justify-end">
+                      {planPerm.read && (
                       <Button 
                         variant="primary" 
                         size="sm"
@@ -278,6 +367,25 @@ const PlansPage = () => {
                       >
                         View Details
                       </Button>
+                      )}
+                      {planPerm.update && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openEditModal(plan)}
+                      >
+                        Edit
+                      </Button>
+                      )}
+                      {planPerm.delete && (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => openDeleteModal(plan)}
+                      >
+                        Delete
+                      </Button>
+                      )}
                     </td>
                   </tr>
                 )
@@ -439,6 +547,71 @@ const PlansPage = () => {
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* Add/Edit Plan Modal */}
+      <Modal
+        isOpen={isAddEditModalOpen}
+        onClose={() => setIsAddEditModalOpen(false)}
+        title={modalMode === 'add' ? 'Add New Plan' : 'Edit Plan'}
+        size="md"
+      >
+        <form onSubmit={handleAddEditSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Plan Name</label>
+            <input
+              type="text"
+              name="name"
+              value={planForm.name}
+              onChange={handlePlanFormChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+            <input
+              type="number"
+              name="price"
+              value={planForm.price}
+              onChange={handlePlanFormChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">BHK/Plan Type</label>
+            <input
+              type="text"
+              name="bhk"
+              value={planForm.bhk}
+              onChange={handlePlanFormChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          {modalError && <div className="text-red-600 text-sm">{modalError}</div>}
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setIsAddEditModalOpen(false)} type="button">Cancel</Button>
+            <Button variant="primary" type="submit" disabled={modalLoading}>{modalMode === 'add' ? 'Add Plan' : 'Save Changes'}</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Delete Plan Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Delete Plan"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <p>Are you sure you want to delete this plan?</p>
+          {modalError && <div className="text-red-600 text-sm">{modalError}</div>}
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
+            <Button variant="danger" onClick={handleDelete} disabled={modalLoading}>Delete</Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

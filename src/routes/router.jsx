@@ -38,6 +38,8 @@ import RolePermissions from '../pages/dashboard/role-permissions/page';
 import EditRole from '../pages/dashboard/role-permissions/edit-role';
 import ServicesPage from '../pages/dashboard/services/page';
 import ServiceHistory from '../pages/dashboard/serviceHistory/page';
+
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -104,7 +106,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'maintenance-repair/:product',
+        path: 'maintenance-repair/:name',
         element: <ProductRepairForm />,
       },
       {

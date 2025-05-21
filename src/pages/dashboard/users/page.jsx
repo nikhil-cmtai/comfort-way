@@ -11,13 +11,20 @@ import Modal from '../../../components/ui/Modal';
 import FormInput from '../../../components/ui/FormInput';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUserData, selectUserData, selectUserLoading, selectUserError, addUser, editUser, deleteUser } from '../../../features/slices/userSlice';
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
+
+// Utility function to get permissions for a module
+function getModulePermission(permissions, moduleName) {
+    return permissions?.find(p => p.module === moduleName) || {};
+} 
 
 const UsersPage = () => {
   const dispatch = useDispatch();
   const users = useSelector(selectUserData);
+  const role = useSelector(selectSelectedRole);
+  const roleId = localStorage.getItem('role');
   const loading = useSelector(selectUserLoading);
   const error = useSelector(selectUserError);
-  
   // State for filters and search
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -83,6 +90,10 @@ const UsersPage = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterStatus, sortBy, users]);
+
+  useEffect(() => {
+    dispatch(fetchRoleById(roleId));
+  }, [dispatch, roleId]);
 
   // Status filter options
   const statusOptions = [
@@ -178,18 +189,23 @@ const UsersPage = () => {
     setIsDeleteModalOpen(false);
   };
 
+  const permissions = role?.permissions || [];
+  const userPerm = getModulePermission(permissions, 'users');
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <PageHeader 
         title="Users Management" 
         description="Manage your user database and information"
         actions={
+          userPerm.create && (
           <Button 
             variant="primary" 
             onClick={openAddModal}
           >
             Add User
           </Button>
+          )
         }
       />
 
@@ -265,6 +281,7 @@ const UsersPage = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end items-center space-x-2">
+                    {userPerm.update && (
                       <Button 
                         variant="primary" 
                         size="sm"
@@ -272,6 +289,8 @@ const UsersPage = () => {
                       >
                         Edit
                       </Button>
+                      )}
+                      {userPerm.delete && (
                       <Button 
                         variant="danger" 
                         size="sm"
@@ -279,6 +298,7 @@ const UsersPage = () => {
                       >
                         Delete
                       </Button>
+                      )}
                     </div>
                   </td>
                 </tr>

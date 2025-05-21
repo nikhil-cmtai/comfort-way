@@ -1,18 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchServiceHistoryData, selectServiceHistoryData, selectServiceHistoryLoading, selectServiceHistoryError } from '../../../features/slices/serviceHistorySlice';
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
+
+// Utility function to get permissions for a module
+function getModulePermission(permissions, moduleName) {
+    return permissions?.find(p => p.module === moduleName) || {};
+} 
 
 const ServiceHistory = () => {
     const dispatch = useDispatch();
     const serviceHistory = useSelector(selectServiceHistoryData);
     const loading = useSelector(selectServiceHistoryLoading);
     const error = useSelector(selectServiceHistoryError);
+    const role = useSelector(selectSelectedRole);
+    const roleId = localStorage.getItem('role');
 
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         dispatch(fetchServiceHistoryData());
     }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(fetchRoleById(roleId));
+    }, [dispatch, roleId]);
 
     // Filter by user name/email or service label
     const filteredHistory = (serviceHistory || []).filter(record =>
@@ -41,6 +53,9 @@ const ServiceHistory = () => {
             </div>
         </div>;
     }
+
+    const permissions = role?.permissions || [];
+    const serviceHistoryPerm = getModulePermission(permissions, 'service History');
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">

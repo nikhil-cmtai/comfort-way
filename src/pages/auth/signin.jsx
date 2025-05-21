@@ -17,6 +17,19 @@ const Signin = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   useEffect(() => {
+    // Auto-redirect if already logged in
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    if (token) {
+      if (role === 'NpkR5K3M242WKHPdVTTw') {
+        navigate('/profile', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     dispatch(setError(''));
   }, [dispatch]);
 
@@ -86,7 +99,7 @@ const Signin = () => {
           </p>
         </div>
 
-        <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
+        <form className="mt-5 space-y-4" onSubmit={handleSubmit} autoComplete="off">
           <div className="space-y-3">
             <div className="relative">
               <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />

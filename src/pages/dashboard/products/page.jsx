@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchProductData, selectProductData, selectProductLoading, selectProductError, updateProduct, deleteProduct } from '../../../features/slices/productSlice';
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
+
+// Utility function to get permissions for a module
+function getModulePermission(permissions, moduleName) {
+    return permissions?.find(p => p.module === moduleName) || {};
+} 
 
 const Products = () => {
   const dispatch = useDispatch();
   const productsData = useSelector(selectProductData);
   const loading = useSelector(selectProductLoading);
   const error = useSelector(selectProductError);
+  const role = useSelector(selectSelectedRole);
+  const roleId = localStorage.getItem('role');
 
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
@@ -100,6 +108,10 @@ const Products = () => {
     dispatch(fetchProductData());
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(fetchRoleById(roleId));
+  }, [dispatch, roleId]);
+
   // Get unique categories
   const categories = ['all', ...new Set(productsData.map(product => product.category))];
 
@@ -133,7 +145,9 @@ const Products = () => {
     </div>;
   }
 
-  console.log(productsData);
+  const permissions = role?.permissions || [];
+  const productPerm = getModulePermission(permissions, 'product list');
+
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -178,14 +192,17 @@ const Products = () => {
             {/* View Toggle and Add Button */}
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex rounded-lg border border-gray-300 p-1">
-                <button
-                  className={`p-1 rounded ${viewMode === 'grid' ? 'bg-white text-blue-600 border border-blue-200' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
-                  onClick={() => setViewMode('grid')}
+                {productPerm.read && (
+                  <button
+                    className={`p-1 rounded ${viewMode === 'grid' ? 'bg-white text-blue-600 border border-blue-200' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
+                    onClick={() => setViewMode('grid')}
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                   </svg>
                 </button>
+                )}
+                {productPerm.read && (
                 <button
                   className={`p-1 rounded ${viewMode === 'list' ? 'bg-white text-blue-600 border border-blue-200' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
                   onClick={() => setViewMode('list')}
@@ -194,9 +211,11 @@ const Products = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                 </button>
+                )}
               </div>
             </div>
 
+            {productPerm.create && (
             <button className="bg-white hover:bg-gray-100 text-blue-700 py-2 px-4 rounded-lg transition-colors flex items-center gap-1 border border-blue-200"
               onClick={openAddModal}>
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -204,6 +223,7 @@ const Products = () => {
               </svg>
               Add Product
             </button>
+            )}
           </div>
         </div>
       </div>
@@ -230,18 +250,22 @@ const Products = () => {
                 <p className="text-sm text-gray-500 mb-2">{product.category}</p>
                 <div className="flex justify-between items-center text-sm">
                   <div className="flex gap-2">
+                    {productPerm.update && (
                     <button
                       className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded"
                       onClick={() => openEditModal(product)}
                     >
                       Edit
                     </button>
+                    )}
+                    {productPerm.delete && (
                     <button
                       className="text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
                       onClick={() => openDeleteModal(product)}
                     >
                       Delete
                     </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -286,18 +310,22 @@ const Products = () => {
                     <div className="text-sm text-gray-900">{product.category}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    {productPerm.update && (
                     <button
                       className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded mr-2"
                       onClick={() => openEditModal(product)}
                     >
                       Edit
                     </button>
+                    )}
+                    {productPerm.delete && (
                     <button
                       className="text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
                       onClick={() => openDeleteModal(product)}
                     >
                       Delete
                     </button>
+                    )}
                   </td>
                 </tr>
               ))}

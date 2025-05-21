@@ -3,6 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchCategoryData, selectCategoryData, selectCategoryLoading, selectCategoryError } from '../../../features/slices/categorySlice';
 import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
 
+// Utility function to get permissions for a module
+function getModulePermission(permissions, moduleName) {
+    return permissions?.find(p => p.module === moduleName) || {};
+}
+
 const Categories = () => {
     const dispatch = useDispatch();
     const categories = useSelector(selectCategoryData);
@@ -145,7 +150,8 @@ const Categories = () => {
         </div>;
     }
 
-    const permissions = role?.permissions;
+    const permissions = role?.permissions || [];
+    const categoryPerm = getModulePermission(permissions, 'product categories');
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
@@ -196,15 +202,17 @@ const Categories = () => {
                             {/* )} */}
                         </div>
 
-                        <button
-                            className="bg-white hover:bg-gray-100 text-blue-700 py-2 px-4 rounded-lg transition-colors flex items-center gap-1 border border-blue-200"
-                            onClick={openAddModal}
-                        >
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            Add Category
-                        </button>
+                        {categoryPerm.create && (
+                            <button
+                                className="bg-white hover:bg-gray-100 text-blue-700 py-2 px-4 rounded-lg transition-colors flex items-center gap-1 border border-blue-200"
+                                onClick={openAddModal}
+                            >
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Add Category
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -233,18 +241,22 @@ const Categories = () => {
                                 <h3 className="font-semibold text-gray-800 mb-1">{category.name}</h3>
                                 <p className="text-sm text-gray-500 mb-3 line-clamp-2">{category.desc}</p>
                                 <div className="flex gap-2 mt-auto">
-                                    <button
-                                        className="flex-1 text-blue-600 bg-blue-50 hover:bg-blue-100 py-2 rounded"
-                                        onClick={() => openEditModal(category)}
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        className="flex-1 text-red-600 bg-red-50 hover:bg-red-100 py-2 rounded"
-                                        onClick={() => openDeleteModal(category)}
-                                    >
-                                        Delete
-                                    </button>
+                                    {categoryPerm.update && (
+                                        <button
+                                            className="flex-1 text-blue-600 bg-blue-50 hover:bg-blue-100 py-2 rounded"
+                                            onClick={() => openEditModal(category)}
+                                        >
+                                            Edit
+                                        </button>
+                                    )}
+                                    {categoryPerm.delete && (
+                                        <button
+                                            className="flex-1 text-red-600 bg-red-50 hover:bg-red-100 py-2 rounded"
+                                            onClick={() => openDeleteModal(category)}
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -289,18 +301,22 @@ const Categories = () => {
                                         <div className="text-sm text-gray-900 max-w-xs truncate">{category.desc}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded mr-2"
-                                            onClick={() => openEditModal(category)}
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            className="text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
-                                            onClick={() => openDeleteModal(category)}
-                                        >
-                                            Delete
-                                        </button>
+                                        {categoryPerm.update && (
+                                            <button
+                                                className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded mr-2"
+                                                onClick={() => openEditModal(category)}
+                                            >
+                                                Edit
+                                            </button>
+                                        )}
+                                        {categoryPerm.delete && (
+                                            <button
+                                                className="text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
+                                                onClick={() => openDeleteModal(category)}
+                                            >
+                                                Delete
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

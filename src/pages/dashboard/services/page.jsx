@@ -1,12 +1,19 @@
-import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchServiceData, selectServiceData, selectServiceLoading, selectServiceError, updateService, deleteService, addService } from '../../../features/slices/serviceSlice';
+import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
+
+// Utility function to get permissions for a module
+function getModulePermission(permissions, moduleName) {
+    return permissions?.find(p => p.module === moduleName) || {};
+} 
 
 const Services = () => {
     const dispatch = useDispatch();
     const services = useSelector(selectServiceData);
     const loading = useSelector(selectServiceLoading);
     const error = useSelector(selectServiceError);
+    const role = useSelector(selectSelectedRole);
+    const roleId = localStorage.getItem('role');
 
     const [viewMode, setViewMode] = useState('grid');
     const [searchTerm, setSearchTerm] = useState('');
@@ -124,6 +131,11 @@ const Services = () => {
         dispatch(fetchServiceData());
     }, [dispatch]);
 
+
+    useEffect(() => {
+        dispatch(fetchRoleById(roleId));
+    }, [dispatch, roleId]);
+
     // Use Redux services data for filtering
     const filteredServices = (services || []).filter(service =>
         (service.label || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -150,6 +162,9 @@ const Services = () => {
             </div>
         </div>;
     }
+
+    const permissions = role?.permissions || [];
+    const servicePerm = getModulePermission(permissions, 'services');
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
@@ -195,6 +210,7 @@ const Services = () => {
                                 </svg>
                             </button>
                         </div>
+                        {servicePerm.create && (
                         <button
                             className="bg-white hover:bg-gray-100 text-blue-700 py-2 px-4 rounded-lg transition-colors flex items-center gap-1 border border-blue-200"
                             onClick={openAddModal}
@@ -204,6 +220,7 @@ const Services = () => {
                             </svg>
                             Add Service
                         </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -231,18 +248,22 @@ const Services = () => {
                                 <h3 className="font-semibold text-gray-800 mb-1">{service.label}</h3>
                                 <p className="text-sm text-gray-500 mb-3 line-clamp-2">{service.desc}</p>
                                 <div className="flex gap-2 mt-auto">
+                                    {servicePerm.update && (
                                     <button
                                         className="flex-1 text-blue-600 bg-blue-50 hover:bg-blue-100 py-2 rounded"
                                         onClick={() => openEditModal(service)}
                                     >
                                         Edit
                                     </button>
+                                    )}
+                                    {servicePerm.delete && (
                                     <button
                                         className="flex-1 text-red-600 bg-red-50 hover:bg-red-100 py-2 rounded"
                                         onClick={() => openDeleteModal(service)}
                                     >
                                         Delete
                                     </button>
+                                    )}
                                 </div>
                             
                             </div>
@@ -300,18 +321,22 @@ const Services = () => {
                                         {service.updatedOn ? new Date(service.updatedOn).toLocaleDateString() : '-'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        {servicePerm.update && (
                                         <button
                                             className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded mr-2"
                                             onClick={() => openEditModal(service)}
                                         >
                                             Edit
                                         </button>
+                                        )}
+                                        {servicePerm.delete && (
                                         <button
                                             className="text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
                                             onClick={() => openDeleteModal(service)}
                                         >
                                             Delete
                                         </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
