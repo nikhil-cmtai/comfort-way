@@ -15,6 +15,7 @@ const Signin = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [localError, setLocalError] = useState('');
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     // Auto-redirect if already logged in
@@ -41,15 +42,17 @@ const Signin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError('');
+    setSuccessMessage('');
     try {
       const res = await dispatch(login(formData));
       if (res?.token) {
         const role = res?.user?.role;
         localStorage.setItem("userId", res?.user?.uid);
         localStorage.setItem("role", role);
+        setSuccessMessage('Login successful! Redirecting...');
         setTimeout(() => {
           navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
-        }, 300);
+        }, 3000);
       } else {
         setLocalError('Invalid email or password');
       }
@@ -62,6 +65,7 @@ const Signin = () => {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     setLocalError('');
+    setSuccessMessage('');
     try {
       const auth = getAuth();
       const provider = new GoogleAuthProvider();
@@ -72,7 +76,10 @@ const Signin = () => {
         const role = res?.user?.role;
         localStorage.setItem("userId", res?.user?.uid);
         localStorage.setItem("role", role);
-        navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
+        setSuccessMessage('Login successful! Redirecting...');
+        setTimeout(() => {
+          navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
+        }, 1000);
       } else {
         setLocalError('Google sign-in failed. Please try again.');
       }
@@ -194,6 +201,13 @@ const Signin = () => {
             </>
           )}
         </button>
+
+        {/* Success Message */}
+        {successMessage && (
+          <div className="bg-green-100 text-green-700 p-2 rounded text-sm text-center mb-2">
+            {successMessage}
+          </div>
+        )}
       </div>
     </div>
   );
