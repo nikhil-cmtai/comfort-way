@@ -16,9 +16,11 @@ const Signin = () => {
   const [localError, setLocalError] = useState('');
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
-    // Auto-redirect if already logged in
+    // Auto-redirect only if not in the middle of a login redirect
+    if (isRedirecting) return;
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     if (token) {
@@ -28,7 +30,7 @@ const Signin = () => {
         navigate('/dashboard', { replace: true });
       }
     }
-  }, [navigate]);
+  }, [navigate, isRedirecting]);
 
   useEffect(() => {
     dispatch(setError(''));
@@ -49,6 +51,7 @@ const Signin = () => {
         const role = res?.user?.role;
         localStorage.setItem("userId", res?.user?.uid);
         localStorage.setItem("role", role);
+        setIsRedirecting(true);
         setSuccessMessage('Login successful! Redirecting...');
         setTimeout(() => {
           navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
@@ -76,10 +79,11 @@ const Signin = () => {
         const role = res?.user?.role;
         localStorage.setItem("userId", res?.user?.uid);
         localStorage.setItem("role", role);
+        setIsRedirecting(true);
         setSuccessMessage('Login successful! Redirecting...');
         setTimeout(() => {
           navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
-        }, 1000);
+        }, 3000);
       } else {
         setLocalError('Google sign-in failed. Please try again.');
       }
