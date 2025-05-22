@@ -10,17 +10,19 @@ import '../../firebase'; // Make sure firebase is initialized in frontend only
 
 const Signin = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [localError, setLocalError] = useState('');
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Auto-redirect only if not in the middle of a login redirect or loading
-    if (isRedirecting || isLoading) return;
+    dispatch(setError(''));
+  }, [dispatch]);
+
+  useEffect(() => {
+    // Auto-redirect if already logged in
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     if (token) {
@@ -30,15 +32,16 @@ const Signin = () => {
         navigate('/dashboard', { replace: true });
       }
     }
-  }, [navigate, isRedirecting, isLoading]);
-
-  useEffect(() => {
-    dispatch(setError(''));
-  }, [dispatch]);
+  }, [navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setLocalError('');
+  };
+
+  const redirectToDashboard = (role) => {
+    const target = role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard';
+    window.location.replace(target);
   };
 
   const handleSubmit = async (e) => {
@@ -48,15 +51,12 @@ const Signin = () => {
     try {
       const res = await dispatch(login(formData));
       if (res?.token) {
-        const role = res?.user?.role;
-        localStorage.setItem("userId", res?.user?.uid);
+        const { role, uid } = res.user;
+        localStorage.setItem("userId", uid);
         localStorage.setItem("role", role);
-        localStorage.setItem("token", res?.token);
-        setIsRedirecting(true);
+        localStorage.setItem("token", res.token);
         setSuccessMessage('Login successful! Redirecting...');
-        setTimeout(() => {
-          navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
-        }, 3000);
+        setTimeout(() => redirectToDashboard(role), 1000);
       } else {
         setLocalError('Invalid email or password');
       }
@@ -65,7 +65,6 @@ const Signin = () => {
     }
   };
 
-  // Google sign-in with Firebase Auth (frontend only)
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     setLocalError('');
@@ -77,15 +76,12 @@ const Signin = () => {
       const idToken = await result.user.getIdToken();
       const res = await dispatch(loginWithGoogle(idToken));
       if (res?.token) {
-        const role = res?.user?.role;
-        localStorage.setItem("userId", res?.user?.uid);
+        const { role, uid } = res.user;
+        localStorage.setItem("userId", uid);
         localStorage.setItem("role", role);
-        localStorage.setItem("token", res?.token);
-        setIsRedirecting(true);
+        localStorage.setItem("token", res.token);
         setSuccessMessage('Login successful! Redirecting...');
-        setTimeout(() => {
-          navigate(role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard');
-        }, 3000);
+        setTimeout(() => redirectToDashboard(role), 1000);
       } else {
         setLocalError('Google sign-in failed. Please try again.');
       }
@@ -96,6 +92,7 @@ const Signin = () => {
     }
   };
 
+  
   return (
     <div className="min-h-screen bg-gradient-to-tr from-blue-200 via-indigo-200 to-blue-300 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-4 bg-white p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-100">
