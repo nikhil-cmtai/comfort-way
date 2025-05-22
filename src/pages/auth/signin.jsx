@@ -92,10 +92,10 @@ const Signin = () => {
           </div>
           <h2 className="text-2xl font-extrabold text-gray-900">Welcome Back!</h2>
           <p className="mt-1 text-sm text-gray-600">
-            Sign in or{' '}
-            <Link to="/sign-up" className="font-medium text-blue-600 hover:text-blue-500">
+            {/* Sign in or{' '} */}
+            {/* <Link to="/sign-up" className="font-medium text-blue-600 hover:text-blue-500">
               create an account
-            </Link>
+            </Link> */}
           </p>
         </div>
 
