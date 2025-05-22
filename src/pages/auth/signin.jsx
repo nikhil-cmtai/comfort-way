@@ -19,8 +19,8 @@ const Signin = () => {
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
-    // Auto-redirect only if not in the middle of a login redirect
-    if (isRedirecting) return;
+    // Auto-redirect only if not in the middle of a login redirect or loading
+    if (isRedirecting || isLoading) return;
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     if (token) {
@@ -30,7 +30,7 @@ const Signin = () => {
         navigate('/dashboard', { replace: true });
       }
     }
-  }, [navigate, isRedirecting]);
+  }, [navigate, isRedirecting, isLoading]);
 
   useEffect(() => {
     dispatch(setError(''));
@@ -51,6 +51,7 @@ const Signin = () => {
         const role = res?.user?.role;
         localStorage.setItem("userId", res?.user?.uid);
         localStorage.setItem("role", role);
+        localStorage.setItem("token", res?.token);
         setIsRedirecting(true);
         setSuccessMessage('Login successful! Redirecting...');
         setTimeout(() => {
@@ -79,6 +80,7 @@ const Signin = () => {
         const role = res?.user?.role;
         localStorage.setItem("userId", res?.user?.uid);
         localStorage.setItem("role", role);
+        localStorage.setItem("token", res?.token);
         setIsRedirecting(true);
         setSuccessMessage('Login successful! Redirecting...');
         setTimeout(() => {
