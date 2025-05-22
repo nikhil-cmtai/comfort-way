@@ -38,7 +38,8 @@ const Sidebar = () => {
       module: 'products',
       subItems: [
         { label: 'Categories', path: '/dashboard/products/categories', icon: '🏷️', slug: 'product-categories', module: 'product categories' },
-        { label: 'Product List', path: '/dashboard/products', icon: '📋', slug: 'products', module: 'product list' }
+        { label: 'Product List', path: '/dashboard/products', icon: '📋', slug: 'products', module: 'product list' },
+        { label: 'Product Plans', path: '/dashboard/products/product-plans', icon: '📋', slug: 'product-plans', module: 'product plans' }
       ]
     },
     { label: 'Tasks', path: '/dashboard/tasks', icon: '📝', module: 'tasks' },

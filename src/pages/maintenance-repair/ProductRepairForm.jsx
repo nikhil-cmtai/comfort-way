@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { FiUser, FiMail, FiPhone, FiMapPin, FiEdit3, FiCheckCircle, FiArrowRight } from 'react-icons/fi';
+import { FiUser, FiMail, FiPhone, FiEdit3, FiCheckCircle, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { addMaintenanceRequest } from '../../features/slices/maintenanceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectSelectedCategory, selectCategoryLoading, selectCategoryError, fetchCategoryByName } from '../../features/slices/categorySlice';
 import { fetchProductByCategory, selectProductData, selectProductError, selectProductLoading } from '../../features/slices/productSlice';
-
+import { fetchProductPlansByCategory, selectProductPlanData, selectProductPlanLoading, selectProductPlanError } from '../../features/slices/productPlanSlice';
 
 const ProductRepairForm = () => {
   const dispatch = useDispatch();
@@ -16,7 +16,9 @@ const ProductRepairForm = () => {
   const productData = useSelector(selectProductData);
   const productLoading = useSelector(selectProductLoading);
   const productError = useSelector(selectProductError);
-
+  const productPlanData = useSelector(selectProductPlanData);
+  const productPlanLoading = useSelector(selectProductPlanLoading);
+  const productPlanError = useSelector(selectProductPlanError);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -29,7 +31,8 @@ const ProductRepairForm = () => {
 
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
+  const [openPlan, setOpenPlan] = useState(null);
+  const [selectedPlans, setSelectedPlans] = useState([]);
 
   useEffect(() => {
     console.log("name", name);
@@ -38,16 +41,17 @@ const ProductRepairForm = () => {
     }
   }, [dispatch, name]);
 
-
   useEffect(() => {
     if (categoryData && categoryData.id) {
       dispatch(fetchProductByCategory(categoryData.id));
     }
   }, [dispatch, categoryData]);
 
-  console.log("productData", productData); 
-  console.log("categoryData", categoryData);
-
+  useEffect(() => {
+    if (categoryData && categoryData.id) {
+      dispatch(fetchProductPlansByCategory(categoryData.id));
+    }
+  }, [dispatch, categoryData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,13 +61,32 @@ const ProductRepairForm = () => {
     }));
   };
 
+  const getPlanQty = (planId) => selectedPlans.find(p => p.id === planId)?.quantity || 0;
+
+  const handleAdd = (planId) => {
+    setSelectedPlans(prev => [...prev, { id: planId, quantity: 1 }]);
+  };
+
+  const handleQtyChange = (planId, delta) => {
+    setSelectedPlans(prev =>
+      prev
+        .map(p => p.id === planId ? { ...p, quantity: p.quantity + delta } : p)
+        .filter(p => p.quantity > 0)
+    );
+  };
+
+  const handleRemove = (planId) => {
+    setSelectedPlans(prev => prev.filter(p => p.id !== planId));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccessMessage('');
     setErrorMessage('');
     try {
-      await dispatch(addMaintenanceRequest(formData));
+      await dispatch(addMaintenanceRequest({ ...formData, selectedPlans }));
       setFormData({ name: '', email: '', phone: '', address: '', category: '', issueDescription: '' });
+      setSelectedPlans([]);
       setSuccessMessage('Thank you for your service request! We will contact you shortly to arrange the service.');
       setTimeout(() => setSuccessMessage(''), 2000);
     } catch (err) {
@@ -98,9 +121,9 @@ const ProductRepairForm = () => {
         <div className="relative z-10 w-full flex flex-col items-center justify-center px-4">
           <div className="bg-white/90 p-3 rounded-full shadow-lg mb-4">
             <img
-              src={categoryData.image}
+              src={categoryData.img}
               alt={categoryData.name}
-              className="h-16 w-16 object-contain"
+              className="h-16 w-16 object-contain rounded-full"
               onError={e => { e.target.src = '/images/placeholder.png'; }}
             />
           </div>
@@ -116,8 +139,52 @@ const ProductRepairForm = () => {
       {/* Heading above product cards */}
       <section className="pt-8 pb-2 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Select Your Appliance</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Get Your Appliance Serviced</h2>
           <p className="text-gray-500 text-base mb-2">Choose the appliance you need service for</p>
+        </div>
+      </section>
+
+      {/* Plans Section Above Form */}
+      <section className="mb-8 w-full">
+        <div className="container mx-auto px-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {productPlanData.map(plan => {
+              const qty = getPlanQty(plan.id);
+              const isOpen = openPlan === plan.id;
+              return (
+                <div key={plan.id} className="bg-white rounded-lg shadow border flex flex-col transition-all duration-200">
+                  <div className="flex items-stretch">
+                    <div className="flex-1 flex flex-col justify-center min-w-0 px-6 py-4">
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">{plan.title}</h3>
+                      <p className="text-base text-gray-600 mb-0.5">{plan.description}</p>
+                    </div>
+                    <div className="flex flex-col items-end justify-between py-4 pr-4 min-w-[180px]">
+                      <div className="text-xl font-bold text-blue-700 mb-2">₹{plan.price}</div>
+                    </div>
+                    <button
+                        className="my-auto mr-2 flex items-center justify-center w-9 h-9 rounded-lg text-xl transition-all duration-150 focus:outline-none"
+                        onClick={() => setOpenPlan(isOpen ? null : plan.id)}
+                        aria-label="Toggle features"
+                      >
+                        {isOpen ? <FiChevronUp className="w-5 h-5 text-black" /> : <FiChevronDown className="w-5 h-5 text-black" />}
+                      </button>
+                  </div>
+                  {isOpen && (
+                    <div className="px-6 pb-4">
+                      <ul className="text-base text-gray-700 space-y-1">
+                        {plan.features && plan.features.map((feature, idx) => (
+                          <li key={idx} className="flex items-center gap-2">
+                            <span className="text-green-500">✔</span>
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -181,48 +248,12 @@ const ProductRepairForm = () => {
                         onChange={handleChange}
                         required
                         placeholder="Your contact number"
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Address Field */}
-                  <div className="relative">
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">User Address</label>
-                    <div className="flex items-center">
-                      <FiMapPin className="absolute left-3 top-1/3 text-indigo-400 w-5 h-5" />
-                      <textarea
-                        id="address"
-                        name="address"
-                        rows="3"
-                        value={formData.address}
-                        onChange={handleChange}
-                        required
-                        placeholder="Your complete address"
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white resize-none"
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 roundw-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white resize-none"
                       />
                     </div>
                   </div>
                 </div>
                 <div className="space-y-6">
-                  {/* Service Type Dropdown */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <select
-                      name="category"
-                      value={formData.category}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-800"
-                    >
-                      <option value="" disabled>Select a category</option>
-                      {productData.map((type) => (
-                        <option key={type.id} value={type.id}>
-                          {type.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
 
                   {/* Issue Description */}
                   <div className="relative">

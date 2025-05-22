@@ -38,7 +38,7 @@ import RolePermissions from '../pages/dashboard/role-permissions/page';
 import EditRole from '../pages/dashboard/role-permissions/edit-role';
 import ServicesPage from '../pages/dashboard/services/page';
 import ServiceHistory from '../pages/dashboard/serviceHistory/page';
-
+import ProductPlans from '../pages/dashboard/products/products-plan/page';
 
 export const router = createBrowserRouter([
   {
@@ -150,6 +150,10 @@ export const router = createBrowserRouter([
       {
         path: 'plans',
         element: <ProtectedRoute><Plans /></ProtectedRoute>,
+      },
+      {
+        path: 'products/product-plans',
+        element: <ProtectedRoute><ProductPlans /></ProtectedRoute>,
       },
       {
         path: 'customers',

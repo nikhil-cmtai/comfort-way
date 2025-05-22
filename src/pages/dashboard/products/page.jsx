@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchProductData, selectProductData, selectProductLoading, selectProductError, updateProduct, deleteProduct } from '../../../features/slices/productSlice';
+import { fetchProductData, selectProductData, selectProductLoading, selectProductError, updateProduct, deleteProduct, addProduct } from '../../../features/slices/productSlice';
 import { fetchRoleById, selectSelectedRole } from '../../../features/slices/roleSlice';
 
 // Utility function to get permissions for a module
@@ -91,11 +91,31 @@ const Products = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Prepare form data for image upload
+    const data = new FormData();
+    data.append('name', formData.name);
+    data.append('category', formData.category);
+    data.append('featured', formData.featured);
+    if (formData.img) {
+      data.append('img', formData.img);
+    }
 
+    if (isAddModalOpen) {
+      // Add product
+      await dispatch(addProduct(data));
+      closeAllModals();
+      dispatch(fetchProductData());
+    } else if (isEditModalOpen && selectedProduct) {
+      // Update product
+      await dispatch(updateProduct(selectedProduct.id, data));
+      closeAllModals();
+      dispatch(fetchProductData());
+    }
+    setIsSubmitting(false);
   };
 
   const handleDelete = () => {

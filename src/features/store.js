@@ -12,7 +12,7 @@ import serviceHistoryReducer from './slices/serviceHistorySlice';
 import purchasedPlanReducer from './slices/purchasedPlanSlice';
 import statReducer from './slices/statSlice';
 import serviceReducer from './slices/serviceSlice';
-
+import productPlanReducer from './slices/productPlanSlice'; 
 
 export const store = configureStore({
   reducer: {
@@ -29,6 +29,7 @@ export const store = configureStore({
     purchasedPlan: purchasedPlanReducer,
     stats: statReducer,
     service: serviceReducer,
+    productPlan: productPlanReducer,
   },
 });
 
