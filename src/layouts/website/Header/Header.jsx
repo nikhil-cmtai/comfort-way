@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, CircleUserRound, User } from 'lucide-react';
+import { Menu, X, CircleUserRound, User, ShoppingCart } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -89,94 +89,90 @@ const Header = () => {
   return (
     <header className="bg-white text-gray-800 shadow-md sticky top-0 z-50">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
-        <div className="flex h-20 items-center justify-between">
-          {/* Mobile menu button (left) */}
-          <button
-            id="mobile-menu-button"
-            className="md:hidden text-gray-600 hover:text-indigo-600 bg-gray-100 hover:bg-gray-200 rounded-md p-2 mr-2"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            <span className="sr-only">Open menu</span>
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-indigo-600">
-              <img src="/logo.png" alt="ComfortWay" className="h-16 w-full" />
-            </Link>
-          </div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-6 lg:space-x-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className="text-sm lg:text-base font-medium text-gray-600 hover:text-indigo-600 relative"
-              >
-                {item.name}
-                {item.new && (
-                  <span className="absolute -top-2 -right-4 text-xs font-semibold text-white bg-red-500 px-1.5 py-0.5 rounded-full">
-                    NEW
-                  </span>
-                )}
-              </Link>
-            ))}
-          </div>
-
-          {/* User Icon Button (right, all screens) */}
-          <button
-            className="flex md:hidden items-center justify-center px-3 shadow-sm text-base font-medium bg-white text-gray-700 ml-2"
-            onMouseEnter={handleUserMouseEnter}
-            onMouseLeave={handleUserMouseLeave}
-            aria-label="Open profile dropdown"
-            ref={userDropdownRef}
-          >
-            <CircleUserRound className="h-8 w-8 text-indigo-600" />
-          </button>
-
-          <button
-            className="hidden md:flex items-center justify-center px-4 py-2 border border-gray-300 rounded-full shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
-            onClick={() => setIsUserDropdownOpen((open) => !open)}
-          >
-            <User className="mr-2 h-5 w-5 text-indigo-600" />
-            {role && token ? "Sign Out" : "Sign In/Up"}
-          </button>
-
-          {/* User Dropdown (all screens) */}
-          {isUserDropdownOpen && (
-            <div
-              className="absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
-              style={{ top: '100%', right: 0 }}
-              ref={userDropdownRef}
+        <div className="flex h-20 items-center justify-between w-full">
+          {/* Mobile Header Layout: Hamburger left, logo center, icons right */}
+          {/* Mobile (sm) */}
+          <div className="flex md:hidden items-center w-full justify-between">
+            {/* Hamburger (left) */}
+            <button
+              id="mobile-menu-button"
+              className="text-gray-600 hover:text-indigo-600 bg-gray-100 hover:bg-gray-200 rounded-md p-2 mr-2"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle menu"
             >
-              {/* Optional close button for mobile */}
-
-              <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                {userDropdownItems.map((item) => (
-                  <div key={item.name}>
-                    {item.separator && <div className="border-t border-gray-200 mx-1 my-1"></div>}
-                    <Link
-                      to={item.path}
-                      className={`block px-4 py-2 text-sm ${item.separator ? 'text-gray-500' : 'text-gray-700'} hover:bg-gray-100 hover:text-gray-900`}
-                      role="menuitem"
-                      onClick={() => {
-                        setIsUserDropdownOpen(false);
-                        if (item.signOut) {
-                          localStorage.removeItem('role');
-                          localStorage.removeItem('token');
-                          window.location.href = '/sign-in';
-                        }
-                      }}
-                    >
-                      {item.name}
-                    </Link>
-                  </div>
-                ))}
-              </div>
+              <span className="sr-only">Open menu</span>
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+            {/* Logo (center) */}
+            <div className="flex-1 flex justify-center">
+              <Link to="/" className="text-2xl font-bold text-indigo-600">
+                <img src="/logo.png" alt="ComfortWay" className="h-16 w-auto" />
+              </Link>
             </div>
-          )}
+            {/* Cart + User (right) */}
+            <div className="flex items-center space-x-2">
+              <Link
+                to="/buy-rent"
+                className="flex items-center justify-center text-base font-medium text-gray-700 hover:text-indigo-600"
+                aria-label="Go to Buy/Rent"
+              >
+                <ShoppingCart className="h-7 w-7 text-indigo-600" />
+              </Link>
+              <button
+                className="flex items-center justify-center px-3 shadow-sm text-base font-medium bg-white text-gray-700 ml-0"
+                onMouseEnter={handleUserMouseEnter}
+                onMouseLeave={handleUserMouseLeave}
+                aria-label="Open profile dropdown"
+                ref={userDropdownRef}
+              >
+                <CircleUserRound className="h-8 w-8 text-indigo-600" />
+              </button>
+            </div>
+          </div>
+          {/* Desktop (md+) */}
+          <div className="hidden md:flex h-20 items-center justify-between w-full">
+            {/* Logo */}
+            <div className="flex items-center">
+              <Link to="/" className="text-2xl font-bold text-indigo-600">
+                <img src="/logo.png" alt="ComfortWay" className="h-16 w-full" />
+              </Link>
+            </div>
+            {/* Desktop Navigation */}
+            <div className="md:flex md:items-center md:space-x-6 lg:space-x-8">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className="text-sm lg:text-base font-medium text-gray-600 hover:text-indigo-600 relative"
+                >
+                  {item.name}
+                  {item.new && (
+                    <span className="absolute -top-2 -right-4 text-xs font-semibold text-white bg-red-500 px-1.5 py-0.5 rounded-full">
+                      NEW
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
+            {/* Cart Icon and User Button (desktop) */}
+            <div className="flex items-center ">
+              <Link
+                to="/buy-rent"
+                className="flex items-center justify-center text-base font-medium text-gray-700 hover:text-indigo-600"
+                aria-label="Go to Buy/Rent"
+              >
+                <ShoppingCart className="h-7 w-7 mr-6 text-indigo-600" />
+              </Link>
+              <button
+                className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-full shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
+                onClick={() => setIsUserDropdownOpen((open) => !open)}
+                style={{ marginLeft: 0 }}
+              >
+                <User className="mr-2 h-5 w-5 text-indigo-600" />
+                {role && token ? "Sign Out" : "Sign In/Up"}
+              </button>
+            </div>
+          </div>
         </div>
       </nav>
 
