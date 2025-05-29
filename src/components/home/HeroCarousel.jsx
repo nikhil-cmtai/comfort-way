@@ -52,7 +52,7 @@ const HeroCarousel = () => {
 
   const slides = [
     {
-      bgImage: 'url("/images/hero-bg-1.jpg")',
+      bgImage: 'url("/hero3.avif")',
       bgFallback: 'bg-gradient-to-r from-gray-900 to-indigo-900',
       imageUrl: '/images/products/ac-2.webp',
       imageFallback: 'https://dummyimage.com/400x300/4366d6/ffffff&text=Maintenance+Repair',
@@ -66,7 +66,7 @@ const HeroCarousel = () => {
       buttonColor: 'from-indigo-600 to-blue-600'
     },
     {
-      bgImage: 'url("/images/hero-bg-2.jpg")',
+      bgImage: 'url("/hero2.avif")',
       bgFallback: 'bg-gradient-to-r from-gray-900 to-blue-900',
       imageUrl: '/images/products/fridge.webp',
       imageFallback: 'https://dummyimage.com/400x300/0d9488/ffffff&text=Buy+Appliances',
@@ -80,7 +80,7 @@ const HeroCarousel = () => {
       buttonColor: 'from-cyan-600 to-blue-600'
     },
     {
-      bgImage: 'url("/images/hero-bg-3.jpg")',
+      bgImage: 'url("/hero1.avif")',
       bgFallback: 'bg-gradient-to-r from-gray-900 to-purple-900',
       imageUrl: '/images/products/Washing-machine.webp',
       imageFallback: 'https://dummyimage.com/400x300/6266f1/ffffff&text=Rent+Appliances',
