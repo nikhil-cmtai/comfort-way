@@ -34,7 +34,7 @@ const Header = () => {
   ];
 
   const userDropdownItems = [
-    { name: role && token ? 'Sign Out' : 'Sign In/Sign Up', path: role && token ? '/sign-in' : '/sign-in', signOut: !!(role && token) },
+    { name: role && token ? 'Sign Out' : 'Sign In/Sign Up', path: '/sign-in', signOut: !!(role && token) },
     { name: 'My Profile', path: '/profile' },
     { name: 'Raise Service Request', path: '/raise-request' },
     { name: 'Help & Support', path: '/contact' },
@@ -84,6 +84,16 @@ const Header = () => {
         setIsUserDropdownOpen(false);
       }
     }, 100);
+  };
+
+  // --- Sign Out Handler ---
+  const handleSignOut = () => {
+    localStorage.removeItem('role');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('justLoggedIn');
+    setIsUserDropdownOpen(false);
+    window.location.href = '/sign-in';
   };
 
   return (
@@ -232,6 +242,42 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {/* User Dropdown (all screens) */}
+      {isUserDropdownOpen && (
+        <div
+          className="absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+          style={{ top: '100%', right: 0 }}
+          ref={userDropdownRef}
+        >
+          {/* Optional close button for mobile */}
+          <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+            {userDropdownItems.map((item) => (
+              <div key={item.name}>
+                {item.separator && <div className="border-t border-gray-200 mx-1 my-1"></div>}
+                {item.signOut ? (
+                  <button
+                    className={`block w-full text-left px-4 py-2 text-sm ${item.separator ? 'text-gray-500' : 'text-gray-700'} hover:bg-gray-100 hover:text-gray-900`}
+                    role="menuitem"
+                    onClick={handleSignOut}
+                  >
+                    {item.name}
+                  </button>
+                ) : (
+                  <Link
+                    to={item.path}
+                    className={`block px-4 py-2 text-sm ${item.separator ? 'text-gray-500' : 'text-gray-700'} hover:bg-gray-100 hover:text-gray-900`}
+                    role="menuitem"
+                    onClick={() => setIsUserDropdownOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
