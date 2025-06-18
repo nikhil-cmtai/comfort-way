@@ -1,6 +1,6 @@
 import React from 'react';
 import Slider from 'react-slick';
-import { FiArrowRight, FiCheckCircle } from 'react-icons/fi';
+import { FiArrowRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
 // Import slick carousel CSS files

@@ -24,6 +24,8 @@ export default function ProtectionPlans() {
   const loading = useSelector(selectProtectionLoading);
   const error = useSelector(selectProtectionError);
 
+  // Track expanded state for each plan card
+  const [expandedPlans, setExpandedPlans] = useState({});
 
   const [selectedDuration, setSelectedDuration] = useState(durations[0]);
   const [applianceSelections, setApplianceSelections] = useState(
@@ -37,6 +39,13 @@ export default function ProtectionPlans() {
     dispatch(fetchProtectionData());
   }, [dispatch]);
 
+  // Toggle expand/collapse for a plan card
+  const toggleExpand = (planKey) => {
+    setExpandedPlans((prev) => ({
+      ...prev,
+      [planKey]: !prev[planKey],
+    }));
+  };
 
   return (
     <div className="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen">
@@ -86,6 +95,7 @@ export default function ProtectionPlans() {
             {protectionData.map((plan, idx) => {
               const maxFeatures = 4;
               const showMore = plan.features.length > maxFeatures;
+              const isExpanded = expandedPlans[plan.bhk];
               return (
                 <div key={plan.bhk}
                   className={`relative bg-white/60 backdrop-blur-xl rounded-3xl shadow-2xl flex flex-col border-2 transition-all duration-300 overflow-hidden group ${plan.highlight ? 'border-blue-600 scale-105 z-10 shadow-2xl' : 'border-transparent'} hover:scale-105 hover:border-indigo-500`}
@@ -110,14 +120,17 @@ export default function ProtectionPlans() {
                   <div className="p-5 flex flex-col flex-grow">
                     <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Features:</h4>
                     <ul className="space-y-2 mb-4 flex-grow">
-                      {plan.features.slice(0, maxFeatures).map((feature, featureIndex) => (
+                      {(isExpanded ? plan.features : plan.features.slice(0, maxFeatures)).map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-start gap-2">
                           <FiCheckSquare className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700 text-xs">{feature}</span>
                         </li>
                       ))}
-                      {showMore && (
-                        <li className="text-indigo-500 text-xs font-semibold ml-6">+ more</li>
+                      {showMore && !isExpanded && (
+                        <li className="text-indigo-500 text-xs font-semibold ml-6 cursor-pointer" onClick={() => toggleExpand(plan.bhk)}>+ more</li>
+                      )}
+                      {showMore && isExpanded && (
+                        <li className="text-indigo-500 text-xs font-semibold ml-6 cursor-pointer" onClick={() => toggleExpand(plan.bhk)}>+ less</li>
                       )}
                     </ul>
                   </div>

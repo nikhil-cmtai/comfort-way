@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 // Service categories with beautiful icons and modern styling
 const serviceCategories = [
   {
-    id: 'repair',
+    id: 'maintenance-repair',
     name: 'Maintenance & Repair',
     icon: <FiTool className="w-8 h-8" />,
     color: 'from-blue-600 to-indigo-500',
@@ -13,7 +13,7 @@ const serviceCategories = [
     image: '/images/products/repair-hero.webp',
   },
   {
-    id: 'buy',
+    id: 'buy-rent',
     name: 'Buy New Appliances',
     icon: <FiShoppingCart className="w-8 h-8" />,
     color: 'from-green-500 to-teal-500',
@@ -21,7 +21,7 @@ const serviceCategories = [
     image: '/images/products/buy-hero.webp',
   },
   {
-    id: 'rent',
+    id: 'buy-rent',
     name: 'Appliance Rentals',
     icon: <FiRefreshCw className="w-8 h-8" />,
     color: 'from-orange-500 to-amber-500',
@@ -29,7 +29,7 @@ const serviceCategories = [
     image: '/images/products/rent-hero.webp',
   },
   {
-    id: 'protection',
+    id: 'home-protection',
     name: 'Protection Plans',
     icon: <FiShield className="w-8 h-8" />,
     color: 'from-purple-600 to-indigo-600',
@@ -382,7 +382,7 @@ const Services = () => {
                   </div>
                   
                   <a 
-                    href="/protection-plans" 
+                    href="/home-protection" 
                     className={`inline-block w-full py-3 px-6 rounded-xl font-medium shadow-md transition-all duration-300 relative overflow-hidden ${
                       plan.popular 
                         ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:shadow-lg hover:shadow-indigo-200/50 transform group-hover:scale-105' 
@@ -406,7 +406,7 @@ const Services = () => {
           
           <div className="text-center mt-16">
             <a 
-              href="/protection-plans" 
+              href="/home-protection" 
               className="group relative inline-flex items-center bg-white text-indigo-600 font-medium py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border border-indigo-100 hover:border-indigo-300 transform hover:-translate-y-1 overflow-hidden"
             >
               <span className="relative z-10 flex items-center">

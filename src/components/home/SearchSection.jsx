@@ -1,20 +1,27 @@
-import React, { useState } from 'react';
-import { FiSearch, FiSettings, FiArrowRight, FiClock, FiShield, FiWind, FiDroplet, FiZap, FiTool, FiHome, FiCoffee } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { FiSearch, FiSettings, FiArrowRight, FiTool } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { fetchProductData, selectProductData, selectProductError, selectProductLoading } from '../../features/slices/productSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchServiceData, selectServiceData, selectServiceError, selectServiceLoading } from '../../features/slices/serviceSlice';
 
 const SearchSection = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const productData = useSelector(selectProductData);
+  const productError = useSelector(selectProductError);
+  const productLoading = useSelector(selectProductLoading);
+  const popularServices = useSelector(selectServiceData);
+  const serviceError = useSelector(selectServiceError);
+  const serviceLoading = useSelector(selectServiceLoading);
   const [searchInput, setSearchInput] = useState('');
   const [isButtonHovered, setIsButtonHovered] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
-  const popularServices = [
-    { name: 'AC', icon: <FiWind />, category: 'ac' },
-    { name: 'RO', icon: <FiDroplet />, category: 'ro' },
-    { name: 'Electrician', icon: <FiZap />, category: 'electrician' },
-    { name: 'Plumbing', icon: <FiTool />, category: 'plumbing' },
-    { name: 'Home Appliance', icon: <FiHome />, category: 'home-appliance' },
-    { name: 'Kitchen Appliance', icon: <FiCoffee />, category: 'kitchen-appliance' },
-  ];
+  useEffect(() => {
+    dispatch(fetchProductData());
+    dispatch(fetchServiceData());
+  }, [dispatch]);
 
   // Enhanced background with animated gradient
   const backgroundStyle = {
@@ -24,6 +31,15 @@ const SearchSection = () => {
     position: 'relative',
     marginTop: '-5px', // Ensure no gap with the hero
   };
+
+  // Filtered product suggestions
+  const filteredProducts = searchInput.trim()
+    ? productData.filter(product =>
+        (product.name + ' ' + product.description)
+          .toLowerCase()
+          .includes(searchInput.toLowerCase())
+      ).slice(0, 8)
+    : [];
 
   const handleSearch = () => {
     if (searchInput.trim()) {
@@ -71,14 +87,52 @@ const SearchSection = () => {
               <input
                 type="text"
                 value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
+                onChange={(e) => {
+                  setSearchInput(e.target.value);
+                  setShowDropdown(true);
+                }}
                 placeholder="What device needs service? (AC, Refrigerator, etc.)"
                 className="w-full px-4 py-4 text-white placeholder-blue-200/70 bg-white/10 focus:outline-none focus:ring-2 focus:ring-blue-300/50 border border-white/20 rounded-xl transition-all"
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                onFocus={() => setShowDropdown(true)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                 <FiSettings className="text-blue-300 animate-spin-slow" size={18} />
               </div>
+              {/* Autocomplete Dropdown */}
+              {showDropdown && searchInput.trim() && (
+                <div className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-2 max-h-72 overflow-y-auto z-20 animate-fade-in-down">
+                  {productLoading ? (
+                    <div className="p-3 text-gray-500 text-center text-sm">Loading...</div>
+                  ) : productError ? (
+                    <div className="p-3 text-red-500 text-center text-sm">Error: {productError}</div>
+                  ) : filteredProducts.length === 0 ? (
+                    <div className="p-3 text-gray-400 text-center text-sm">No products found</div>
+                  ) : (
+                    filteredProducts.map(product => (
+                      <div
+                        key={product._id}
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 cursor-pointer border-b last:border-b-0 border-gray-100"
+                        onMouseDown={() => {
+                          setShowDropdown(false);
+                          navigate('/buy-rent'); // Or `/product/${product._id}` if you have a detail page
+                        }}
+                      >
+                        <img
+                          src={product.imageUrl || '/images/products/default.webp'}
+                          alt={product.name}
+                          className="w-10 h-10 object-cover rounded"
+                          onError={e => { e.target.src = '/images/products/default.webp'; }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-gray-800 truncate">{product.name}</div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -86,16 +140,31 @@ const SearchSection = () => {
           <div className="mb-8">
             <div className="text-left text-blue-100 text-sm font-medium mb-3 ml-1">Popular Devices:</div>
             <div className="flex flex-wrap gap-2">
-              {popularServices.map((service) => (
-                <button 
-                  key={service.name}
-                  onClick={() => handleDeviceClick(service.category)}
-                  className="flex items-center px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-full border border-white/20 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
-                >
-                  <span className="mr-2 text-lg">{service.icon}</span>
-                  {service.name}
-                </button>
-              ))}
+              {serviceLoading ? (
+                <div className="text-white text-sm">Loading...</div>
+              ) : serviceError ? (
+                <div className="text-red-200 text-sm">Error loading services</div>
+              ) : (
+                popularServices && popularServices.length > 0 && popularServices.map((service) => (
+                  <button
+                    key={service.id}
+                    onClick={() => handleDeviceClick(service.label.toLowerCase().replace(/\s+/g, '-'))}
+                    className="flex items-center px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-full border border-white/20 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                  >
+                    {service.img ? (
+                      <img
+                        src={service.img}
+                        alt={service.label}
+                        className="w-6 h-6 rounded-full object-cover mr-2 border border-white/30 bg-white/20"
+                        onError={e => { e.target.src = '/images/products/default.webp'; }}
+                      />
+                    ) : (
+                      <span className="mr-2 text-lg"><FiTool /></span>
+                    )}
+                    {service.label}
+                  </button>
+                ))
+              )}
             </div>
           </div>
 
