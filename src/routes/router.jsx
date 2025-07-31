@@ -168,11 +168,11 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute><Users /></ProtectedRoute>,
       },
       {
-        path: 'roles-permissions',
+        path: 'role-permissions',
         element: <ProtectedRoute><RolePermissions /></ProtectedRoute>,
       },
       {
-        path: 'roles-permissions/:id',
+        path: 'role-permissions/:id',
         element: <ProtectedRoute><EditRole /></ProtectedRoute>,
       },
       {
