@@ -64,7 +64,7 @@ export const register = (userData) => async (dispatch) => {
   try {
     const newUser = {
       ...userData,
-      role: "NpkR5K3M242WKHPdVTTw", // always enforce role
+      role: "HX0obee9I27951XIW2GB", // always enforce role
     };
     const res = await axios.post(`${API}/auth/register`, newUser);
     const { token, user } = res.data;

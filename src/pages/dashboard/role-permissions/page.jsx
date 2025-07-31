@@ -6,7 +6,7 @@ import Modal from '../../../components/ui/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRoleData, selectRoleData, selectRoleLoading, selectRoleError, deleteRole, addRole } from '../../../features/slices/roleSlice';
 
-const NON_DELETE_ROLES = ['GzF9rIH8XyGFM1KPQvMO', 'jSCvJJxbUbsWLHqjN84l', 'pCEYHrDJ0f8nUBlNj5rJ', 'NpkR5K3M242WKHPdVTTw'];
+const NON_DELETE_ROLES = ['GzF9rIH8XyGFM1KPQvMO', 'jSCvJJxbUbsWLHqjN84l', 'pCEYHrDJ0f8nUBlNj5rJ', 'HX0obee9I27951XIW2GB'];
 
 const DEFAULT_PERMISSIONS = [
   { module: "users", create: false, read: false, update: false, delete: false },

@@ -5,7 +5,7 @@ const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
   const isAuthenticated = token || localStorage.getItem('token');
   const role = localStorage.getItem('role');
-  const roleId = 'NpkR5K3M242WKHPdVTTw';
+  const roleId = 'HX0obee9I27951XIW2GB';
   const location = useLocation();
 
   // Restrict dashboard access for this roleId

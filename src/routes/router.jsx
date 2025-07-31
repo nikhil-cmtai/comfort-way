@@ -101,7 +101,7 @@ export const router = createBrowserRouter([
         path: 'profile',
         element: (
           <ProtectedRoute>
-            {localStorage.getItem('role') === 'NpkR5K3M242WKHPdVTTw' ? <ProfilePage /> : <Navigate to="/sign-in" replace />}
+            {localStorage.getItem('role') === 'HX0obee9I27951XIW2GB' ? <ProfilePage /> : <Navigate to="/sign-in" replace />}
           </ProtectedRoute>
         ),
       },

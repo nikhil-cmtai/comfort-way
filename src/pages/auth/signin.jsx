@@ -26,7 +26,7 @@ const Signin = () => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     if (token) {
-      if (role === 'NpkR5K3M242WKHPdVTTw') {
+      if (role === 'HX0obee9I27951XIW2GB') {
         navigate('/profile', { replace: true });
       } else {
         navigate('/dashboard', { replace: true });
@@ -40,7 +40,7 @@ const Signin = () => {
   };
 
   const redirectToDashboard = (role) => {
-    const target = role === 'NpkR5K3M242WKHPdVTTw' ? '/profile' : '/dashboard';
+    const target = role === 'HX0obee9I27951XIW2GB' ? '/profile' : '/dashboard';
     window.location.replace(target);
   };
 

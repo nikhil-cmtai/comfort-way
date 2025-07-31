@@ -44,7 +44,7 @@ const UsersPage = () => {
     password: '',
     phone: '',
     address: '',
-    role: 'NpkR5K3M242WKHPdVTTw',
+    role: 'HX0obee9I27951XIW2GB',
     status: 'active',
     provider: 'manual',
     createdOn: '',
@@ -72,9 +72,9 @@ const UsersPage = () => {
   // Sort users
   const sortedUsers = [...filteredUsers].sort((a, b) => {
     if (sortBy === 'newest') {
-      return new Date(b.joinDate) - new Date(a.joinDate);
+      return new Date(b.createdOn) - new Date(a.createdOn);
     } else if (sortBy === 'oldest') {
-      return new Date(a.joinDate) - new Date(b.joinDate);
+      return new Date(a.createdOn) - new Date(b.createdOn);
     } else if (sortBy === 'name') {
       return a.name.localeCompare(b.name);
     }
@@ -108,12 +108,7 @@ const UsersPage = () => {
     { value: 'oldest', label: 'Oldest First' },
     { value: 'name', label: 'Name A-Z' }
   ];
-  
-  // User type options for the form
-  const userTypeOptions = [
-    { value: 'Individual', label: 'Individual' },
-    { value: 'Business', label: 'Business' }
-  ];
+
   
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -129,7 +124,7 @@ const UsersPage = () => {
       password: '',
       phone: '',
       address: '',
-      role: 'NpkR5K3M242WKHPdVTTw',
+      role: 'HX0obee9I27951XIW2GB',
       status: 'active',
       provider: 'manual',
       createdOn: new Date().toISOString(),
@@ -147,7 +142,7 @@ const UsersPage = () => {
       password: '',
       phone: user.phone,
       address: user.address,
-      role: user.role || 'NpkR5K3M242WKHPdVTTw',
+      role: user.role || 'HX0obee9I27951XIW2GB',
       status: user.status || 'active',
       provider: user.provider || 'manual',
       createdOn: user.createdOn || user.createdAt || '',
